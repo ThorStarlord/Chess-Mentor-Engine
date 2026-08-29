@@ -1,6 +1,6 @@
 # FPV-PILOT-002
 
-Status: Designed and frozen. Not executed.
+Status: Position set frozen. Awaiting pre-engine player decision evidence.
 
 Title: Position Context and Decision Reconstruction
 
@@ -17,5 +17,4 @@ Pilot 002 does not modify or supersede the frozen main protocol. It does not rep
 - [Evaluation plan](evaluation-plan.md)
 - [Pilot manifest](manifest.md)
 
-No Pilot 002 positions have been selected, no new participant questions have been asked, and no Pilot 002 result exists.
-
+The position set and exposure audit are frozen. Five fresh positions are packaged for P01's pre-engine decision reconstruction. No participant responses have been collected, no engine comparison has been executed, and no Pilot 002 result exists.
