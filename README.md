@@ -62,6 +62,8 @@ This repository is in the foundation and product-discovery stage. It contains th
 - [Domain discovery seed](docs/domain/domain-model.md) lists concepts and distinctions that need investigation.
 - [Research notes](docs/research/README.md) defines how future experiments should be recorded.
 - [First validation experiment](docs/research/first-product-validation/README.md) contains the frozen manual study protocol and evaluation instruments.
+- [Pilot 001 result](docs/research/first-product-validation/pilots/FPV-PILOT-001/result.md) records the mixed P01 finding and board-context limitation.
+- [Pilot 002](docs/research/first-product-validation/pilots/FPV-PILOT-002/README.md) defines the frozen position-context and decision-reconstruction follow-up.
 - [Decision records](docs/decisions/README.md) explains when to capture a material product or architecture decision.
 - [CONTEXT.md](CONTEXT.md) is the short orientation document for contributors and coding agents.
 

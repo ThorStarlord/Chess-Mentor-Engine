@@ -2,7 +2,7 @@
 
 Run ID: FPV-PILOT-001
 
-Status: P01 EVALUATION PACKAGE READY - BLINDING COMPROMISED - AWAITING PARTICIPANT RESPONSE. Independent reviewer assessment is also pending.
+Status: Pilot result recorded as MIXED - structured questionnaire incomplete, blinding compromised, independent reviewer assessment pending.
 
 Pilot protocol version: 1.0
 
@@ -48,3 +48,5 @@ Blinding deviation: D-001 recorded in [deviations.md](deviations.md). P01 saw re
 - Participant evaluation not collected.
 - Reviewer assessment not collected.
 - Participant-facing evaluation package prepared without revealing condition labels.
+- Real qualitative participant feedback received separately; structured questionnaire remains incomplete.
+- Pilot outcome recorded as Mixed. No cross-participant validation claim made.
