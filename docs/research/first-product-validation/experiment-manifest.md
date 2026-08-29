@@ -12,11 +12,15 @@ Protocol version: 1.0
 
 Protocol freeze date: 2026-08-28
 
-Repository revision: Pending first baseline commit.
+Repository revision: 10fdd6c36b230fffebdaea4a72ccd0995f680c1a (baseline commit)
 
 Protocol SHA-256: 7ED3D48CFE07024FF01D543E35AD7903AEF485F3EC8904469CB37C162FB62253
 
-Baseline repository state: Pending first commit.
+Baseline repository state: First pre-participant baseline committed locally.
+
+Baseline commit SHA: 10fdd6c36b230fffebdaea4a72ccd0995f680c1a
+
+Baseline commit meaning: This commit represents the complete pre-participant, pre-execution state of the first Chess Mentor Engine product-validation experiment.
 
 Planned participant count: 6-8
 
