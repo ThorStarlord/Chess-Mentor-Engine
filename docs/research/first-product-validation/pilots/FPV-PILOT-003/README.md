@@ -17,6 +17,8 @@ Pilot 003 tests the measurement instrument before any multi-participant replicat
 - [Evidence schema](evidence-schema.md)
 - [Evaluation plan](evaluation-plan.md)
 - [Contamination policy](contamination-policy.md)
+- [Deviations](deviations.md)
+- [Information boundary](information-boundary.md)
 - [Manifest](manifest.md)
 
 No positions have been selected, no new participant responses have been collected, and no engine answers have been revealed under Pilot 003.
