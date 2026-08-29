@@ -6,7 +6,7 @@ The [first product-validation experiment](first-product-validation/README.md) is
 
 No participant material or results are present for the main validation run. Pilot 001 contains one real participant's exploratory evidence.
 
-P01 pilot evidence is now recorded under [FPV-PILOT-001](first-product-validation/pilots/FPV-PILOT-001/README.md). Its mixed result led to [FPV-PILOT-002](first-product-validation/pilots/FPV-PILOT-002/README.md), whose participant-specific mixed result exposed a sparse-reasoning measurement limitation. [FPV-PILOT-003](first-product-validation/pilots/FPV-PILOT-003/README.md) freezes an instrument-calibration design to address that limitation before scaling.
+P01 pilot evidence is now recorded under [FPV-PILOT-001](first-product-validation/pilots/FPV-PILOT-001/README.md). Its mixed result led to [FPV-PILOT-002](first-product-validation/pilots/FPV-PILOT-002/README.md), whose participant-specific mixed result exposed a sparse-reasoning measurement limitation. [FPV-PILOT-003](first-product-validation/pilots/FPV-PILOT-003/README.md) freezes a clean instrument-calibration design but remains blocked on unexposed P02. [FPV-PILOT-004](first-product-validation/pilots/FPV-PILOT-004/README.md) is a separate, weaker-claim instrument-aware N-of-1 design for P01.
 
 Each meaningful experiment should eventually record:
 
