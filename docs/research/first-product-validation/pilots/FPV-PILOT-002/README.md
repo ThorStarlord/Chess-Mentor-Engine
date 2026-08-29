@@ -16,5 +16,7 @@ Pilot 002 does not modify or supersede the frozen main protocol. It does not rep
 - [Participant questioning](participant-questioning.md)
 - [Evaluation plan](evaluation-plan.md)
 - [Pilot manifest](manifest.md)
+- [Revealed engine evidence](engine-evidence.md)
+- [Pilot result](result.md)
 
-The position set and exposure audit are frozen. Five fresh positions are packaged for P01's pre-engine decision reconstruction. No participant responses have been collected, no engine comparison has been executed, and no Pilot 002 result exists.
+The position set and exposure audit are frozen. Five fresh positions received P01's sparse pre-engine responses, which were frozen before engine reveal. The C1/C2/C3 comparison is recorded as an exploratory mixed result.
