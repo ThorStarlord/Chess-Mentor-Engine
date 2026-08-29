@@ -2,7 +2,7 @@
 
 Run ID: FPV-PILOT-001
 
-Status: IN PROGRESS. P01 analyses are frozen only after the analysis artifacts are complete. Participant evaluation and reviewer assessment are pending.
+Status: P01 ANALYSES FROZEN - AWAITING PARTICIPANT EVALUATION. Independent reviewer assessment is also pending.
 
 Pilot protocol version: 1.0
 
@@ -24,6 +24,10 @@ Analysis conditions: Condition A, conventional review; Condition B, recurring-pa
 
 Presentation randomization: Pending participant evaluation. Analysis identities must be presented as A/B.
 
+Analysis A SHA-256: EEB0B7C0B85E0826B2E35A91FCE7BB9D47AA0B5F68A3D0A3EFDA8F2C2C6F0EC8
+
+Analysis B SHA-256: 0B66E0A4A9BAD6410E85338F62E3DE6BEFE99EF0AF9D957B25583FF4F8906D5C
+
 Review process: Analyst work recorded. Independent reviewer assessment pending.
 
 Known deviations: Pilot-specific context heterogeneity is allowed under pilot protocol 1.0. The main protocol is not modified.
@@ -35,4 +39,3 @@ Known deviations: Pilot-specific context heterogeneity is allowed under pilot pr
 - P01 game set frozen as P01-GS01.
 - Participant evaluation not collected.
 - Reviewer assessment not collected.
-

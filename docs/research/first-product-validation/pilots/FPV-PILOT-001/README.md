@@ -1,6 +1,6 @@
 # FPV-PILOT-001
 
-Status: In progress. P01 analyses are not yet frozen.
+Status: P01 analyses frozen. Participant evaluation and independent reviewer assessment are pending.
 
 This exploratory pilot uses one real participant's heterogeneous but time-control-consistent game history. It tests whether the recurring-pattern method can produce a defensible candidate tutoring hypothesis before the stronger main experiment is run.
 
@@ -17,4 +17,3 @@ This pilot does not modify or supersede the frozen main protocol. Its weaker cla
 - [Condition B](participants/P01/analysis-b.md) is the recurring-pattern diagnostic.
 
 Participant evaluation and independent reviewer assessment have not been collected.
-
