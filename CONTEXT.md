@@ -73,4 +73,4 @@ The current product-discovery direction is to test an evidence-backed recurring 
 
 The first validation protocol is designed and frozen, but not executed. Product validation should happen before domain modeling or implementation. See [the experiment protocol](docs/research/first-product-validation/README.md).
 
-Pilot 001 produced a mixed, participant-specific result. P01 reported that the analysis was not helpful because the board context was not included. Pilot 002 is designed to test explicit position context and pre-engine player reasoning. Neither result changes the frozen main protocol.
+Pilot 001 produced a mixed, participant-specific result. P01 reported that the analysis was not helpful because the board context was not included. Pilot 002 produced a mixed, participant-specific result: board context improved explanation and direct player evidence added information, but responses were sparse. Pilot 003 freezes an instrument-calibration design to test spontaneous reasoning versus neutral probing. Neither result changes the frozen main protocol.
