@@ -17,9 +17,14 @@ Planned batches: 3
 Positions per batch: 8–10  
 Exposure classes: FRESH, EXPOSED, UNCERTAIN  
 Controls: required where supported  
-Execution status: Not started  
-Batch 1 positions: Not selected  
+Execution status: Batch 1 position set frozen; minimal-response package ready; A1 evidence pending  
+Batch 1 positions: 8 selected, 8 fresh  
 Engine evidence: Not revealed under Pilot 004
+
+Batch 1 game set: P01-GS01; 30 games; source checksum recorded in the internal batch audit  
+Batch 1 position set: [internal position set](batches/B01/position-set.md)  
+Batch 1 exposure audit: [internal exposure audit](batches/B01/exposure-audit.md)  
+Batch 1 participant package: [minimal-response package](batches/B01/participant/README.md)
 
 Outcome categories: Promising; Mixed; Insufficient Evidence; Demand-Characteristic Dominated
 
