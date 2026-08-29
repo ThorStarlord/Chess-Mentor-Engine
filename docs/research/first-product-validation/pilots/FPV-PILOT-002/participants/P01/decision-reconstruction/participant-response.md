@@ -3,91 +3,90 @@
 Pilot: FPV-PILOT-002  
 Participant: P01  
 Stage: Pre-engine decision evidence  
-Status: Pending
+Status: P01 PRE-ENGINE PLAYER DECISION EVIDENCE FROZEN — SPARSE BUT AUTHENTIC
 
-Complete one section for each fresh position. Record current reasoning before consulting an engine, prior analysis, or additional commentary. Keep any recollection of the original game separate.
+The following responses are preserved verbatim. `NOT PROVIDED` means the participant did not provide that structured field in the spontaneous response; it does not mean the participant explicitly said they did not know.
 
 ## Position 01 — P002-01
 
-Player decision evidence:
+### PLAYER DECISION EVIDENCE — PRE-ENGINE
 
-- Moves seriously considered:
-- Move chosen:
-- Why:
-- Opponent's strongest expected reply:
-- Expected continuation:
-- Plan/objective:
-- Confidence (1-5):
-- Primary reasoning type (tactical / strategic / defensive / other):
+> I do not see any good moves
 
-Current pre-engine reasoning:
-
-Original-decision recollection (optional, separate):
+- Moves seriously considered: NOT PROVIDED
+- Chosen move: NOT PROVIDED
+- Why: NOT PROVIDED
+- Opponent's strongest expected reply: NOT PROVIDED
+- Expected continuation: NOT PROVIDED
+- Plan/objective: NOT PROVIDED
+- Confidence (1-5): NOT PROVIDED
+- Primary reasoning type: NOT PROVIDED
+- Original-game recollection: NOT PROVIDED
 
 ## Position 02 — P002-02
 
-Player decision evidence:
+### PLAYER DECISION EVIDENCE — PRE-ENGINE
 
-- Moves seriously considered:
-- Move chosen:
-- Why:
-- Opponent's strongest expected reply:
-- Expected continuation:
-- Plan/objective:
-- Confidence (1-5):
-- Primary reasoning type (tactical / strategic / defensive / other):
+> pawn e5 fork bishop and knight is clear best move.
 
-Current pre-engine reasoning:
-
-Original-decision recollection (optional, separate):
+- Moves seriously considered: NOT PROVIDED
+- Chosen move: e5
+- Why: pawn e5 fork bishop and knight is clear best move.
+- Opponent's strongest expected reply: NOT PROVIDED
+- Expected continuation: NOT PROVIDED
+- Plan/objective: NOT PROVIDED
+- Confidence (1-5): NOT PROVIDED
+- Primary reasoning type: NOT PROVIDED
+- Original-game recollection: NOT PROVIDED
 
 ## Position 03 — P002-03
 
-Player decision evidence:
+### PLAYER DECISION EVIDENCE — PRE-ENGINE
 
-- Moves seriously considered:
-- Move chosen:
-- Why:
-- Opponent's strongest expected reply:
-- Expected continuation:
-- Plan/objective:
-- Confidence (1-5):
-- Primary reasoning type (tactical / strategic / defensive / other):
+> there is tension on the center but I do not see any current moves or long-terms plans for development.
 
-Current pre-engine reasoning:
-
-Original-decision recollection (optional, separate):
+- Moves seriously considered: NOT PROVIDED
+- Chosen move: NOT PROVIDED
+- Why: NOT PROVIDED
+- Opponent's strongest expected reply: NOT PROVIDED
+- Expected continuation: NOT PROVIDED
+- Plan/objective: NOT PROVIDED
+- Confidence (1-5): NOT PROVIDED
+- Primary reasoning type: NOT PROVIDED
+- Original-game recollection: NOT PROVIDED
 
 ## Position 04 — P002-04
 
-Player decision evidence:
+### PLAYER DECISION EVIDENCE — PRE-ENGINE
 
-- Moves seriously considered:
-- Move chosen:
-- Why:
-- Opponent's strongest expected reply:
-- Expected continuation:
-- Plan/objective:
-- Confidence (1-5):
-- Primary reasoning type (tactical / strategic / defensive / other):
+> there is an obvious knight hanging take can be taken by the rook as best move.
 
-Current pre-engine reasoning:
-
-Original-decision recollection (optional, separate):
+- Moves seriously considered: NOT PROVIDED
+- Chosen move: NOT PROVIDED
+- Why: there is an obvious knight hanging take can be taken by the rook as best move.
+- Opponent's strongest expected reply: NOT PROVIDED
+- Expected continuation: NOT PROVIDED
+- Plan/objective: NOT PROVIDED
+- Confidence (1-5): NOT PROVIDED
+- Primary reasoning type: NOT PROVIDED
+- Original-game recollection: NOT PROVIDED
 
 ## Position 05 — P002-05
 
-Player decision evidence:
+### PLAYER DECISION EVIDENCE — PRE-ENGINE
 
-- Moves seriously considered:
-- Move chosen:
-- Why:
-- Opponent's strongest expected reply:
-- Expected continuation:
-- Plan/objective:
-- Confidence (1-5):
-- Primary reasoning type (tactical / strategic / defensive / other):
+> there is an weakness in the opponent king side where the g pawn is missing as an obvious long-term plan of attack, but, is not clear how to progress the development long term as black have options to defend.
 
-Current pre-engine reasoning:
+- Moves seriously considered: NOT PROVIDED
+- Chosen move: NOT PROVIDED
+- Why: there is an weakness in the opponent king side where the g pawn is missing as an obvious long-term plan of attack, but, is not clear how to progress the development long term as black have options to defend.
+- Opponent's strongest expected reply: NOT PROVIDED
+- Expected continuation: NOT PROVIDED
+- Plan/objective: NOT PROVIDED
+- Confidence (1-5): NOT PROVIDED
+- Primary reasoning type: NOT PROVIDED
+- Original-game recollection: NOT PROVIDED
 
-Original-decision recollection (optional, separate):
+## Evidence-completeness limitation
+
+P01 provided spontaneous high-level reasoning for all five fresh positions but did not provide every structured questionnaire field. Unprovided details were not solicited again before engine reveal because additional prompting could alter the originally observed reasoning process.
