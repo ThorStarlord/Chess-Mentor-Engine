@@ -95,8 +95,13 @@ class ParticipantMove:
         _require_nonempty("submitted_value", self.submitted_value)
         if self.normalization_status == "normalized" and not self.normalized_uci:
             raise ValueError("normalized move requires normalized_uci")
-        if self.normalization_status != "normalized" and self.normalized_uci is not None:
-            raise ValueError("ambiguous/unresolved move must not contain normalized_uci")
+        if (
+            self.normalization_status != "normalized"
+            and self.normalized_uci is not None
+        ):
+            raise ValueError(
+                "ambiguous/unresolved move must not contain normalized_uci"
+            )
         if self.legality != "not_assessed" and self.normalized_uci is None:
             raise ValueError("assessed move legality requires normalized_uci")
 
@@ -157,7 +162,9 @@ class ParticipantStructuredResponse:
             ],
             "stated_objective": self.stated_objective,
             "uncertainty": self.uncertainty,
-            "confidence": None if self.confidence is None else self.confidence.to_dict(),
+            "confidence": (
+                None if self.confidence is None else self.confidence.to_dict()
+            ),
         }
 
 
