@@ -16,6 +16,7 @@ from .model import (
 )
 from .precomputed import PrecomputedAnalysisProvider, PrecomputedFixture
 from .provider import ChessAnalysisProvider
+from .uci import UciAnalysisProvider
 
 __all__ = [
     "AnalysisFailure",
@@ -32,6 +33,7 @@ __all__ = [
     "PositionAnalysis",
     "PrecomputedAnalysisProvider",
     "PrecomputedFixture",
+    "UciAnalysisProvider",
     "analysis_request_fingerprint",
     "analysis_result_fingerprint",
 ]

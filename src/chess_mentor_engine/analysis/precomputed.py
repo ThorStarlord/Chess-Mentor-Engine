@@ -5,7 +5,6 @@ from __future__ import annotations
 from dataclasses import dataclass, field, replace
 
 from chess_mentor_engine.chess import CanonicalPosition, canonical_json
-from chess_mentor_engine.chess._core import Board, Move
 
 from .fingerprints import (
     analysis_request_fingerprint,
@@ -23,17 +22,11 @@ from .model import (
     FailureCode,
     PositionAnalysis,
 )
+from .validation import expected_candidate_count, validate_candidate_lines
 
 
 def _fixture_key(fen: str, request: AnalysisRequest) -> str:
     return canonical_json({"fen": fen, "request": request.to_dict()})
-
-
-def _find_legal_move(board: Board, uci: str) -> Move | None:
-    for move in board.legal_moves():
-        if move.uci() == uci:
-            return move
-    return None
 
 
 @dataclass(frozen=True, slots=True)
@@ -134,15 +127,13 @@ class PrecomputedAnalysisProvider:
         request: AnalysisRequest,
         fixture: PrecomputedFixture,
     ) -> None:
-        board = Board.from_fen(fen)
-        legal_moves = board.legal_moves()
-        expected_count = min(request.multipv, len(legal_moves))
+        expected_count = expected_candidate_count(fen, request.multipv)
 
         if fixture.status == "terminal":
-            if legal_moves:
+            if expected_count:
                 raise ValueError("terminal fixture source position has legal moves")
             return
-        if not legal_moves:
+        if expected_count == 0:
             raise ValueError("non-terminal fixture source position has no legal moves")
         if fixture.status == "complete" and len(fixture.lines) != expected_count:
             raise ValueError("complete fixture does not satisfy requested MultiPV")
@@ -151,30 +142,4 @@ class PrecomputedAnalysisProvider:
         if len(fixture.lines) > expected_count:
             raise ValueError("fixture returns more candidate lines than requested")
 
-        expected_ranks = tuple(range(1, len(fixture.lines) + 1))
-        actual_ranks = tuple(line.rank for line in fixture.lines)
-        if actual_ranks != expected_ranks:
-            raise ValueError("candidate ranks must be contiguous starting at 1")
-
-        legal_root_moves = {move.uci() for move in legal_moves}
-        seen_roots: set[str] = set()
-        for line in fixture.lines:
-            if line.root_move_uci not in legal_root_moves:
-                raise ValueError(
-                    f"illegal candidate root move: {line.root_move_uci}"
-                )
-            if line.root_move_uci in seen_roots:
-                raise ValueError("candidate root moves must be unique")
-            seen_roots.add(line.root_move_uci)
-            PrecomputedAnalysisProvider._validate_pv(fen, line)
-
-    @staticmethod
-    def _validate_pv(fen: str, line: CandidateLine) -> None:
-        if not line.pv_uci:
-            return
-        board = Board.from_fen(fen)
-        for uci in line.pv_uci:
-            move = _find_legal_move(board, uci)
-            if move is None:
-                raise ValueError(f"illegal PV move {uci!r} after {board.fen()}")
-            board.push(move)
+        validate_candidate_lines(fen, fixture.lines)
