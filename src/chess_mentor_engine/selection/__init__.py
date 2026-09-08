@@ -16,7 +16,11 @@ from .model import (
     SelectionPolicyIdentity,
     SelectionSignal,
 )
-from .signals import SIGNAL_SCHEMA_VERSION, SelectionSignalError, build_selection_signals
+from .signals import (
+    SIGNAL_SCHEMA_VERSION,
+    SelectionSignalError,
+    build_selection_signals,
+)
 
 __all__ = [
     "AnalysisEvidenceRef",

@@ -196,7 +196,9 @@ def _validate_analysis_target(
         raise SelectionSignalError("root analysis request fingerprint mismatch")
     if isinstance(analysis, AnalysisFailure):
         if ref.status != "failure" or analysis.code != ref.failure_code:
-            raise SelectionSignalError("root analysis failure does not match M4B evidence")
+            raise SelectionSignalError(
+                "root analysis failure does not match M4B evidence"
+            )
         return
     if analysis.status != ref.status:
         raise SelectionSignalError("root analysis status does not match M4B evidence")
