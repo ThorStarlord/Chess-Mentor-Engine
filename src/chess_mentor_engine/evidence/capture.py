@@ -584,7 +584,10 @@ def present_capture_stage(
             details=(("unfrozen_prior_stages", ",".join(unfrozen_prior)),),
         )
 
-    if stage.phase == "pre_reveal" and prompt.interaction_class == "tutoring_intervention":
+    if (
+        stage.phase == "pre_reveal"
+        and prompt.interaction_class == "tutoring_intervention"
+    ):
         working = _handle_violation(
             working,
             mode=violation_mode,
@@ -747,7 +750,11 @@ def append_evidence_amendment(
     if not reason:
         raise PlayerEvidenceError("amendment reason must not be empty")
     response = next(
-        (item for item in session.responses if item.response_id == original_response_id),
+        (
+            item
+            for item in session.responses
+            if item.response_id == original_response_id
+        ),
         None,
     )
     if response is None:
@@ -757,7 +764,9 @@ def append_evidence_amendment(
         None,
     )
     if freeze is None:
-        raise PlayerEvidenceError("amendment requires the original response to be frozen")
+        raise PlayerEvidenceError(
+            "amendment requires the original response to be frozen"
+        )
     if submitted_time < _parse_timestamp(freeze.frozen_at):
         raise PlayerEvidenceError("amendment cannot precede original freeze")
     payload = {
@@ -826,8 +835,12 @@ def reveal_objective_evidence(
         )
 
     latest_times: list[datetime] = [_parse_timestamp(working.context.created_at)]
-    latest_times.extend(_parse_timestamp(item.shown_at) for item in working.presentations)
-    latest_times.extend(_parse_timestamp(item.submitted_at) for item in working.responses)
+    latest_times.extend(
+        _parse_timestamp(item.shown_at) for item in working.presentations
+    )
+    latest_times.extend(
+        _parse_timestamp(item.submitted_at) for item in working.responses
+    )
     latest_times.extend(_parse_timestamp(item.frozen_at) for item in working.freezes)
     if reveal_time < max(latest_times):
         working = _handle_violation(
