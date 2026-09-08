@@ -62,7 +62,9 @@ class PrecomputedFixture:
             if self.lines:
                 raise ValueError("terminal fixture must not contain candidate lines")
             if self.termination.reason != "terminal_position":
-                raise ValueError("terminal fixture must use terminal_position termination")
+                raise ValueError(
+                    "terminal fixture must use terminal_position termination"
+                )
 
 
 class PrecomputedAnalysisProvider:
