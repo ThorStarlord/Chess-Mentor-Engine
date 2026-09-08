@@ -1,0 +1,44 @@
+{
+  "schema_version": "1",
+  "qualification_name": "M5Q full Player Decision Evidence qualification",
+  "required_cases": [
+    "clean_minimal_only",
+    "clean_two_stage",
+    "instrument_aware",
+    "contaminated_exposure",
+    "early_later_stage",
+    "early_objective_reveal",
+    "append_only_amendment",
+    "ambiguous_reported_move",
+    "illegal_reported_move",
+    "post_reveal_reflection",
+    "deterministic_replay",
+    "research_artifact_preservation"
+  ],
+  "pilot_003_instrument": {
+    "stage_a_prompt": "What do you think about this position, and what would you play?",
+    "stage_b_prompts": [
+      "What other moves did you seriously consider?",
+      "What do you think your opponent's strongest reply to your chosen move is?",
+      "What continuation do you expect after that reply?",
+      "What are you trying to accomplish with your move?",
+      "Is there anything about the position that makes you uncertain?",
+      "How confident are you in your choice, from 1 to 5?"
+    ]
+  },
+  "participant_evidence": {
+    "minimal_raw_response": "  I would play e4 because it takes space.\nI am not fully sure what Black's strongest reply is.  ",
+    "probe_raw_response": "I also seriously considered d4. I expect ...e5, then Nf3. My objective is central control. I am uncertain about Black's best reply. Confidence: 4/5.",
+    "amendment_raw_response": "Correction: I meant that d4 was my second candidate, not my chosen move.",
+    "post_reveal_raw_response": "After seeing the objective evidence, I would keep e4 but I understand the alternatives differently."
+  },
+  "research_artifact_git_blob_shas": {
+    "docs/research/first-product-validation/pilots/FPV-PILOT-003/pilot-protocol.md": "79b67620ef5bef276d454fbde97e0247be1135f4",
+    "docs/research/first-product-validation/pilots/FPV-PILOT-003/reasoning-instrument.md": "fb0d15ec989fe2a9653d4d59851d712d7f61067e",
+    "docs/research/first-product-validation/pilots/FPV-PILOT-003/evidence-schema.md": "187ffb74e09008390b9c812935141edea32ac5f5",
+    "docs/research/first-product-validation/pilots/FPV-PILOT-003/information-boundary.md": "09e198dc5dafdd313d6ada8f7de336a1d0ef0449",
+    "docs/research/first-product-validation/pilots/FPV-PILOT-003/contamination-policy.md": "f3709d25d6178a051da387b5f0394eab9ad17827",
+    "docs/research/first-product-validation/pilots/FPV-PILOT-004/pilot-protocol.md": "883db320f7dabd2c6241fb24d8e3353f02699c18",
+    "docs/research/first-product-validation/pilots/FPV-PILOT-004/reasoning-instrument.md": "f4afe93699a9e938cc41bfccf8c9025896c0654a"
+  }
+}
