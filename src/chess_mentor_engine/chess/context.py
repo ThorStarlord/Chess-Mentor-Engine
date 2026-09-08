@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from ._core import Board, FILES, square_name
+from ._core import FILES, Board, square_name
 from .model import (
     CanonicalGame,
     CanonicalPosition,
