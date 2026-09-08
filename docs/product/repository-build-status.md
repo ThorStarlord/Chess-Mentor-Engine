@@ -1,11 +1,11 @@
 # Chess Mentor Engine — Current Build Status
 
 **Status authority:** current implementation/milestone status only  
-**Updated for:** M4D SelectionPolicy + DiagnosticCandidateBatch qualification  
+**Updated for:** M4Q full Diagnostic Position Selection qualification  
 **Relationship to roadmap:** this file complements
 `chess-mentor-engine-repository-build-plan.md`. The roadmap preserves the conceptual
 sequence and historical planning rationale; this file is the authority for which
-milestones are actually qualified, frozen, implemented, or not started.
+milestones are actually qualified, frozen, implemented, authorized, or not started.
 
 ## Why this file exists
 
@@ -26,7 +26,7 @@ current implementation status
 ratified technical decisions
 → docs/decisions/*.md
 
-implemented technical boundaries
+implemented technical boundaries / qualification records
 → docs/architecture/*.md
 ```
 
@@ -43,15 +43,15 @@ M3 — Engine Evidence                            QUALIFIED
   M3B — Precomputed provider                    QUALIFIED
   M3C — External UCI provider                   QUALIFIED
 
-M4 — Diagnostic Position Selection              IN PROGRESS
+M4 — Diagnostic Position Selection              QUALIFIED
   M4A — Selection contract                      FROZEN
   M4B — DecisionComparison                      QUALIFIED
   M4C — SelectionSignal + DiagnosticCandidate   QUALIFIED
   M4D — SelectionPolicy + CandidateBatch        QUALIFIED
-  M4Q — Full M4 qualification                   NOT STARTED / NEXT
+  M4Q — Full M4 qualification                   QUALIFIED
 
-M5 — Player Decision Evidence                   NOT STARTED / UNAUTHORIZED
-M6 — Reasoning Discrepancy                      NOT STARTED
+M5 — Player Decision Evidence                   NOT STARTED / AUTHORIZED NEXT
+M6 — Reasoning Discrepancy                      NOT STARTED / UNAUTHORIZED
 M7 — Learner Hypothesis Ledger                  NOT STARTED
 M8 — Evidence-aware Tutor Session               NOT STARTED
 M9 — Training Interventions                     NOT STARTED
@@ -60,9 +60,9 @@ M11 — Longitudinal Learner State                NOT STARTED
 M12+ — CLI/UI/richer LLM productization         NOT STARTED
 ```
 
-## Qualified evidence chain
+## Qualified objective evidence chain
 
-The repository currently has this qualified objective evidence path:
+The repository now has this qualified objective evidence-acquisition path:
 
 ```text
 PGN
@@ -78,60 +78,62 @@ PGN
 → DiagnosticCandidateBatch
 ```
 
-M4D now supplies the deterministic policy execution that M4C intentionally left
-external. Qualified M4D can:
+M4 as a whole is qualified under the frozen ADR 0003 claim ceiling. It can derive
+transparent, provenance-rich objective decision comparisons and use versioned
+deterministic policies to select bounded candidate sets containing both potentially
+informative decisions and successful controls.
 
-- evaluate qualified M4C signals under an explicit policy ID/version and full policy
-  fingerprint;
-- retain the raw observed value, operator, configured threshold, and source signal for
-  each matched rule;
-- interpret M4C raw top-candidate separation under a versioned close-choice threshold;
-- select symbolic mate relations without centipawn sentinels;
-- classify rank-1 and configured low-severity decisions as operational controls;
-- construct reproducible bounded candidate/control batches;
-- enforce requested size, per-game caps, quota minima/maxima, and minimum controls;
-- retain source-pool identity and deterministic ordering;
-- record policy exclusions and visible size/control/quota shortfalls instead of
-  silently weakening constraints;
-- reject policy-configuration drift even when policy ID/version are reused.
+M4 qualification proves, among other things:
 
-See `docs/architecture/selection-policy-and-batches.md` for the M4D implementation
-and qualification record.
+- canonical played-move provenance and compatible objective engine comparison;
+- mover-relative exact centipawn comparison without hiding engine-evidence inversion;
+- symbolic mate and terminal semantics without fake centipawn sentinels;
+- conservative preservation of partial, bound, failure, and incompatible evidence;
+- transparent objective selection signals with reconstructable evidence references;
+- explicit versioned policy thresholds rather than universal chess labels;
+- operational successful controls rather than error-only sampling;
+- deterministic candidate/control batches with quotas, per-game caps, exclusions,
+  source-pool provenance, and visible shortfalls;
+- policy-version sensitivity without rewriting upstream objective evidence;
+- absence of learner-psychology, LLM-ranking, and pedagogical-effectiveness claims.
 
-M4D does **not** make M4 overall qualified. Full M4 coherence remains an M4Q gate.
+M4Q freezes all 12 qualification categories required by M4A, including the prior
+research board-context FEN, custom-FEN and promotion decisions, quiet/control cases,
+close/separated MultiPV choices, and forced-mate cases. It also qualifies terminal,
+partial, bound, failure, inversion, incompatible-analysis, deterministic replay,
+policy-version, exclusion, and deliberate-shortfall behavior.
+
+See:
+
+- `docs/architecture/diagnostic-position-selection.md` — frozen M4A contract;
+- `docs/architecture/decision-comparison.md` — M4B implementation record;
+- `docs/architecture/selection-signals-and-candidates.md` — M4C record;
+- `docs/architecture/selection-policy-and-batches.md` — M4D record;
+- `docs/architecture/m4-qualification.md` — full M4Q qualification record.
 
 ## Current authorized next task
 
-> **M4Q — full M4 qualification and bounded-selection surface review only.**
+> **M5 — Player Decision Evidence contract/design gate only.**
 
-M4Q should primarily prove the complete path:
+M5 crosses the product from objective chess evidence into direct evidence about what
+the player actually thought. The next work should therefore freeze the Player Decision
+Evidence boundary before production implementation.
+
+The M5 design gate should preserve at least these distinctions:
 
 ```text
-M4A frozen contract
-→ M4B DecisionComparison
-→ M4C SelectionSignal / DiagnosticCandidate
-→ M4D SelectionPolicy / DiagnosticCandidateBatch
+objective chess truth
+!= player self-report
+!= analyst/model inference
+!= learner diagnosis
 ```
 
-M4Q should verify end-to-end provenance, deterministic replay, stable identities,
-policy-version sensitivity, successful/control sampling, visible exclusions and
-shortfalls, and the M4 claim ceiling. It should not introduce Player Decision Evidence
-or learner diagnosis merely to make the qualification richer.
+It should also reconcile the production evidence schema with the already-preserved
+research instrument boundaries without rewriting Pilot 001–004 evidence or exposure
+state.
 
-M5 remains unauthorized until M4Q is qualified.
-
-## Required stop before M4Q execution
-
-M4D qualification is a deliberate stop/review boundary. Before starting M4Q, inspect
-the complete M4 surface and verify:
-
-- every selected position can explain why it was selected;
-- every exclusion has reconstructable policy evidence;
-- policy thresholds remain policy rather than universal chess truth;
-- successful controls are first-class rather than error-only sampling;
-- shortfalls cannot be hidden;
-- input reordering cannot change a deterministic batch;
-- no learner-psychology or pedagogical-value label has entered M4.
+M5 is **authorized but not started**. M6 and later learner-inference/pedagogy
+milestones remain unauthorized until their preceding evidence gates are qualified.
 
 ## Current claim ceiling
 
@@ -140,20 +142,27 @@ The repository may claim that it has:
 - qualified deterministic chess state;
 - qualified deterministic board features;
 - qualified provenance-bound engine evidence;
-- a frozen Diagnostic Position Selection contract;
-- a qualified objective `DecisionComparison` layer;
-- a qualified transparent objective `SelectionSignal` layer;
-- a qualified immutable `DiagnosticCandidate` recording boundary;
+- a frozen and fully qualified Diagnostic Position Selection milestone;
+- qualified objective `DecisionComparison`;
+- qualified transparent objective `SelectionSignal` derivation;
+- qualified immutable `DiagnosticCandidate` provenance;
 - qualified versioned deterministic `SelectionPolicy` execution;
 - qualified reproducible bounded `DiagnosticCandidateBatch` construction with
   controls, quotas, caps, exclusions, and visible shortfalls.
 
-It may **not** yet claim that:
+It may **not** claim that:
 
-- M4 Diagnostic Position Selection as a whole is qualified;
-- a selected position is the best teaching opportunity;
-- a control contradicts a learner hypothesis;
 - it knows why a player chose a move;
-- it can diagnose a learner weakness or recurrence;
-- it can recommend effective training;
-- it has demonstrated transfer or mastery.
+- a selected position demonstrates a stable learner weakness;
+- a selected position is the best teaching opportunity;
+- centipawn loss measures cognitive severity;
+- a control contradicts a learner hypothesis;
+- recurrence has been established;
+- an intervention is warranted or effective;
+- learning, transfer, or mastery has occurred.
+
+## Stop boundary
+
+M4 is closed and qualified. M5 is the next authorized milestone, but no M5
+implementation has begun in this status state. Do not advance into M6 learner
+inference or later pedagogy from M4 evidence alone.
