@@ -40,7 +40,9 @@ def build_position_features(position: CanonicalPosition) -> PositionFeaturePacke
     legal_captures = tuple(
         move.uci() for move in legal if _move_is_capture(board, move)
     )
-    square_attacks = tuple(_square_attack_relation(board, square) for square in range(64))
+    square_attacks = tuple(
+        _square_attack_relation(board, square) for square in range(64)
+    )
     piece_defenders = tuple(_piece_defenses(board))
     absolute_pins = tuple(_absolute_pins(board))
     return PositionFeaturePacket(
@@ -86,7 +88,8 @@ def _square_attack_relation(board: Board, square: int) -> SquareAttackRelation:
 
 
 def _attacker_names(board: Board, square: int, color: str) -> tuple[str, ...]:
-    return tuple(square_name(source) for source in _attacker_squares(board, square, color))
+    attackers = _attacker_squares(board, square, color)
+    return tuple(square_name(source) for source in attackers)
 
 
 def _attacker_squares(board: Board, square: int, color: str) -> tuple[int, ...]:
