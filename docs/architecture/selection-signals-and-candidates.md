@@ -2,7 +2,7 @@
 
 ## Status
 
-**M4C implementation is merged. Qualification reconciliation is pending a completed post-merge external Stockfish witness. M4D has not started. M4 overall is not yet qualified.**
+**M4C — SelectionSignal and DiagnosticCandidate is implemented and qualified. M4D has not started. M4 overall is not yet qualified.**
 
 This document records the implemented M4C boundary and its qualification evidence.
 The frozen selection semantics remain defined by
@@ -269,9 +269,9 @@ high-value teaching moment
 
 Those require player evidence, later inference, or pedagogy.
 
-## Implementation qualification evidence
+## Qualification record
 
-### Exact qualified candidate
+### Exact qualified implementation candidate
 
 ```text
 8658a7b9922693e1806e47fd75285dc7b9effc9d
@@ -306,28 +306,53 @@ The initial M4C head was not qualified because Ruff failed. That candidate was
 superseded, the lint defects were fixed, the partial-evidence contract was tightened,
 and the exact candidate above requalified from scratch.
 
-### Post-merge reconciliation
+### Post-merge qualification evidence
 
 The implementation merge's `test-and-lint` job passed. Its first external Stockfish
-job did not report a chess-test failure but remained stalled inside the Ubuntu package
-installation step during qualification reconciliation.
+job did not report a chess-test failure but became operationally stalled inside the
+Ubuntu package-install step before the external chess tests ran.
 
-This documentation branch is intentionally based directly on the tree-identical M4C
-implementation merge. Its CI is being used as an independent post-merge external
-witness over identical product code. This record must not be promoted to `main` with a
-QUALIFIED status unless that replacement witness and the final reconciliation head are
-green.
+The stalled job was not counted as a pass.
 
-## Pending qualification verdict
+A docs-only qualification branch was then created directly from the tree-identical
+implementation merge without changing product code. Exact witness head:
 
-> **M4C — IMPLEMENTED; FINAL QUALIFICATION RECONCILIATION PENDING**
+```text
+2667b9ef00bc47483a128e8b38bc81c49c941d1d
+```
 
-The intended qualified claim, once the remaining post-merge witness closes, is:
+CI run:
+
+```text
+34209881796
+```
+
+On that direct post-merge descendant:
+
+```text
+test-and-lint PASS
+external Stockfish integration PASS
+```
+
+This replacement witness tests the same M4C product tree while making the infrastructure
+stall explicit rather than pretending the original job succeeded.
+
+The final documentation reconciliation head must also pass repository CI before this
+record is promoted to `main`.
+
+## Qualification verdict
+
+> **M4C — SELECTIONSIGNAL + DIAGNOSTICCANDIDATE: QUALIFIED**
+
+The qualified claim is deliberately bounded:
 
 > Chess Mentor Engine can derive deterministic, provenance-rich objective selection
 > signals from qualified M2/M3/M4B evidence and can record a stable
 > `DiagnosticCandidate` with explicit policy identity and eligibility-signal
 > provenance, without executing batch policy or inferring learner psychology.
+
+M4C does **not** establish that the repository can execute a selection policy or
+produce bounded candidate/control batches. Those require M4D and M4Q.
 
 ## Explicitly not implemented
 
@@ -352,13 +377,19 @@ M4C does not implement:
 - transfer/mastery;
 - Pilot 004 mutation.
 
-## Next boundary after qualification
+## Next authorized boundary
 
-Once M4C qualification is reconciled, stop and review before authorizing:
+> **M4D — implement versioned `SelectionPolicy` + `DiagnosticCandidateBatch` only.**
 
-> **M4D — versioned `SelectionPolicy` + `DiagnosticCandidateBatch` only.**
+M4D must consume qualified M4C evidence without inventing learner-psychology or
+pedagogical labels. It may introduce explicit thresholds, quotas, successful-control
+sampling, per-game caps, deterministic tie-breaking, exclusions, and shortfalls under
+a versioned policy.
 
-M4 overall remains unqualified until M4D and M4Q close their gates.
+After M4D implementation and qualification, stop again before M4Q review.
+
+M4 overall remains unqualified until M4D and M4Q close their gates. M5 remains
+unauthorized until M4Q.
 
 ## Governing principle
 
