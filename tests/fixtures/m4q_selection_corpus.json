@@ -1,0 +1,156 @@
+{
+  "schema_version": "1",
+  "description": "Frozen precomputed M4Q corpus covering every category required by the M4A qualification contract.",
+  "cases": [
+    {
+      "id": "large_exact_cp_loss",
+      "category": "obvious_large_exact_centipawn_loss",
+      "pgn": "[Event \"M4Q Large CP Loss\"]\n[Result \"*\"]\n\n1. d4 *\n",
+      "lines": [
+        {"rank": 1, "move": "e2e4", "evaluation": {"kind": "cp", "value": 120}},
+        {"rank": 2, "move": "d2d4", "evaluation": {"kind": "cp", "value": -20}}
+      ],
+      "expected_comparison_kind": "worse_for_mover",
+      "expected_exact_cp_delta": 140,
+      "expected_signals": ["PLAYED_DIFFERS_FROM_RANK_1", "EXACT_CP_DELTA", "TOP_CANDIDATE_SEPARATION"]
+    },
+    {
+      "id": "quiet_engine_preferred",
+      "category": "quiet_engine_preferred_move",
+      "pgn": "[Event \"M4Q Quiet Preferred\"]\n[Result \"*\"]\n\n1. d4 *\n",
+      "lines": [
+        {"rank": 1, "move": "d2d4", "evaluation": {"kind": "cp", "value": 30}},
+        {"rank": 2, "move": "e2e4", "evaluation": {"kind": "cp", "value": 15}}
+      ],
+      "expected_comparison_kind": "approximately_equal_under_policy",
+      "expected_exact_cp_delta": 0,
+      "expected_signals": ["PLAYED_EQUALS_RANK_1", "BEST_MOVE_IS_QUIET", "PLAYED_MOVE_IS_QUIET"]
+    },
+    {
+      "id": "defensive_in_check",
+      "category": "side_to_move_in_check_defensive_decision",
+      "pgn": "[Event \"M4Q Defensive\"]\n[SetUp \"1\"]\n[FEN \"4k3/8/8/8/8/8/4r3/4K3 w - - 0 1\"]\n[Result \"*\"]\n\n1. Kxe2 *\n",
+      "expected_fen": "4k3/8/8/8/8/8/4r3/4K3 w - - 0 1",
+      "lines": [
+        {"rank": 1, "move": "e1e2", "evaluation": {"kind": "cp", "value": 0}}
+      ],
+      "expected_comparison_kind": "approximately_equal_under_policy",
+      "expected_exact_cp_delta": 0,
+      "expected_signals": ["PLAYED_EQUALS_RANK_1", "ROOT_SIDE_IS_IN_CHECK", "PLAYED_MOVE_IS_CAPTURE", "BEST_MOVE_IS_CAPTURE"]
+    },
+    {
+      "id": "close_multipv_choice",
+      "category": "multiple_close_engine_candidates",
+      "pgn": "[Event \"M4Q Close Choice\"]\n[Result \"*\"]\n\n1. d4 *\n",
+      "lines": [
+        {"rank": 1, "move": "e2e4", "evaluation": {"kind": "cp", "value": 35}},
+        {"rank": 2, "move": "d2d4", "evaluation": {"kind": "cp", "value": 30}}
+      ],
+      "expected_comparison_kind": "worse_for_mover",
+      "expected_exact_cp_delta": 5,
+      "expected_top_separation": 5,
+      "expected_signals": ["PLAYED_DIFFERS_FROM_RANK_1", "EXACT_CP_DELTA", "TOP_CANDIDATE_SEPARATION"]
+    },
+    {
+      "id": "separated_top_candidate",
+      "category": "clearly_separated_top_candidate",
+      "pgn": "[Event \"M4Q Separated Choice\"]\n[Result \"*\"]\n\n1. d4 *\n",
+      "lines": [
+        {"rank": 1, "move": "e2e4", "evaluation": {"kind": "cp", "value": 90}},
+        {"rank": 2, "move": "d2d4", "evaluation": {"kind": "cp", "value": 10}}
+      ],
+      "expected_comparison_kind": "worse_for_mover",
+      "expected_exact_cp_delta": 80,
+      "expected_top_separation": 80,
+      "expected_signals": ["PLAYED_DIFFERS_FROM_RANK_1", "EXACT_CP_DELTA", "TOP_CANDIDATE_SEPARATION"]
+    },
+    {
+      "id": "forced_mate_missed",
+      "category": "forced_mate_missed",
+      "pgn": "[Event \"M4Q Mate Missed\"]\n[Result \"*\"]\n\n1. d4 *\n",
+      "lines": [
+        {"rank": 1, "move": "e2e4", "evaluation": {"kind": "mate", "winner": "white", "plies": 3}},
+        {"rank": 2, "move": "d2d4", "evaluation": {"kind": "cp", "value": 80}}
+      ],
+      "expected_comparison_kind": "worse_for_mover",
+      "expected_mate_relation": "forced_mate_missed",
+      "expected_signals": ["PLAYED_DIFFERS_FROM_RANK_1", "MATE_RELATION"]
+    },
+    {
+      "id": "forced_mate_allowed",
+      "category": "forced_mate_allowed",
+      "pgn": "[Event \"M4Q Mate Allowed\"]\n[Result \"*\"]\n\n1. d4 *\n",
+      "lines": [
+        {"rank": 1, "move": "e2e4", "evaluation": {"kind": "cp", "value": 20}},
+        {"rank": 2, "move": "d2d4", "evaluation": {"kind": "mate", "winner": "black", "plies": 5}}
+      ],
+      "expected_comparison_kind": "worse_for_mover",
+      "expected_mate_relation": "forced_mate_allowed",
+      "expected_signals": ["PLAYED_DIFFERS_FROM_RANK_1", "MATE_RELATION"]
+    },
+    {
+      "id": "correct_rank1",
+      "category": "correct_rank1_played_move",
+      "pgn": "[Event \"M4Q Correct Rank1\"]\n[Result \"*\"]\n\n1. e4 *\n",
+      "lines": [
+        {"rank": 1, "move": "e2e4", "evaluation": {"kind": "cp", "value": 25}},
+        {"rank": 2, "move": "d2d4", "evaluation": {"kind": "cp", "value": 10}}
+      ],
+      "expected_comparison_kind": "approximately_equal_under_policy",
+      "expected_exact_cp_delta": 0,
+      "expected_signals": ["PLAYED_EQUALS_RANK_1", "EXACT_CP_DELTA"]
+    },
+    {
+      "id": "correct_quiet_control",
+      "category": "correct_quiet_control_decision",
+      "pgn": "[Event \"M4Q Quiet Control\"]\n[Result \"*\"]\n\n1. d4 *\n",
+      "lines": [
+        {"rank": 1, "move": "d2d4", "evaluation": {"kind": "cp", "value": 15}},
+        {"rank": 2, "move": "e2e4", "evaluation": {"kind": "cp", "value": 0}}
+      ],
+      "expected_comparison_kind": "approximately_equal_under_policy",
+      "expected_exact_cp_delta": 0,
+      "expected_signals": ["PLAYED_EQUALS_RANK_1", "BEST_MOVE_IS_QUIET", "PLAYED_MOVE_IS_QUIET"]
+    },
+    {
+      "id": "custom_fen_decision",
+      "category": "custom_fen_decision",
+      "pgn": "[Event \"M4Q Custom FEN\"]\n[SetUp \"1\"]\n[FEN \"4k3/8/8/8/8/8/4K3/7R w - - 0 1\"]\n[Result \"*\"]\n\n1. Rh8+ *\n",
+      "expected_fen": "4k3/8/8/8/8/8/4K3/7R w - - 0 1",
+      "lines": [
+        {"rank": 1, "move": "h1h8", "evaluation": {"kind": "cp", "value": 50}},
+        {"rank": 2, "move": "h1h7", "evaluation": {"kind": "cp", "value": 20}}
+      ],
+      "expected_comparison_kind": "approximately_equal_under_policy",
+      "expected_exact_cp_delta": 0,
+      "expected_signals": ["PLAYED_EQUALS_RANK_1", "PLAYED_MOVE_IS_CHECK", "BEST_MOVE_IS_CHECK"]
+    },
+    {
+      "id": "promotion_decision",
+      "category": "promotion_decision",
+      "pgn": "[Event \"M4Q Promotion\"]\n[SetUp \"1\"]\n[FEN \"7k/P7/8/8/8/8/8/7K w - - 0 1\"]\n[Result \"*\"]\n\n1. a8=Q+ *\n",
+      "expected_fen": "7k/P7/8/8/8/8/8/7K w - - 0 1",
+      "lines": [
+        {"rank": 1, "move": "a7a8q", "evaluation": {"kind": "cp", "value": 500}},
+        {"rank": 2, "move": "a7a8r", "evaluation": {"kind": "cp", "value": 400}}
+      ],
+      "expected_comparison_kind": "approximately_equal_under_policy",
+      "expected_exact_cp_delta": 0,
+      "expected_signals": ["PLAYED_EQUALS_RANK_1", "PLAYED_MOVE_IS_CHECK", "BEST_MOVE_IS_CHECK"]
+    },
+    {
+      "id": "research_board_context",
+      "category": "prior_research_board_context_position",
+      "pgn": "[Event \"M4Q Research Context\"]\n[SetUp \"1\"]\n[FEN \"r2qr1k1/1b3ppp/2p5/ppb4Q/3p4/6PP/PPP3BK/R1B2R2 b - - 0 22\"]\n[Result \"*\"]\n\n22... g6 *\n",
+      "expected_fen": "r2qr1k1/1b3ppp/2p5/ppb4Q/3p4/6PP/PPP3BK/R1B2R2 b - - 0 22",
+      "lines": [
+        {"rank": 1, "move": "g8f8", "evaluation": {"kind": "cp", "value": 10}},
+        {"rank": 2, "move": "g7g6", "evaluation": {"kind": "cp", "value": 40}}
+      ],
+      "expected_comparison_kind": "worse_for_mover",
+      "expected_exact_cp_delta": 30,
+      "expected_top_separation": 30,
+      "expected_signals": ["PLAYED_DIFFERS_FROM_RANK_1", "EXACT_CP_DELTA", "TOP_CANDIDATE_SEPARATION", "PLAYED_MOVE_IS_QUIET", "BEST_MOVE_IS_QUIET"]
+    }
+  ]
+}
