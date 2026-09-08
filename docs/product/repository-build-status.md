@@ -1,7 +1,7 @@
 # Chess Mentor Engine — Current Build Status
 
 **Status authority:** current implementation/milestone status only  
-**Updated for:** M4B DecisionComparison qualification  
+**Updated for:** M4C SelectionSignal + DiagnosticCandidate qualification  
 **Relationship to roadmap:** this file complements
 `chess-mentor-engine-repository-build-plan.md`. The roadmap preserves the conceptual
 sequence and historical planning rationale; this file is the authority for which
@@ -46,7 +46,7 @@ M3 — Engine Evidence                            QUALIFIED
 M4 — Diagnostic Position Selection              IN PROGRESS
   M4A — Selection contract                      FROZEN
   M4B — DecisionComparison                      QUALIFIED
-  M4C — SelectionSignal + DiagnosticCandidate   NOT STARTED
+  M4C — SelectionSignal + DiagnosticCandidate   QUALIFIED
   M4D — SelectionPolicy + CandidateBatch        NOT STARTED
   M4Q — Full M4 qualification                   NOT STARTED
 
@@ -72,81 +72,91 @@ PGN
 → PositionFeaturePacket
 → PositionAnalysis
 → DecisionComparison
+→ SelectionSignal[]
+→ DiagnosticCandidate record
 ```
 
-M4A freezes how objective comparisons and later selection must preserve authority
-boundaries. M4B now implements and qualifies the comparison step only.
+The final step is deliberately a record boundary rather than policy execution.
+M4C can record a `DiagnosticCandidate` only when the caller supplies an opaque
+selection-policy identity and the exact eligibility signal IDs. M4D will own the
+versioned policy that actually decides eligibility and constructs bounded batches.
 
-Qualified M4B can:
+Qualified M4C can:
 
-- derive the actual played move from canonical game history;
-- independently replay that move to the canonical child FEN;
-- use root MultiPV or compatible child reanalysis;
-- compare exact centipawn evidence from mover perspective for both colors;
-- preserve mate symbolically rather than as a fake centipawn sentinel;
-- derive checkmate/stalemate terminal child outcomes from qualified chess rules;
-- preserve partial, failed, bound-limited, incompatible, and engine-inversion states;
-- produce stable provenance-rich comparison identity.
+- validate that M2/M3 evidence matches the M4B root decision;
+- derive stable, provenance-rich objective `SelectionSignal` records;
+- preserve successful rank-1 decisions as first-class evidence;
+- preserve exact mover-relative centipawn deltas and engine inversions;
+- preserve symbolic mate relations;
+- preserve raw exact top-candidate separation without applying a close-choice
+  threshold;
+- derive best/played move check/capture/quiet properties from qualified M2 features;
+- preserve the objective fact that the root side is in check;
+- suppress ordered engine-derived signals when the root M3 analysis is partial;
+- record a stable `DiagnosticCandidate` with explicit policy identity and exact
+  eligibility-signal provenance.
 
-See `docs/architecture/decision-comparison.md` for the implementation and
-qualification record.
+See `docs/architecture/selection-signals-and-candidates.md` for the M4C
+implementation and qualification record.
 
-M4B does **not** select diagnostic positions.
+M4C does **not** execute a selection policy or produce a candidate batch.
 
 ## Current authorized next task
 
-> **M4C — implement transparent `SelectionSignal` + `DiagnosticCandidate` only.**
+> **M4D — implement versioned `SelectionPolicy` + `DiagnosticCandidateBatch` only.**
 
-M4C must consume qualified M4B comparison evidence and the already-qualified M1-M3
-substrate while preserving the frozen M4A distinctions.
+M4D may introduce deterministic policy mechanics such as:
 
-Initial M4C work may implement objective signals such as:
+- requested batch size;
+- allowed/excluded objective signal kinds;
+- explicit centipawn tolerances/bands;
+- a versioned `MULTIPV_CLOSE_CHOICE` threshold over M4C's raw separation signal;
+- quotas by objective signal family;
+- per-game maximums;
+- minimum successful/control count;
+- deterministic near-duplicate suppression once the rule is precisely defined;
+- deterministic tie-breaking;
+- explicit exclusions and quota shortfalls;
+- stable `DiagnosticCandidateBatch` identity and provenance.
+
+M4D must preserve the frozen M4A distinction:
 
 ```text
-PLAYED_EQUALS_RANK_1
-PLAYED_DIFFERS_FROM_RANK_1
-EXACT_CP_DELTA
-MATE_RELATION
-TOP_CANDIDATE_SEPARATION
-MULTIPV_CLOSE_CHOICE
-BEST_MOVE_IS_CHECK
-BEST_MOVE_IS_CAPTURE
-BEST_MOVE_IS_QUIET
-PLAYED_MOVE_IS_CHECK
-PLAYED_MOVE_IS_CAPTURE
-PLAYED_MOVE_IS_QUIET
-ROOT_SIDE_IS_IN_CHECK
-ENGINE_EVIDENCE_INVERSION
+objective candidate selection
+!= learner diagnosis
+!= pedagogical ranking
 ```
 
-M4C must not introduce:
+M4D must not introduce:
 
 - player reasoning capture;
 - cognitive or learner diagnosis;
-- generic `blunder`/`mistake` thresholds as product truth;
+- universal `blunder`/`mistake`/`inaccuracy` thresholds as product truth;
 - LLM ranking;
 - pedagogical-value claims;
-- batch quotas, controls, or M4D candidate-batch policy;
 - learner hypotheses;
 - Pilot 004 mutation.
 
-## Stop condition after M4C
+## Stop condition after M4D
 
-After M4C implementation and qualification, stop and inspect the signal/candidate
-surface before authorizing M4D.
+After M4D implementation and qualification, stop and review the complete bounded
+selection surface before M4Q.
 
 The intended sequence remains:
 
 ```text
-M4A contract
-→ M4B comparison                QUALIFIED
-→ M4C signals/candidates         NEXT
+M4A contract                         FROZEN
+→ M4B comparison                     QUALIFIED
+→ M4C signals/candidate record       QUALIFIED
 → STOP / REVIEW
-→ M4D bounded batches/controls
-→ M4Q qualification
+→ M4D policy + bounded batches       NEXT
+→ STOP / REVIEW
+→ M4Q full M4 qualification
 → STOP
 → M5 Player Decision Evidence
 ```
+
+M4 overall remains **IN PROGRESS**, not qualified. M5 remains unauthorized until M4Q.
 
 ## Current claim ceiling
 
@@ -156,11 +166,15 @@ The repository may claim that it has:
 - qualified deterministic board features;
 - qualified provenance-bound engine evidence;
 - a frozen Diagnostic Position Selection contract;
-- a qualified provenance-rich objective `DecisionComparison` layer.
+- a qualified provenance-rich objective `DecisionComparison` layer;
+- a qualified transparent objective `SelectionSignal` layer;
+- a qualified immutable `DiagnosticCandidate` recording boundary with explicit policy
+  identity and eligibility-signal provenance.
 
 It may **not** yet claim that it can:
 
-- select diagnostic positions in production;
+- execute the complete diagnostic-position selection policy;
+- produce qualified bounded candidate/control batches;
 - identify the best teaching opportunity;
 - explain why a player chose a move;
 - diagnose a learner weakness;
