@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import re
 
-from ._core import Board, STANDARD_FEN
+from ._core import STANDARD_FEN, Board
 from .errors import PgnError, UnsupportedVariantError
 from .model import (
     CanonicalGame,
