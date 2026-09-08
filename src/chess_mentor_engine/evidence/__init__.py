@@ -1,5 +1,21 @@
 """M5 Player Decision Evidence API."""
 
+from .capture import (
+    CaptureProtocol,
+    CaptureStageSpec,
+    EvidenceAmendment,
+    EvidenceCaptureSession,
+    ProtocolDeviation,
+    append_evidence_amendment,
+    capture_stage_response,
+    define_capture_protocol,
+    freeze_stage_response,
+    present_capture_stage,
+    record_capture_deviation,
+    record_capture_exposure,
+    reveal_objective_evidence,
+    start_capture_session,
+)
 from .model import (
     EvidenceFreeze,
     EvidenceReference,
@@ -28,6 +44,10 @@ from .records import (
 )
 
 __all__ = [
+    "CaptureProtocol",
+    "CaptureStageSpec",
+    "EvidenceAmendment",
+    "EvidenceCaptureSession",
     "EvidenceFreeze",
     "EvidenceReference",
     "ExposureEvent",
@@ -40,7 +60,15 @@ __all__ = [
     "PlayerResponseEvidence",
     "PromptDefinition",
     "PromptPresentation",
+    "ProtocolDeviation",
+    "append_evidence_amendment",
+    "capture_stage_response",
+    "define_capture_protocol",
     "define_prompt",
+    "freeze_stage_response",
+    "present_capture_stage",
+    "record_capture_deviation",
+    "record_capture_exposure",
     "record_evidence_freeze",
     "record_exposure_event",
     "record_objective_evidence_reveal",
@@ -50,4 +78,6 @@ __all__ = [
     "reference_decision_comparison",
     "reference_position_analysis",
     "reference_selection_signal",
+    "reveal_objective_evidence",
+    "start_capture_session",
 ]
