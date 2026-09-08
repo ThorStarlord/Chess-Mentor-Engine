@@ -476,6 +476,40 @@ def test_wrong_child_analysis_target_is_rejected() -> None:
         )
 
 
+def test_root_failure_is_preserved_as_incomparable() -> None:
+    game = _game(WHITE_D4_PGN)
+    root = game.positions[0]
+
+    comparison = compare_played_decision(
+        game=game,
+        position=root,
+        root_analysis=_failure(root),
+    )
+
+    assert comparison.comparison_kind == "incomparable"
+    assert comparison.root_analysis_ref.failure_code == "ANALYSIS_TIMEOUT"
+    assert comparison.best_evaluation is None
+
+
+def test_canonical_child_must_replay_from_the_actual_played_move() -> None:
+    game = _game(WHITE_D4_PGN)
+    root = game.positions[0]
+    child = game.positions[1]
+    corrupted_child = replace(child, fen=root.fen)
+    corrupted_game = replace(game, positions=(root, corrupted_child))
+    root_analysis = _analysis(
+        root,
+        (_line(1, "e2e4", CentipawnEvaluation(35)),),
+    )
+
+    with pytest.raises(DecisionComparisonError, match="consequence"):
+        compare_played_decision(
+            game=corrupted_game,
+            position=root,
+            root_analysis=root_analysis,
+        )
+
+
 def test_comparison_identity_is_deterministic_and_policy_sensitive() -> None:
     game = _game(WHITE_D4_PGN)
     root = game.positions[0]

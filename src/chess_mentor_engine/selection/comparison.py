@@ -294,6 +294,25 @@ def _decision_context(
     child = game.positions[index + 1]
     if child.last_move_uci != played_move:
         raise DecisionComparisonError("canonical child does not preserve played move")
+
+    board = Board.from_fen(position.fen)
+    move = next(
+        (
+            candidate
+            for candidate in board.legal_moves()
+            if candidate.uci() == played_move
+        ),
+        None,
+    )
+    if move is None:
+        raise DecisionComparisonError(
+            "canonical played move is illegal from root position"
+        )
+    board.push(move)
+    if board.fen() != child.fen:
+        raise DecisionComparisonError(
+            "canonical child FEN is not the consequence of the played move"
+        )
     return played_move, child
 
 
