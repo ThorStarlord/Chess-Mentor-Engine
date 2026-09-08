@@ -2,7 +2,7 @@
 
 ## Status
 
-**M3A contract frozen. M3B precomputed provider qualified and merged. M3C external UCI provider has not started. M3 overall is not yet qualified.**
+**M3 — Engine Evidence is qualified. M3A contract, M3B precomputed provider, and M3C external UCI provider are implemented/frozen at their intended boundaries.**
 
 This document defines how Chess Mentor Engine represents engine judgment without
 making any particular engine, executable, or UCI process the domain model. M1 and M2
@@ -70,8 +70,8 @@ AnalysisTermination
 AnalysisFailure
 ```
 
-Names may change during implementation only if semantics remain identical or ADR
-0002 is deliberately revised.
+Names may change only if semantics remain identical or ADR 0002 is deliberately
+revised.
 
 ## Analysis request
 
@@ -163,12 +163,16 @@ Provider adapters are responsible for translating their native mate convention i
 this representation.
 
 For a UCI engine, `score mate N` is reported in moves rather than plies, and a
-negative value means the engine side is being mated. A UCI adapter must therefore
-combine the raw score convention with the root side to move and normalize it to:
+negative value means the engine/root side is being mated. The UCI adapter combines
+the raw convention with root side to move and normalizes it to:
 
 ```text
 winner + plies_to_mate
 ```
+
+For a positive UCI mate distance `N`, the normalized mate distance is `2*N - 1`
+plies and the winner is the root side. For a negative distance `-N`, the normalized
+distance is `2*N` plies and the winner is the opposite side.
 
 The raw provider convention must not leak into downstream learner or tutoring code.
 
@@ -219,6 +223,9 @@ Optional per-line search metrics may be attached when the provider supports them
 `best_move` is derived from candidate rank 1. It is not duplicated as an independent
 stored field that could disagree with the first line.
 
+M3B and M3C use the same shared candidate/PV legality validator so precomputed and
+external engine evidence cross the same chess-truth gate.
+
 ## MultiPV semantics
 
 `multipv` is part of the analysis request and request fingerprint.
@@ -232,6 +239,10 @@ rank 1 happens to be the same move.
 
 A provider may return fewer lines than requested. The result must then be marked
 according to the completion rules rather than fabricating missing ranks.
+
+For the UCI provider, `MultiPV` is owned by `AnalysisRequest`; callers cannot also set
+it independently through the generic engine-option list. When a request requires
+multiple lines, the external engine must advertise the UCI `MultiPV` option.
 
 ## Engine provenance
 
@@ -262,6 +273,10 @@ Engine options are stored in deterministic key order.
 provider owns or can inspect a local executable. Their absence lowers reproducibility
 strength and must not be hidden.
 
+The qualified external UCI provider resolves an explicitly configured executable,
+records the executable SHA-256, captures UCI `id name` and optional `id author`, and
+records the effective option set used for the request.
+
 Modern engine evaluation may depend on auxiliary artifacts such as neural-network
 weights. The contract allows such artifacts to be recorded without making any
 specific engine format mandatory.
@@ -286,6 +301,9 @@ tablebase_hits:
 All are optional unless a specific provider promises them.
 
 Requested limit and achieved metrics must remain separate.
+
+The UCI provider currently normalizes corresponding `info` fields when supplied by
+the engine.
 
 ## Position analysis
 
@@ -318,10 +336,18 @@ The provider returned some valid evidence but did not complete normally or retur
 fewer valid results than required for a complete result. Partial evidence remains
 explicitly partial.
 
+The external UCI provider may preserve validated ranked lines as partial evidence
+after a supervisor timeout or engine crash rather than discarding trustworthy output
+that arrived before termination.
+
 ### Terminal
 
 The source position is terminal and no root candidate move exists. Terminal is not
 an engine failure.
+
+The external provider detects terminal positions using the qualified chess substrate
+and does not require a meaningless engine `bestmove` for a position with no legal
+root move.
 
 ## Termination
 
@@ -341,8 +367,8 @@ its termination reason.
 
 ## Failure semantics
 
-If no trustworthy normalized engine evidence can be returned, providers return or
-raise an explicit `AnalysisFailure` rather than an empty successful analysis.
+If no trustworthy normalized engine evidence can be returned, providers return an
+explicit `AnalysisFailure` rather than an empty successful analysis.
 
 Initial failure codes:
 
@@ -360,7 +386,8 @@ CANCELLED
 Failure details must not contain fabricated candidate lines or evaluations.
 
 Human-readable diagnostics may be stored, but secrets, arbitrary environment dumps,
-and unbounded stderr must not become canonical evidence.
+and unbounded stderr must not become canonical evidence. The UCI subprocess provider
+keeps stderr diagnostics bounded.
 
 ## Request and result fingerprints
 
@@ -439,11 +466,25 @@ analyze(CanonicalPosition, AnalysisRequest)
 Downstream code consumes normalized M3 records and does not parse UCI text, manage
 process pipes, or depend on Stockfish-specific score conventions.
 
-## Implementation order
+Two providers are qualified against this boundary:
 
-M3 implementation proceeds in two steps.
+```text
+PrecomputedAnalysisProvider
+UciAnalysisProvider
+```
 
-### Step 1 — Precomputed provider
+## Implementation record
+
+M3 was implemented in three bounded steps: contract freeze, precomputed-provider
+proof, then external-UCI runtime integration.
+
+### M3A — contract freeze
+
+ADR 0002 and this architecture contract froze the evaluation, provenance, identity,
+MultiPV, completion, termination, and failure semantics before any external engine
+process was introduced.
+
+### M3B — precomputed provider
 
 The normalized models plus `PrecomputedAnalysisProvider` are implemented and
 qualified. The provider is backed by frozen fixtures and validates candidate root
@@ -457,7 +498,7 @@ Purpose:
   partial/terminal behavior, and failures without requiring an engine executable;
 - provide stable fixtures for downstream tests.
 
-### M3B qualification record
+#### M3B qualification record
 
 Qualified candidate head:
 
@@ -490,55 +531,135 @@ Qualification evidence:
 The merge commit is tree-identical to the qualified candidate head, and `main` CI
 passed again after merge.
 
-### Step 2 — External UCI provider
+### M3C — external UCI provider
 
-**Not started.** Only after the normalized contract and precomputed provider are
-qualified should an external UCI/Stockfish adapter be implemented.
+`UciAnalysisProvider` is implemented and qualified behind the same normalized
+provider boundary. It receives an explicitly configured external engine executable;
+Chess Mentor Engine does not bundle or redistribute an engine binary.
 
-The initial adapter should receive an explicitly configured executable path/command.
-Chess Mentor Engine does not bundle an engine binary in the first M3 slice.
+The provider implements:
 
-Bundling or redistributing an engine executable requires a separate explicit
-licensing/distribution decision and is not authorized by this contract.
+- executable path/command resolution;
+- fresh subprocess isolation per analysis;
+- UCI `uci`/`uciok` handshake and engine identity capture;
+- configured option validation against advertised UCI options;
+- request-owned `MultiPV` negotiation;
+- `isready`, `ucinewgame`, and readiness gates;
+- `position fen ...`;
+- `go depth`, `go nodes`, and `go movetime`;
+- centipawn normalization to fixed White perspective;
+- mate normalization to winner plus plies-to-mate;
+- exact/lower/upper score-bound preservation;
+- normalized search metrics;
+- `bestmove`/rank-1 consistency checking;
+- shared root/PV legality validation;
+- supervisor timeout handling;
+- partial evidence retention when valid lines precede timeout/crash;
+- explicit missing/start/crash/protocol/timeout/invalid-output failures;
+- bounded subprocess diagnostics and controlled shutdown;
+- executable SHA-256 provenance.
 
-## Qualification corpus
+#### M3C implementation qualification
 
-The full M3 implementation should qualify against fixed positions including at least:
+Qualified implementation candidate head:
+
+```text
+69bfb43fa422b529609f1b1b6ca3d62b00d1c11c
+```
+
+Implementation merge commit:
+
+```text
+10daa4b9347c68dc42d33cfb1f6c532368c8b360
+```
+
+The exact implementation candidate passed:
+
+- 51 repository unit/contract tests with the external integration tests skipped when
+  no engine witness was configured;
+- Ruff;
+- two real external Stockfish 16 integration tests covering the prior research
+  board-context position under MultiPV and a forced mate.
+
+The implementation merge commit is tree-identical to the qualified candidate head,
+and both post-merge CI jobs passed.
+
+#### M3C complete frozen qualification corpus
+
+Before declaring M3 fully qualified, the frozen M3A corpus requirement was re-read
+and the real-engine corpus was expanded rather than weakening the contract.
+
+Qualification-only candidate head:
+
+```text
+4034d3e23ab67c7dc600f970ff75debe2aaf5ddc
+```
+
+Qualification-corpus merge commit:
+
+```text
+54343f6789d0586a7fa4607478eb4efc4cfba348
+```
+
+The final external Stockfish 16 corpus covers:
 
 - normal starting position;
-- tactical position;
+- prior research tactical/board-context position;
 - quiet/positional position;
 - side to move in check;
 - forced mate;
 - already checkmated terminal position;
 - custom-FEN position;
 - promotion position;
-- MultiPV position;
-- the research board-context position used by prior pilots.
+- MultiPV through the research position.
+
+On the qualification candidate and again after merge:
+
+- the generic job reported 51 passed and 8 intentionally skipped external-engine
+  tests, with Ruff passing;
+- the separately configured external Stockfish job reported 8/8 integration tests
+  passing;
+- Ubuntu 24.04 installed Stockfish 16 (`16-1build1`) at CI runtime;
+- the Stockfish executable remained external to the repository;
+- the qualification merge commit is tree-identical to the exact green candidate.
+
+This closes the frozen M3 qualification corpus without changing its claim ceiling.
+
+## Qualification verdict
+
+> **M3 — ENGINE EVIDENCE: QUALIFIED**
+
+The qualified scope establishes that Chess Mentor Engine can normalize and audit
+engine evidence through both frozen precomputed fixtures and an external UCI engine
+while preserving the M3 epistemic/provenance boundary.
+
+It does **not** establish that engine evaluation explains player reasoning, that a
+large evaluation loss is a useful teaching opportunity, or that any learner
+hypothesis is valid.
 
 ## Qualification invariants
 
-M3 is not fully qualified until all applicable invariants hold for the external
-provider as well:
+The qualified M3 evidence establishes all applicable frozen invariants:
 
 - M1 and M2 suites remain green;
-- White-perspective centipawn normalization is correct for both sides to move;
+- White-perspective centipawn normalization is exercised for both root colors;
 - mate evidence normalizes to winner + plies-to-mate without numeric sentinels;
 - exact/lower/upper bounds are preserved;
-- MultiPV ranks are deterministic and valid;
+- MultiPV ranks are valid and request-owned;
 - candidate root moves and PVs replay legally from the source FEN;
-- best move derives from rank 1 rather than a duplicate field;
+- best move derives from rank 1 and external `bestmove` must agree with it;
 - request fingerprints change when material analysis conditions change;
 - identical requests may legally produce distinct result fingerprints;
-- provider/engine provenance is preserved;
+- provider/engine provenance is preserved, including external executable SHA-256;
 - complete, partial, terminal, and failure states are distinguishable;
 - timeout and engine crash do not masquerade as successful empty analysis;
 - no engine binary is bundled implicitly;
+- the frozen real-engine position corpus passes against external Stockfish;
 - pytest, Ruff, and repository CI pass.
 
 ## Explicitly deferred
 
-M3 does not yet freeze or implement:
+M3 does not freeze or implement:
 
 - WDL probability normalization;
 - tablebase evidence contracts;
