@@ -30,3 +30,33 @@ jobs:
 
       - name: Run Ruff
         run: ruff check .
+
+  stockfish-integration:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install package and development dependencies
+        run: python -m pip install -e ".[dev]"
+
+      - name: Install external Stockfish witness
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y stockfish
+          STOCKFISH_PATH="$(command -v stockfish || true)"
+          if [ -z "$STOCKFISH_PATH" ] && [ -x /usr/games/stockfish ]; then
+            STOCKFISH_PATH=/usr/games/stockfish
+          fi
+          test -n "$STOCKFISH_PATH"
+          test -x "$STOCKFISH_PATH"
+          echo "STOCKFISH_EXECUTABLE=$STOCKFISH_PATH" >> "$GITHUB_ENV"
+
+      - name: Run external Stockfish qualification
+        run: pytest tests/integration/test_stockfish_uci.py
