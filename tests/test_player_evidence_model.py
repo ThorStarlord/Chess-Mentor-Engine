@@ -142,13 +142,15 @@ def test_context_identity_changes_with_participant_or_session() -> None:
 
 
 def test_context_rejects_candidate_for_different_position() -> None:
-    game, _position, packet, candidate = _candidate_fixture()
+    game, _position, _packet, candidate = _candidate_fixture()
+    alternate = game.positions[1]
+    alternate_packet = build_position_context(game, alternate)
     with pytest.raises(PlayerEvidenceError, match="candidate position_id mismatch"):
         record_player_decision_context(
             participant_id="P01",
             session_id="session-001",
-            position=game.positions[1],
-            position_context=packet,
+            position=alternate,
+            position_context=alternate_packet,
             candidate=candidate,
             created_at=T0,
         )
@@ -205,11 +207,13 @@ def test_prompt_wording_order_and_version_are_identity_provenance() -> None:
         response_schema=base.response_schema,
         provenance=base.provenance,
     )
-    assert len({
-        base.prompt_definition_id,
-        wording_change.prompt_definition_id,
-        version_change.prompt_definition_id,
-    }) == 3
+    assert len(
+        {
+            base.prompt_definition_id,
+            wording_change.prompt_definition_id,
+            version_change.prompt_definition_id,
+        }
+    ) == 3
 
 
 def test_prompt_provenance_order_is_canonicalized() -> None:
