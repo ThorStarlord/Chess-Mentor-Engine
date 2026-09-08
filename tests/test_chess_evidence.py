@@ -10,7 +10,6 @@ from chess_mentor_engine.chess import (
     ingest_pgn,
 )
 
-
 STANDARD_PGN = b'''[Event "Mini"]
 [Site "https://example.test/game/1"]
 [Date "2026.09.08"]
