@@ -423,7 +423,10 @@ def test_m5q_context_is_bound_to_real_m1_to_m4_selected_evidence() -> None:
     assert upstream.context.diagnostic_candidate_ref.ref_id == upstream.candidate_id
     assert upstream.context.diagnostic_batch_ref is not None
     assert upstream.context.diagnostic_batch_ref.ref_id == upstream.batch_id
-    assert upstream.context.position_context_packet_ref.ref_id == upstream.context.position_id
+    assert (
+        upstream.context.position_context_packet_ref.ref_id
+        == upstream.context.position_id
+    )
 
 
 def test_m5q_clean_minimal_only_capture_preserves_raw_report_and_freeze() -> None:
@@ -431,7 +434,9 @@ def test_m5q_clean_minimal_only_capture_preserves_raw_report_and_freeze() -> Non
     response = session.responses[0]
     freeze = session.freezes[0]
     assert session.contaminated is False
-    assert response.raw_response == CORPUS["participant_evidence"]["minimal_raw_response"]
+    assert response.raw_response == CORPUS["participant_evidence"][
+        "minimal_raw_response"
+    ]
     assert response.structured_response == _minimal_structured()
     assert freeze.response_id == response.response_id
     assert freeze.response_fingerprint == response.response_fingerprint
@@ -477,7 +482,10 @@ def test_m5q_instrument_awareness_is_provenance_not_cleanliness_inference() -> N
         rendered_content=CORPUS["pilot_003_instrument"]["stage_a_prompt"],
     )
     assert awareness.instrument_awareness == "known_aware"
-    assert awareness.exposure_event_id in presentation.information_available_before_presentation
+    assert (
+        awareness.exposure_event_id
+        in presentation.information_available_before_presentation
+    )
     assert session.contaminated is False
     assert session.deviations == ()
 
