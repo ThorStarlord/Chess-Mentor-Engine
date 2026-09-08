@@ -1,7 +1,7 @@
 # Chess Mentor Engine — Current Build Status
 
 **Status authority:** current implementation/milestone status only  
-**Updated for:** M4C SelectionSignal + DiagnosticCandidate qualification  
+**Updated for:** M4D SelectionPolicy + DiagnosticCandidateBatch qualification  
 **Relationship to roadmap:** this file complements
 `chess-mentor-engine-repository-build-plan.md`. The roadmap preserves the conceptual
 sequence and historical planning rationale; this file is the authority for which
@@ -47,10 +47,10 @@ M4 — Diagnostic Position Selection              IN PROGRESS
   M4A — Selection contract                      FROZEN
   M4B — DecisionComparison                      QUALIFIED
   M4C — SelectionSignal + DiagnosticCandidate   QUALIFIED
-  M4D — SelectionPolicy + CandidateBatch        NOT STARTED
-  M4Q — Full M4 qualification                   NOT STARTED
+  M4D — SelectionPolicy + CandidateBatch        QUALIFIED
+  M4Q — Full M4 qualification                   NOT STARTED / NEXT
 
-M5 — Player Decision Evidence                   NOT STARTED
+M5 — Player Decision Evidence                   NOT STARTED / UNAUTHORIZED
 M6 — Reasoning Discrepancy                      NOT STARTED
 M7 — Learner Hypothesis Ledger                  NOT STARTED
 M8 — Evidence-aware Tutor Session               NOT STARTED
@@ -73,90 +73,65 @@ PGN
 → PositionAnalysis
 → DecisionComparison
 → SelectionSignal[]
-→ DiagnosticCandidate record
+→ SelectionPolicy
+→ SelectionDecision / DiagnosticCandidate
+→ DiagnosticCandidateBatch
 ```
 
-The final step is deliberately a record boundary rather than policy execution.
-M4C can record a `DiagnosticCandidate` only when the caller supplies an opaque
-selection-policy identity and the exact eligibility signal IDs. M4D will own the
-versioned policy that actually decides eligibility and constructs bounded batches.
+M4D now supplies the deterministic policy execution that M4C intentionally left
+external. Qualified M4D can:
 
-Qualified M4C can:
+- evaluate qualified M4C signals under an explicit policy ID/version and full policy
+  fingerprint;
+- retain the raw observed value, operator, configured threshold, and source signal for
+  each matched rule;
+- interpret M4C raw top-candidate separation under a versioned close-choice threshold;
+- select symbolic mate relations without centipawn sentinels;
+- classify rank-1 and configured low-severity decisions as operational controls;
+- construct reproducible bounded candidate/control batches;
+- enforce requested size, per-game caps, quota minima/maxima, and minimum controls;
+- retain source-pool identity and deterministic ordering;
+- record policy exclusions and visible size/control/quota shortfalls instead of
+  silently weakening constraints;
+- reject policy-configuration drift even when policy ID/version are reused.
 
-- validate that M2/M3 evidence matches the M4B root decision;
-- derive stable, provenance-rich objective `SelectionSignal` records;
-- preserve successful rank-1 decisions as first-class evidence;
-- preserve exact mover-relative centipawn deltas and engine inversions;
-- preserve symbolic mate relations;
-- preserve raw exact top-candidate separation without applying a close-choice
-  threshold;
-- derive best/played move check/capture/quiet properties from qualified M2 features;
-- preserve the objective fact that the root side is in check;
-- suppress ordered engine-derived signals when the root M3 analysis is partial;
-- record a stable `DiagnosticCandidate` with explicit policy identity and exact
-  eligibility-signal provenance.
+See `docs/architecture/selection-policy-and-batches.md` for the M4D implementation
+and qualification record.
 
-See `docs/architecture/selection-signals-and-candidates.md` for the M4C
-implementation and qualification record.
-
-M4C does **not** execute a selection policy or produce a candidate batch.
+M4D does **not** make M4 overall qualified. Full M4 coherence remains an M4Q gate.
 
 ## Current authorized next task
 
-> **M4D — implement versioned `SelectionPolicy` + `DiagnosticCandidateBatch` only.**
+> **M4Q — full M4 qualification and bounded-selection surface review only.**
 
-M4D may introduce deterministic policy mechanics such as:
-
-- requested batch size;
-- allowed/excluded objective signal kinds;
-- explicit centipawn tolerances/bands;
-- a versioned `MULTIPV_CLOSE_CHOICE` threshold over M4C's raw separation signal;
-- quotas by objective signal family;
-- per-game maximums;
-- minimum successful/control count;
-- deterministic near-duplicate suppression once the rule is precisely defined;
-- deterministic tie-breaking;
-- explicit exclusions and quota shortfalls;
-- stable `DiagnosticCandidateBatch` identity and provenance.
-
-M4D must preserve the frozen M4A distinction:
+M4Q should primarily prove the complete path:
 
 ```text
-objective candidate selection
-!= learner diagnosis
-!= pedagogical ranking
+M4A frozen contract
+→ M4B DecisionComparison
+→ M4C SelectionSignal / DiagnosticCandidate
+→ M4D SelectionPolicy / DiagnosticCandidateBatch
 ```
 
-M4D must not introduce:
+M4Q should verify end-to-end provenance, deterministic replay, stable identities,
+policy-version sensitivity, successful/control sampling, visible exclusions and
+shortfalls, and the M4 claim ceiling. It should not introduce Player Decision Evidence
+or learner diagnosis merely to make the qualification richer.
 
-- player reasoning capture;
-- cognitive or learner diagnosis;
-- universal `blunder`/`mistake`/`inaccuracy` thresholds as product truth;
-- LLM ranking;
-- pedagogical-value claims;
-- learner hypotheses;
-- Pilot 004 mutation.
+M5 remains unauthorized until M4Q is qualified.
 
-## Stop condition after M4D
+## Required stop before M4Q execution
 
-After M4D implementation and qualification, stop and review the complete bounded
-selection surface before M4Q.
+M4D qualification is a deliberate stop/review boundary. Before starting M4Q, inspect
+the complete M4 surface and verify:
 
-The intended sequence remains:
-
-```text
-M4A contract                         FROZEN
-→ M4B comparison                     QUALIFIED
-→ M4C signals/candidate record       QUALIFIED
-→ STOP / REVIEW
-→ M4D policy + bounded batches       NEXT
-→ STOP / REVIEW
-→ M4Q full M4 qualification
-→ STOP
-→ M5 Player Decision Evidence
-```
-
-M4 overall remains **IN PROGRESS**, not qualified. M5 remains unauthorized until M4Q.
+- every selected position can explain why it was selected;
+- every exclusion has reconstructable policy evidence;
+- policy thresholds remain policy rather than universal chess truth;
+- successful controls are first-class rather than error-only sampling;
+- shortfalls cannot be hidden;
+- input reordering cannot change a deterministic batch;
+- no learner-psychology or pedagogical-value label has entered M4.
 
 ## Current claim ceiling
 
@@ -166,18 +141,19 @@ The repository may claim that it has:
 - qualified deterministic board features;
 - qualified provenance-bound engine evidence;
 - a frozen Diagnostic Position Selection contract;
-- a qualified provenance-rich objective `DecisionComparison` layer;
+- a qualified objective `DecisionComparison` layer;
 - a qualified transparent objective `SelectionSignal` layer;
-- a qualified immutable `DiagnosticCandidate` recording boundary with explicit policy
-  identity and eligibility-signal provenance.
+- a qualified immutable `DiagnosticCandidate` recording boundary;
+- qualified versioned deterministic `SelectionPolicy` execution;
+- qualified reproducible bounded `DiagnosticCandidateBatch` construction with
+  controls, quotas, caps, exclusions, and visible shortfalls.
 
-It may **not** yet claim that it can:
+It may **not** yet claim that:
 
-- execute the complete diagnostic-position selection policy;
-- produce qualified bounded candidate/control batches;
-- identify the best teaching opportunity;
-- explain why a player chose a move;
-- diagnose a learner weakness;
-- establish recurrence;
-- recommend effective training;
-- demonstrate transfer or mastery.
+- M4 Diagnostic Position Selection as a whole is qualified;
+- a selected position is the best teaching opportunity;
+- a control contradicts a learner hypothesis;
+- it knows why a player chose a move;
+- it can diagnose a learner weakness or recurrence;
+- it can recommend effective training;
+- it has demonstrated transfer or mastery.
