@@ -1,4 +1,4 @@
-"""Immutable M4B decision-comparison records."""
+"""Immutable M4 decision-selection records."""
 
 from __future__ import annotations
 
@@ -39,6 +39,26 @@ PlayedEvaluationSource: TypeAlias = Literal[
     "unavailable",
 ]
 TerminalOutcome: TypeAlias = Literal["checkmate", "stalemate"]
+SelectionSignalKind: TypeAlias = Literal[
+    "PLAYED_EQUALS_RANK_1",
+    "PLAYED_DIFFERS_FROM_RANK_1",
+    "EXACT_CP_DELTA",
+    "MATE_RELATION",
+    "TOP_CANDIDATE_SEPARATION",
+    "BEST_MOVE_IS_CHECK",
+    "BEST_MOVE_IS_CAPTURE",
+    "BEST_MOVE_IS_QUIET",
+    "PLAYED_MOVE_IS_CHECK",
+    "PLAYED_MOVE_IS_CAPTURE",
+    "PLAYED_MOVE_IS_QUIET",
+    "ROOT_SIDE_IS_IN_CHECK",
+    "ENGINE_EVIDENCE_INVERSION",
+]
+SelectionEvidenceSource: TypeAlias = Literal[
+    "decision_comparison",
+    "position_features",
+    "root_analysis",
+]
 
 
 @dataclass(frozen=True, slots=True)
@@ -171,3 +191,129 @@ class DecisionComparison:
         if include_comparison_id:
             payload["comparison_id"] = self.comparison_id
         return payload
+
+
+@dataclass(frozen=True, slots=True)
+class SelectionEvidenceRef:
+    """Stable reference to one objective evidence record used by a signal."""
+
+    source: SelectionEvidenceSource
+    ref_id: str
+    fingerprint: str | None = None
+
+    def __post_init__(self) -> None:
+        if not self.ref_id:
+            raise ValueError("selection evidence ref_id must not be empty")
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "source": self.source,
+            "ref_id": self.ref_id,
+            "fingerprint": self.fingerprint,
+        }
+
+
+@dataclass(frozen=True, slots=True)
+class SelectionSignal:
+    """One objective, reconstructable M4C property of a canonical decision."""
+
+    signal_id: str
+    kind: SelectionSignalKind
+    position_id: str
+    game_id: str
+    comparison_id: str
+    schema_version: str
+    raw_value: Any
+    evidence: tuple[SelectionEvidenceRef, ...]
+    detail: str | None = None
+
+    def __post_init__(self) -> None:
+        for name, value in (
+            ("signal_id", self.signal_id),
+            ("position_id", self.position_id),
+            ("game_id", self.game_id),
+            ("comparison_id", self.comparison_id),
+            ("schema_version", self.schema_version),
+        ):
+            if not value:
+                raise ValueError(f"{name} must not be empty")
+        if not self.evidence:
+            raise ValueError("selection signal must cite at least one evidence record")
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "signal_id": self.signal_id,
+            "kind": self.kind,
+            "position_id": self.position_id,
+            "game_id": self.game_id,
+            "comparison_id": self.comparison_id,
+            "schema_version": self.schema_version,
+            "raw_value": self.raw_value,
+            "evidence": [item.to_dict() for item in self.evidence],
+            "detail": self.detail,
+        }
+
+
+@dataclass(frozen=True, slots=True)
+class SelectionPolicyIdentity:
+    """Opaque M4C reference to policy identity; policy execution belongs to M4D."""
+
+    policy_id: str
+    version: str
+
+    def __post_init__(self) -> None:
+        if not self.policy_id:
+            raise ValueError("policy_id must not be empty")
+        if not self.version:
+            raise ValueError("version must not be empty")
+
+    def to_dict(self) -> dict[str, str]:
+        return {"policy_id": self.policy_id, "version": self.version}
+
+
+@dataclass(frozen=True, slots=True)
+class DiagnosticCandidate:
+    """Immutable record that an external policy marked a decision as eligible."""
+
+    candidate_id: str
+    position_id: str
+    game_id: str
+    comparison_id: str
+    selection_policy: SelectionPolicyIdentity
+    signals: tuple[SelectionSignal, ...]
+    eligibility_signal_ids: tuple[str, ...]
+    provenance: DecisionProvenance
+
+    def __post_init__(self) -> None:
+        if not self.candidate_id:
+            raise ValueError("candidate_id must not be empty")
+        if not self.signals:
+            raise ValueError("diagnostic candidate must retain at least one signal")
+        if not self.eligibility_signal_ids:
+            raise ValueError("candidate must name at least one eligibility signal")
+        signal_ids = tuple(signal.signal_id for signal in self.signals)
+        if len(set(signal_ids)) != len(signal_ids):
+            raise ValueError("diagnostic candidate signals must be unique")
+        if len(set(self.eligibility_signal_ids)) != len(self.eligibility_signal_ids):
+            raise ValueError("eligibility_signal_ids must be unique")
+        if not set(self.eligibility_signal_ids).issubset(signal_ids):
+            raise ValueError("eligibility_signal_ids must reference retained signals")
+        for signal in self.signals:
+            if signal.position_id != self.position_id:
+                raise ValueError("candidate signal position_id mismatch")
+            if signal.game_id != self.game_id:
+                raise ValueError("candidate signal game_id mismatch")
+            if signal.comparison_id != self.comparison_id:
+                raise ValueError("candidate signal comparison_id mismatch")
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "candidate_id": self.candidate_id,
+            "position_id": self.position_id,
+            "game_id": self.game_id,
+            "comparison_id": self.comparison_id,
+            "selection_policy": self.selection_policy.to_dict(),
+            "signals": [signal.to_dict() for signal in self.signals],
+            "eligibility_signal_ids": list(self.eligibility_signal_ids),
+            "provenance": self.provenance.to_dict(),
+        }
