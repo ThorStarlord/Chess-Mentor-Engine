@@ -24,7 +24,9 @@ Evaluation
 Learner-state update
 ```
 
-This is a direction for discovery, not a committed implementation plan.
+This is a direction for discovery, not a committed end-to-end implementation plan.
+
+The repository now has one bounded implementation slice: [M1 — Trustworthy Chess Evidence Substrate](chess-evidence-substrate.md). M1 establishes deterministic PGN, game, position, provenance, and engine-free context contracts. It does not freeze the broader architecture described here.
 
 ## Tentative system split
 
@@ -51,4 +53,3 @@ Instruction
 ```
 
 This hierarchy should not be copied mechanically from another system or accepted without domain modeling.
-
