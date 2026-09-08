@@ -54,7 +54,16 @@ def _oracle_pins(board: chess.Board) -> tuple[tuple[str, str, str, str], ...]:
                     chess.square_name(pinners[0]),
                 )
             )
-    return tuple(sorted(pins, key=lambda item: (0 if item[0] == "white" else 1, item[1], item[3])))
+    return tuple(
+        sorted(
+            pins,
+            key=lambda item: (
+                0 if item[0] == "white" else 1,
+                item[1],
+                item[3],
+            ),
+        )
+    )
 
 
 def test_m2_feature_surface_matches_independent_oracle() -> None:
