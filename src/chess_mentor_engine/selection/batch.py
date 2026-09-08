@@ -262,7 +262,9 @@ def _validate_results(
             )
         if item.candidate is not None:
             if item.candidate.selection_policy != policy.identity:
-                raise DiagnosticCandidateBatchError("candidate policy identity mismatch")
+                raise DiagnosticCandidateBatchError(
+                    "candidate policy identity mismatch"
+                )
             if item.candidate.comparison_id != decision.comparison_id:
                 raise DiagnosticCandidateBatchError("candidate comparison mismatch")
     if len(set(comparison_ids)) != len(comparison_ids):
@@ -352,7 +354,9 @@ def _count_kind(
 
 def _has_kind(item: PolicySelectionResult, kind: SelectionSignalKind) -> bool:
     candidate = item.candidate
-    return candidate is not None and any(signal.kind == kind for signal in candidate.signals)
+    return candidate is not None and any(
+        signal.kind == kind for signal in candidate.signals
+    )
 
 
 def _nonselection_reasons(
