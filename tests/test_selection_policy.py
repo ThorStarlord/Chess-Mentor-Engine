@@ -165,8 +165,7 @@ def test_candidate_cp_threshold_is_inclusive_and_inspectable() -> None:
     match = exact_result.decision.matches[0]
     assert match.rule_id == "candidate_min_cp_delta"
     assert match.observed_value == 50
-    assert match.operator == ">="
-    assert match.threshold == 50
+    assert match.operator == ">="n    assert match.threshold == 50
     assert exact_result.candidate is not None
     assert exact_result.candidate.eligibility_signal_ids == (
         exact_result.decision.eligibility_signal_ids
@@ -417,8 +416,8 @@ def test_batch_rejects_same_policy_identity_with_changed_configuration() -> None
 
 
 def test_policy_version_changes_candidate_and_batch_identity() -> None:
-    first_policy = _policy(version="1")
-    second_policy = _policy(version="2")
+    first_policy = _policy(version="1", requested_size=1, minimum_controls=0)
+    second_policy = _policy(version="2", requested_size=1, minimum_controls=0)
     comparison = _comparison(20, game_id="versioned")
     signals = (_signal(comparison, "EXACT_CP_DELTA", 100),)
 
@@ -426,11 +425,11 @@ def test_policy_version_changes_candidate_and_batch_identity() -> None:
     second_result = _apply(comparison, signals, second_policy)
     first_batch = build_diagnostic_candidate_batch(
         results=(first_result,),
-        policy=_policy(version="1", requested_size=1, minimum_controls=0),
+        policy=first_policy,
     )
     second_batch = build_diagnostic_candidate_batch(
         results=(second_result,),
-        policy=_policy(version="2", requested_size=1, minimum_controls=0),
+        policy=second_policy,
     )
 
     assert first_result.candidate is not None
