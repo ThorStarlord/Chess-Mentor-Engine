@@ -74,7 +74,12 @@ def build_selection_signals(
             )
         )
 
-    if comparison.best_move_uci is not None:
+    root_complete = (
+        isinstance(root_analysis, PositionAnalysis)
+        and root_analysis.status == "complete"
+    )
+
+    if root_complete and comparison.best_move_uci is not None:
         rank_payload = {
             "played_move_uci": comparison.played_move_uci,
             "rank_1_move_uci": comparison.best_move_uci,
@@ -137,7 +142,7 @@ def build_selection_signals(
     )
 
     best_move = comparison.best_move_uci
-    if best_move is not None:
+    if root_complete and best_move is not None:
         if best_move not in root_features.legal_moves:
             raise SelectionSignalError(
                 "comparison best move is absent from root PositionFeaturePacket"
