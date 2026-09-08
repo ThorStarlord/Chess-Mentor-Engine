@@ -20,7 +20,7 @@
       "pgn": "[Event \"M4Q Quiet Preferred\"]\n[Result \"*\"]\n\n1. d4 *\n",
       "lines": [
         {"rank": 1, "move": "d2d4", "evaluation": {"kind": "cp", "value": 30}},
-        {"rank": 2, "move": "e2e4", "evaluation": {"kind": "cp", "value": 20}}
+        {"rank": 2, "move": "e2e4", "evaluation": {"kind": "cp", "value": 15}}
       ],
       "expected_comparison_kind": "approximately_equal_under_policy",
       "expected_exact_cp_delta": 0,
@@ -94,7 +94,7 @@
       "pgn": "[Event \"M4Q Correct Rank1\"]\n[Result \"*\"]\n\n1. e4 *\n",
       "lines": [
         {"rank": 1, "move": "e2e4", "evaluation": {"kind": "cp", "value": 25}},
-        {"rank": 2, "move": "d2d4", "evaluation": {"kind": "cp", "value": 20}}
+        {"rank": 2, "move": "d2d4", "evaluation": {"kind": "cp", "value": 10}}
       ],
       "expected_comparison_kind": "approximately_equal_under_policy",
       "expected_exact_cp_delta": 0,
@@ -106,7 +106,7 @@
       "pgn": "[Event \"M4Q Quiet Control\"]\n[Result \"*\"]\n\n1. d4 *\n",
       "lines": [
         {"rank": 1, "move": "d2d4", "evaluation": {"kind": "cp", "value": 15}},
-        {"rank": 2, "move": "e2e4", "evaluation": {"kind": "cp", "value": 10}}
+        {"rank": 2, "move": "e2e4", "evaluation": {"kind": "cp", "value": 0}}
       ],
       "expected_comparison_kind": "approximately_equal_under_policy",
       "expected_exact_cp_delta": 0,
