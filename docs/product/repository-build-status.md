@@ -1,7 +1,7 @@
 # Chess Mentor Engine — Current Build Status
 
 **Status authority:** current implementation/milestone status only  
-**Updated for:** full M5 Player Decision Evidence qualification  
+**Updated for:** M6A Reasoning Discrepancy contract freeze  
 **Relationship to roadmap:** this file complements
 `chess-mentor-engine-repository-build-plan.md`. The roadmap preserves the conceptual
 sequence and historical planning rationale; this file is the authority for which
@@ -56,7 +56,12 @@ M5 — Player Decision Evidence                   QUALIFIED
   M5C — Capture/freeze state machine            QUALIFIED
   M5Q — Full M5 qualification                   QUALIFIED
 
-M6 — Reasoning Discrepancy                      NOT STARTED / AUTHORIZED NEXT
+M6 — Reasoning Discrepancy                      IN PROGRESS
+  M6A — Reasoning Discrepancy contract          FROZEN
+  M6B — Deterministic comparison facts          NOT STARTED / NEXT
+  M6C — Coded local discrepancy assessment      NOT STARTED
+  M6Q — Full M6 qualification                   NOT STARTED
+
 M7 — Learner Hypothesis Ledger                  NOT STARTED / UNAUTHORIZED
 M8 — Evidence-aware Tutor Session               NOT STARTED
 M9 — Training Interventions                     NOT STARTED
@@ -98,7 +103,7 @@ See:
 
 ## Qualified M5 Player Decision Evidence
 
-M5 is now qualified under the frozen M5A contract and ADR 0004.
+M5 is qualified under the frozen M5A contract and ADR 0004.
 
 The authority split remains:
 
@@ -185,45 +190,197 @@ See:
 - `docs/architecture/m5-qualification.md` — full M5Q qualification;
 - `docs/decisions/0004-player-decision-evidence-contract.md` — ADR 0004.
 
-## Current authorized next task
+## Frozen M6 Reasoning Discrepancy boundary
 
-> **M6 — Reasoning Discrepancy contract/design gate only.**
+M6A is now frozen by:
 
-M5 now gives the repository qualified objective chess evidence plus qualified
-participant-reported evidence under auditable information-state provenance. M6 is the
-first milestone authorized to define a local traceable difference between those two
-evidence domains.
+- `docs/architecture/reasoning-discrepancy.md`;
+- `docs/decisions/0005-reasoning-discrepancy-contract.md`.
 
-The next task should therefore freeze the M6 contract before implementation. At
-minimum it must define:
+M6 is the first production layer authorized to compare qualified objective evidence
+with qualified participant-reported evidence. Its scope remains local to one selected
+position / evidence context.
+
+The governing boundary is:
 
 ```text
-qualified objective evidence refs
-+ qualified player-evidence refs
-→ local Reasoning Discrepancy candidate
+qualified objective evidence
++ qualified Player Decision Evidence
+→ position-local Reasoning Discrepancy assessment
 ```
 
 while preserving:
 
 ```text
 local discrepancy
+!= unreported cognition
+!= causal cognitive mechanism
 != recurrence
 != stable learner weakness
-!= causal cognitive trait
 != learner hypothesis
 != pedagogical prescription
 ```
 
-The M6 design must explicitly separate participant authority, analyst/model coding,
-and deterministic comparison facts; retain uncertainty/uncodability; require traceable
-evidence references; and prevent missing/ambiguous self-report from being silently
-interpreted as evidence that a move was never considered.
+M6A separates five semantic records:
 
-**M6 implementation has not started.** M7 remains unauthorized.
+```text
+ReasoningDiscrepancyContext
+DiscrepancyFact
+ReasoningCoding
+ReasoningDiscrepancyAssertion
+ReasoningDiscrepancyAssessment
+```
+
+The most important production distinction is:
+
+```text
+deterministic comparison fact
+!= analyst/model semantic coding
+```
+
+Deterministic M6 facts may compare explicit structured M5 values with exact qualified
+objective evidence. They may emit only descriptive relations such as:
+
+```text
+match
+conflict
+not_explicitly_reported
+ambiguous
+not_observed
+not_comparable
+```
+
+They may not parse free text or infer hidden cognition.
+
+Semantic interpretations from prose or judgments such as `critical feature`, `strong
+candidate` outside an exact upstream rule, or `incomplete rationale` require immutable
+human/model `ReasoningCoding` provenance.
+
+### Hard anti-overclaiming rules
+
+M6A freezes:
+
+```text
+not explicitly reported
+!= not considered
+!= not recognized
+!= not generated
+```
+
+and:
+
+```text
+missing dimension
+→ not_observed
+→ not a discrepancy by default
+```
+
+and:
+
+```text
+partial / bounded / incompatible objective evidence
+→ not_comparable for the affected relation
+```
+
+Engine judgment remains distinguishable from deterministic chess truth. Divergence
+from one engine PV is not automatically an error when multiple lines may be valid or
+comparable.
+
+### Conservative initial discrepancy taxonomy
+
+The frozen production codes are:
+
+```text
+OBJECTIVELY_RELEVANT_FEATURE_NOT_EXPLICITLY_REPORTED
+STRONG_OBJECTIVE_CANDIDATE_NOT_EXPLICITLY_REPORTED
+EXPECTED_OPPONENT_REPLY_CONFLICT
+EXPECTED_CONTINUATION_CONFLICT
+REPORTED_RESULTING_EVALUATION_CONFLICT
+STATED_TARGET_WITHOUT_REPORTED_EXECUTABLE_MOVE
+CORRECT_MOVE_WITH_INCOMPLETE_REPORTED_RATIONALE
+OTHER_LOCAL_DISCREPANCY
+```
+
+Assessment statuses are separately:
+
+```text
+discrepancy_supported
+no_supported_discrepancy
+unclear
+unscorable
+```
+
+`no_supported_discrepancy` is dimension-bounded. It is not a claim that all reasoning
+was observed or correct.
+
+### Stage and measurement-condition rules
+
+The initial primary M6 evidence surface is frozen pre-reveal M5:
+
+```text
+MINIMAL_RESPONSE
+STANDARDIZED_PROBE
+```
+
+A1 and A2 remain separate. Post-reveal reflection and historical recollection may be
+supplemental/contradictory evidence but cannot be silently promoted backward into
+pre-reveal evidence.
+
+M6 also preserves measurement condition:
+
+```text
+clean
+instrument_aware_clean
+deviating
+contaminated
+unknown
+```
+
+Instrument awareness alone is not contamination. Deviating/contaminated evidence may
+be analyzed only under an explicit assessment policy that allows it, and the condition
+must remain attached.
+
+### Research boundary
+
+Pilot 004's discrepancy taxonomy informed M6A, but its research codes remain historical
+research authority rather than universal product learner categories. In particular,
+its `strong candidate not generated` wording is conservatively adapted to `strong
+objective candidate not explicitly reported` because production M5 does not read
+unreported cognition.
+
+Pilot 004's recurrence policy remains outside M6. Cross-position recurrence, controls
+and contradictions across positions, competing explanations, and learner hypotheses
+belong to M7.
+
+## Current authorized next task
+
+> **M6B — deterministic reasoning-evidence comparisons only.**
+
+M6B may implement:
+
+- `ReasoningDiscrepancyContext` binding;
+- deterministic `DiscrepancyFact` derivation from explicit structured M5 evidence and
+  qualified objective evidence;
+- exact provenance/fingerprints;
+- `match`, `conflict`, `not_explicitly_reported`, `ambiguous`, `not_observed`, and
+  `not_comparable` relation semantics.
+
+M6B must **not**:
+
+- parse free text;
+- invoke an LLM;
+- emit stable cognitive labels;
+- aggregate across positions;
+- infer recurrence;
+- create learner hypotheses;
+- prescribe training;
+- implement pedagogy.
+
+M6C and M6Q remain not started. M7 remains unauthorized.
 
 ## Current claim ceiling
 
-The repository may now claim that it has:
+The repository may claim that it has:
 
 - qualified deterministic chess state;
 - qualified deterministic board features;
@@ -231,12 +388,8 @@ The repository may now claim that it has:
 - a fully qualified Diagnostic Position Selection milestone;
 - qualified objective `DecisionComparison`, `SelectionSignal`, `SelectionPolicy`, and
   `DiagnosticCandidateBatch` evidence;
-- a frozen M5A Player Decision Evidence production contract;
-- a qualified M5B immutable Player Decision Evidence record/identity layer;
-- a qualified M5C capture/freeze sequencing layer with reveal gates,
-  exposure/deviation provenance, and append-only amendments;
-- a fully qualified M5 Player Decision Evidence milestone across the frozen M5Q
-  corpus.
+- a fully qualified M5 Player Decision Evidence milestone;
+- a frozen M6A production contract for position-local Reasoning Discrepancy.
 
 M5 may report evidence facts such as:
 
@@ -248,21 +401,25 @@ M5 may report evidence facts such as:
 - whether a response belongs to a pre-reveal or post-reveal stage;
 - whether an ambiguous or illegal reported move was preserved without repair.
 
+The frozen M6A contract may define how future M6 records must behave, but **no
+production M6 discrepancy implementation is qualified yet**.
+
 The repository may **not** yet claim that:
 
+- a production `ReasoningDiscrepancy` has been emitted under a qualified M6 runtime;
 - it knows why a player chose a move;
 - a participant report is objective chess truth;
 - an omitted move was never considered;
+- an omitted move was never generated internally;
 - a reported explanation is the causal reason the move was chosen;
-- a Reasoning Discrepancy has been established under a production M6 contract;
 - recurrence or a stable learner weakness exists;
 - a control confirms or contradicts a learner hypothesis;
+- a learner hypothesis is supported;
 - an intervention is warranted or effective;
 - learning, transfer, or mastery has occurred.
 
 ## Stop boundary
 
-M5A is frozen; M5B, M5C, and M5Q are qualified; **M5 as a whole is qualified**.
-M6 Reasoning Discrepancy is authorized next, but its production contract and
-implementation have not started. The next bounded task is the **M6 contract/design
-gate**, not learner diagnosis or pedagogy.
+M5 is fully qualified. M6A is frozen. **M6B deterministic comparison facts is the only
+next authorized implementation slice.** M6C, M6Q, and M7 have not started. Do not
+advance from a local comparison fact into recurrence, learner diagnosis, or pedagogy.
