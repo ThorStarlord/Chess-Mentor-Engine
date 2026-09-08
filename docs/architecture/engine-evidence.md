@@ -2,9 +2,9 @@
 
 ## Status
 
-**Contract frozen for M3 implementation. Implementation has not started.**
+**M3A contract frozen. M3B precomputed provider qualified and merged. M3C external UCI provider has not started. M3 overall is not yet qualified.**
 
-This document defines how Chess Mentor Engine will represent engine judgment without
+This document defines how Chess Mentor Engine represents engine judgment without
 making any particular engine, executable, or UCI process the domain model. M1 and M2
 remain the qualified deterministic chess-truth substrate.
 
@@ -12,7 +12,7 @@ The contract is constrained by ADR 0002.
 
 ## Boundary
 
-M3 will add provider-produced objective evaluation evidence on top of the qualified
+M3 adds provider-produced objective evaluation evidence on top of the qualified
 position substrate:
 
 ```text
@@ -55,7 +55,7 @@ It does not mean:
 
 ## Domain concepts
 
-The initial M3 implementation should introduce concepts equivalent to:
+The M3 implementation introduces concepts equivalent to:
 
 ```text
 ChessAnalysisProvider
@@ -429,7 +429,7 @@ This prevents one engine record from mixing evidence from different board states
 
 ## Provider interface boundary
 
-The future provider contract should be equivalent to:
+The provider contract is equivalent to:
 
 ```text
 analyze(CanonicalPosition, AnalysisRequest)
@@ -441,24 +441,59 @@ process pipes, or depend on Stockfish-specific score conventions.
 
 ## Implementation order
 
-M3 implementation should proceed in two steps.
+M3 implementation proceeds in two steps.
 
 ### Step 1 — Precomputed provider
 
-Implement the normalized models plus a `PrecomputedAnalysisProvider` backed by frozen
-fixtures.
+The normalized models plus `PrecomputedAnalysisProvider` are implemented and
+qualified. The provider is backed by frozen fixtures and validates candidate root
+moves and every PV move against the qualified chess rules substrate before returning
+normalized evidence.
 
 Purpose:
 
 - prove provider/domain separation;
-- test serialization, score semantics, mate normalization, MultiPV, partial/terminal
-  behavior, and failures without requiring an engine executable;
+- test serialization, score semantics, forced-mate evidence, MultiPV,
+  partial/terminal behavior, and failures without requiring an engine executable;
 - provide stable fixtures for downstream tests.
+
+### M3B qualification record
+
+Qualified candidate head:
+
+```text
+a9ae94c339aa47fe3c21fe767c6e6f45f7e2b0c2
+```
+
+Merge commit on `main`:
+
+```text
+18d43a1b5cb53fde83c827ce9fca7574aff4d88c
+```
+
+Qualification evidence:
+
+- 35 repository tests passed on the exact candidate head;
+- Ruff passed;
+- M1 and M2 suites remained green;
+- centipawn and mate evidence types were exercised;
+- a legal forced-mate PV passed through the precomputed provider;
+- MultiPV completeness was enforced;
+- illegal root moves and illegal PV continuations were rejected;
+- complete, partial, terminal, explicit failure, and unsupported-request behavior
+  were distinguished;
+- request fingerprints changed when material request conditions changed;
+- identical request fingerprints were shown to permit distinct result fingerprints;
+- no UCI process, Stockfish binary, learner model, diagnosis, pedagogy, database, or
+  UI was introduced.
+
+The merge commit is tree-identical to the qualified candidate head, and `main` CI
+passed again after merge.
 
 ### Step 2 — External UCI provider
 
-Only after the normalized contract is qualified should an external UCI/Stockfish
-adapter be implemented.
+**Not started.** Only after the normalized contract and precomputed provider are
+qualified should an external UCI/Stockfish adapter be implemented.
 
 The initial adapter should receive an explicitly configured executable path/command.
 Chess Mentor Engine does not bundle an engine binary in the first M3 slice.
@@ -468,7 +503,7 @@ licensing/distribution decision and is not authorized by this contract.
 
 ## Qualification corpus
 
-M3 implementation should qualify against fixed positions including at least:
+The full M3 implementation should qualify against fixed positions including at least:
 
 - normal starting position;
 - tactical position;
@@ -483,7 +518,8 @@ M3 implementation should qualify against fixed positions including at least:
 
 ## Qualification invariants
 
-M3 is not qualified until tests establish all applicable invariants:
+M3 is not fully qualified until all applicable invariants hold for the external
+provider as well:
 
 - M1 and M2 suites remain green;
 - White-perspective centipawn normalization is correct for both sides to move;
