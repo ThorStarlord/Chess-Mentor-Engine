@@ -1,7 +1,7 @@
 # Chess Mentor Engine — Current Build Status
 
 **Status authority:** current implementation/milestone status only  
-**Updated for:** M5B immutable Player Decision Evidence model qualification  
+**Updated for:** M5C capture/freeze state machine qualification  
 **Relationship to roadmap:** this file complements
 `chess-mentor-engine-repository-build-plan.md`. The roadmap preserves the conceptual
 sequence and historical planning rationale; this file is the authority for which
@@ -53,8 +53,8 @@ M4 — Diagnostic Position Selection              QUALIFIED
 M5 — Player Decision Evidence                   IN PROGRESS
   M5A — Player Decision Evidence contract       FROZEN
   M5B — Immutable evidence model                QUALIFIED
-  M5C — Capture/freeze state machine            NOT STARTED / NEXT
-  M5Q — Full M5 qualification                   NOT STARTED
+  M5C — Capture/freeze state machine            QUALIFIED
+  M5Q — Full M5 qualification                   NOT STARTED / NEXT
 
 M6 — Reasoning Discrepancy                      NOT STARTED / UNAUTHORIZED
 M7 — Learner Hypothesis Ledger                  NOT STARTED
@@ -162,7 +162,7 @@ See `docs/architecture/player-decision-evidence.md` and ADR 0004.
 
 ### Qualified M5B model
 
-M5B now implements and qualifies the immutable record/identity layer for:
+M5B implements and qualifies the immutable record/identity layer for:
 
 ```text
 PlayerDecisionContext
@@ -184,33 +184,80 @@ them.
 `EvidenceFreeze` is the sole freeze authority: the immutable response record stores
 submission evidence, while a separate freeze record binds the exact response
 fingerprint and freeze timestamp. `ObjectiveEvidenceReveal` is also an immutable
-provenance record only. M5B deliberately does not enforce stage ordering or reveal
-gating; those transitions belong to M5C.
+provenance record.
 
-See `docs/architecture/player-decision-evidence-model.md` for exact qualification
+See `docs/architecture/player-decision-evidence-model.md` for exact M5B qualification
+evidence.
+
+### Qualified M5C capture/freeze state machine
+
+M5C now qualifies deterministic interaction sequencing around the M5B records through
+an immutable append-only `EvidenceCaptureSession` ledger and a material/versioned
+`CaptureProtocol`.
+
+For clean capture paths, M5C enforces:
+
+```text
+planned prompt presentation
+→ one participant response for that stage
+→ immutable EvidenceFreeze
+→ required later pre-reveal stage(s), each after prior freeze
+→ objective-evidence reveal only after all required pre-reveal freezes
+→ optional post-reveal stage(s)
+```
+
+M5C also implements the contract's preservation rule. A protocol violation may be
+rejected in strict mode or preserved with a first-class `ProtocolDeviation`. The
+session's contamination state is derived from append-only deviation provenance rather
+than stored as an independently mutable flag.
+
+The qualified implementation additionally:
+
+- preserves early objective reveal or early later-stage prompts when explicitly run in
+  preservation mode and records why the sequence is not clean;
+- appends prohibited pre-reveal information exposures rather than deleting them;
+- treats explicit instrument awareness as provenance rather than automatic
+  contamination;
+- keeps observation, diagnostic probing, and tutoring intervention distinct;
+- records later corrections through immutable `EvidenceAmendment` records that cite
+  the original frozen response and never rewrite it;
+- separates pre-reveal and post-reveal stages;
+- preserves source timestamps and records timestamp-order deviations instead of
+  silently repairing chronology;
+- deterministically fingerprints complete capture-session snapshots.
+
+See `docs/architecture/player-decision-evidence-capture.md` for exact M5C qualification
 evidence.
 
 ## Current authorized next task
 
-> **M5C — capture/freeze state machine only.**
+> **M5Q — full M5 qualification only.**
 
-M5C should implement deterministic interaction transitions around the qualified M5B
-records, including:
+M5Q should exercise the complete frozen M5A claim surface as one bounded qualification
+corpus, including at least:
 
 ```text
-stage ordering
-prompt presentation / response capture / freeze transitions
-required pre-reveal freeze gating
-objective-evidence reveal transition
-append-only amendment handling
-explicit deviation/exposure handling
+clean minimal-only capture
+clean minimal + standardized-probe capture
+instrument-aware provenance
+contaminated / deviating capture
+early later-stage exposure
+early objective reveal
+append-only amendment
+ambiguous reported move
+illegal reported move
+post-reveal reflection
+deterministic replay / identity
+historical research-artifact preservation
 ```
 
-M5C must not implement Reasoning Discrepancy, recurrence, learner hypotheses, tutoring,
-or pedagogy.
+M5Q should verify the complete path from qualified selected position through
+participant evidence, freeze, exposure/deviation provenance, and objective reveal. It
+must not add Reasoning Discrepancy, recurrence, learner hypotheses, tutoring, or
+pedagogy.
 
-After M5C qualification, stop and review the complete capture surface before M5Q.
-M6 remains unauthorized until full M5Q qualification.
+After M5Q, stop and review the full M5 claim before authorizing any M6 work. M6 remains
+unauthorized until M5Q passes and the status authority is explicitly reconciled.
 
 ## Current claim ceiling
 
@@ -227,26 +274,27 @@ The repository may claim that it has:
 - qualified reproducible bounded `DiagnosticCandidateBatch` construction with
   controls, quotas, caps, exclusions, and visible shortfalls;
 - a frozen M5A Player Decision Evidence production contract;
-- a qualified M5B immutable Player Decision Evidence record/identity layer.
+- a qualified M5B immutable Player Decision Evidence record/identity layer;
+- a qualified M5C deterministic capture/freeze sequencing layer with reveal gates,
+  exposure/deviation provenance, and append-only amendments.
 
 It may **not** claim that:
 
 - M5 Player Decision Evidence as a whole is qualified;
-- the production capture/freeze workflow is implemented or qualified;
-- stage ordering or objective-reveal gating is enforced;
-- append-only amendment/deviation transitions are implemented;
+- the complete frozen M5A qualification corpus has passed;
 - it knows why a player chose a move;
 - a player report is objective chess truth;
 - a selected position demonstrates a stable learner weakness;
 - an omitted move was never considered;
 - a reported explanation is the causal reason the move was chosen;
-- a control contradicts a learner hypothesis;
+- a control confirms or contradicts a learner hypothesis;
 - recurrence has been established;
+- a Reasoning Discrepancy has been established;
 - an intervention is warranted or effective;
 - learning, transfer, or mastery has occurred.
 
 ## Stop boundary
 
-M5A is frozen and M5B is qualified. M5 as a whole remains in progress. M5C is the
-only next authorized implementation slice. Do not advance into M5Q or M6 from M5B
-alone.
+M5A is frozen, M5B is qualified, and M5C is qualified. M5 as a whole remains in
+progress. **M5Q is the only next authorized milestone.** Do not advance into M6 from
+M5C alone.
