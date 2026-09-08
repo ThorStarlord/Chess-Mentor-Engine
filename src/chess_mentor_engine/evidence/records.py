@@ -397,7 +397,9 @@ def record_objective_evidence_reveal(
         "revealed_at": revealed_at,
         "position_analysis_refs": [item.to_dict() for item in position_analysis_refs],
         "decision_comparison_ref": (
-            None if decision_comparison_ref is None else decision_comparison_ref.to_dict()
+            None
+            if decision_comparison_ref is None
+            else decision_comparison_ref.to_dict()
         ),
         "selection_signal_refs": [item.to_dict() for item in selection_signal_refs],
         "rendered_content_fingerprint": rendered_fingerprint,
