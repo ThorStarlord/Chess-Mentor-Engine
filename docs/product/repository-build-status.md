@@ -1,7 +1,7 @@
 # Chess Mentor Engine — Current Build Status
 
 **Status authority:** current implementation/milestone status only  
-**Updated for:** M4A Diagnostic Position Selection contract freeze  
+**Updated for:** M4B DecisionComparison qualification  
 **Relationship to roadmap:** this file complements
 `chess-mentor-engine-repository-build-plan.md`. The roadmap preserves the conceptual
 sequence and historical planning rationale; this file is the authority for which
@@ -45,7 +45,7 @@ M3 — Engine Evidence                            QUALIFIED
 
 M4 — Diagnostic Position Selection              IN PROGRESS
   M4A — Selection contract                      FROZEN
-  M4B — DecisionComparison                      NOT STARTED
+  M4B — DecisionComparison                      QUALIFIED
   M4C — SelectionSignal + DiagnosticCandidate   NOT STARTED
   M4D — SelectionPolicy + CandidateBatch        NOT STARTED
   M4Q — Full M4 qualification                   NOT STARTED
@@ -62,7 +62,7 @@ M12+ — CLI/UI/richer LLM productization         NOT STARTED
 
 ## Qualified evidence chain
 
-The repository currently has a qualified objective evidence substrate:
+The repository currently has this qualified objective evidence path:
 
 ```text
 PGN
@@ -71,49 +71,77 @@ PGN
 → PositionContextPacket
 → PositionFeaturePacket
 → PositionAnalysis
+→ DecisionComparison
 ```
 
-M4A now freezes how later code may derive objective decision comparisons and select
-bounded evidence-gathering candidates from that substrate.
+M4A freezes how objective comparisons and later selection must preserve authority
+boundaries. M4B now implements and qualifies the comparison step only.
 
-M4A does **not** implement the selector.
+Qualified M4B can:
+
+- derive the actual played move from canonical game history;
+- independently replay that move to the canonical child FEN;
+- use root MultiPV or compatible child reanalysis;
+- compare exact centipawn evidence from mover perspective for both colors;
+- preserve mate symbolically rather than as a fake centipawn sentinel;
+- derive checkmate/stalemate terminal child outcomes from qualified chess rules;
+- preserve partial, failed, bound-limited, incompatible, and engine-inversion states;
+- produce stable provenance-rich comparison identity.
+
+See `docs/architecture/decision-comparison.md` for the implementation and
+qualification record.
+
+M4B does **not** select diagnostic positions.
 
 ## Current authorized next task
 
-> **M4B — implement `DecisionComparison` only.**
+> **M4C — implement transparent `SelectionSignal` + `DiagnosticCandidate` only.**
 
-M4B must implement the frozen rules in ADR 0003 and
-`docs/architecture/diagnostic-position-selection.md`, including:
+M4C must consume qualified M4B comparison evidence and the already-qualified M1-M3
+substrate while preserving the frozen M4A distinctions.
 
-- authoritative played-move provenance from canonical game history;
-- compatible root/child engine-evidence pairing;
-- exact centipawn comparison from mover perspective;
-- mate-aware symbolic comparison without centipawn sentinels;
-- terminal child outcome handling;
-- partial/failure/bound evidence preservation;
-- engine-evidence inversion preservation;
-- deterministic comparison identity and serialization.
+Initial M4C work may implement objective signals such as:
 
-M4B must **not** implement:
+```text
+PLAYED_EQUALS_RANK_1
+PLAYED_DIFFERS_FROM_RANK_1
+EXACT_CP_DELTA
+MATE_RELATION
+TOP_CANDIDATE_SEPARATION
+MULTIPV_CLOSE_CHOICE
+BEST_MOVE_IS_CHECK
+BEST_MOVE_IS_CAPTURE
+BEST_MOVE_IS_QUIET
+PLAYED_MOVE_IS_CHECK
+PLAYED_MOVE_IS_CAPTURE
+PLAYED_MOVE_IS_QUIET
+ROOT_SIDE_IS_IN_CHECK
+ENGINE_EVIDENCE_INVERSION
+```
 
-- batch selection;
-- learner reasoning capture;
-- cognitive diagnosis;
+M4C must not introduce:
+
+- player reasoning capture;
+- cognitive or learner diagnosis;
+- generic `blunder`/`mistake` thresholds as product truth;
 - LLM ranking;
-- pedagogy;
-- learner hypotheses.
+- pedagogical-value claims;
+- batch quotas, controls, or M4D candidate-batch policy;
+- learner hypotheses;
+- Pilot 004 mutation.
 
-## Stop condition after M4B
+## Stop condition after M4C
 
-After M4B implementation and qualification, stop and review the comparison evidence
-before starting M4C.
+After M4C implementation and qualification, stop and inspect the signal/candidate
+surface before authorizing M4D.
 
 The intended sequence remains:
 
 ```text
 M4A contract
-→ M4B comparison
-→ M4C signals/candidates
+→ M4B comparison                QUALIFIED
+→ M4C signals/candidates         NEXT
+→ STOP / REVIEW
 → M4D bounded batches/controls
 → M4Q qualification
 → STOP
@@ -122,16 +150,18 @@ M4A contract
 
 ## Current claim ceiling
 
-The repository may currently claim that it has qualified deterministic chess state,
-qualified deterministic board features, and qualified provenance-bound engine
-evidence.
+The repository may claim that it has:
 
-After M4A it may additionally claim that the Diagnostic Position Selection **contract
-is frozen**.
+- qualified deterministic chess state;
+- qualified deterministic board features;
+- qualified provenance-bound engine evidence;
+- a frozen Diagnostic Position Selection contract;
+- a qualified provenance-rich objective `DecisionComparison` layer.
 
-It may not yet claim that it can:
+It may **not** yet claim that it can:
 
 - select diagnostic positions in production;
+- identify the best teaching opportunity;
 - explain why a player chose a move;
 - diagnose a learner weakness;
 - establish recurrence;
