@@ -1,7 +1,7 @@
 # Chess Mentor Engine — Current Build Status
 
 **Status authority:** current implementation/milestone status only  
-**Updated for:** M5A Player Decision Evidence contract freeze  
+**Updated for:** M5B immutable Player Decision Evidence model qualification  
 **Relationship to roadmap:** this file complements
 `chess-mentor-engine-repository-build-plan.md`. The roadmap preserves the conceptual
 sequence and historical planning rationale; this file is the authority for which
@@ -52,8 +52,8 @@ M4 — Diagnostic Position Selection              QUALIFIED
 
 M5 — Player Decision Evidence                   IN PROGRESS
   M5A — Player Decision Evidence contract       FROZEN
-  M5B — Immutable evidence model                NOT STARTED / NEXT
-  M5C — Capture/freeze state machine            NOT STARTED
+  M5B — Immutable evidence model                QUALIFIED
+  M5C — Capture/freeze state machine            NOT STARTED / NEXT
   M5Q — Full M5 qualification                   NOT STARTED
 
 M6 — Reasoning Discrepancy                      NOT STARTED / UNAUTHORIZED
@@ -116,7 +116,7 @@ See:
 - `docs/architecture/selection-policy-and-batches.md` — M4D record;
 - `docs/architecture/m4-qualification.md` — full M4Q qualification record.
 
-## Frozen M5A boundary
+## M5 Player Decision Evidence boundary
 
 M5A freezes the first production boundary for direct Player Decision Evidence. It is
 informed by the preserved Pilot 003/004 research instruments without rewriting those
@@ -160,14 +160,9 @@ The contract requires:
 
 See `docs/architecture/player-decision-evidence.md` and ADR 0004.
 
-M5A freezes the contract only. No M5 production entity or runtime state machine has
-been implemented yet.
+### Qualified M5B model
 
-## Current authorized next task
-
-> **M5B — immutable Player Decision Evidence model only.**
-
-M5B should implement deterministic records/serialization/identity for:
+M5B now implements and qualifies the immutable record/identity layer for:
 
 ```text
 PlayerDecisionContext
@@ -179,10 +174,42 @@ EvidenceFreeze
 ObjectiveEvidenceReveal
 ```
 
-M5B must not implement the interactive capture/freeze state machine, Reasoning
-Discrepancy, recurrence, learner hypotheses, tutoring, or pedagogy.
+The model binds Player Decision Evidence to matching canonical/M4 selection evidence,
+preserves free text verbatim, retains participant-authored structured values without
+promoting them to objective chess truth, gives prompt wording/version/rendering and
+prior exposure state deterministic provenance, represents instrument awareness
+explicitly, and preserves ambiguous or illegal reported moves rather than repairing
+them.
 
-After M5B qualification, stop and review the evidence model before authorizing M5C.
+`EvidenceFreeze` is the sole freeze authority: the immutable response record stores
+submission evidence, while a separate freeze record binds the exact response
+fingerprint and freeze timestamp. `ObjectiveEvidenceReveal` is also an immutable
+provenance record only. M5B deliberately does not enforce stage ordering or reveal
+gating; those transitions belong to M5C.
+
+See `docs/architecture/player-decision-evidence-model.md` for exact qualification
+evidence.
+
+## Current authorized next task
+
+> **M5C — capture/freeze state machine only.**
+
+M5C should implement deterministic interaction transitions around the qualified M5B
+records, including:
+
+```text
+stage ordering
+prompt presentation / response capture / freeze transitions
+required pre-reveal freeze gating
+objective-evidence reveal transition
+append-only amendment handling
+explicit deviation/exposure handling
+```
+
+M5C must not implement Reasoning Discrepancy, recurrence, learner hypotheses, tutoring,
+or pedagogy.
+
+After M5C qualification, stop and review the complete capture surface before M5Q.
 M6 remains unauthorized until full M5Q qualification.
 
 ## Current claim ceiling
@@ -199,11 +226,15 @@ The repository may claim that it has:
 - qualified versioned deterministic `SelectionPolicy` execution;
 - qualified reproducible bounded `DiagnosticCandidateBatch` construction with
   controls, quotas, caps, exclusions, and visible shortfalls;
-- a frozen M5A Player Decision Evidence production contract.
+- a frozen M5A Player Decision Evidence production contract;
+- a qualified M5B immutable Player Decision Evidence record/identity layer.
 
 It may **not** claim that:
 
-- M5 Player Decision Evidence is implemented or qualified;
+- M5 Player Decision Evidence as a whole is qualified;
+- the production capture/freeze workflow is implemented or qualified;
+- stage ordering or objective-reveal gating is enforced;
+- append-only amendment/deviation transitions are implemented;
 - it knows why a player chose a move;
 - a player report is objective chess truth;
 - a selected position demonstrates a stable learner weakness;
@@ -216,6 +247,6 @@ It may **not** claim that:
 
 ## Stop boundary
 
-M5A is frozen. M5 production implementation has not started. M5B is the only next
-authorized implementation slice. Do not advance into M5C or M6 from the design
-contract alone.
+M5A is frozen and M5B is qualified. M5 as a whole remains in progress. M5C is the
+only next authorized implementation slice. Do not advance into M5Q or M6 from M5B
+alone.
