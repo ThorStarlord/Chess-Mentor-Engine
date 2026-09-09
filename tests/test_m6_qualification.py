@@ -6,7 +6,6 @@ from dataclasses import replace
 from pathlib import Path
 
 import pytest
-
 from test_reasoning_discrepancy_assessment import _coding, _policy
 from test_reasoning_discrepancy_facts import (
     T7,
