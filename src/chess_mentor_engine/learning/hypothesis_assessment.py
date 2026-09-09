@@ -16,11 +16,13 @@ from .hypothesis_model import (
 )
 from .hypothesis_recurrence import (
     HypothesisAssessmentError,
-    assess_hypothesis_recurrence as _assess_hypothesis_recurrence,
     build_hypothesis_ledger_snapshot,
     define_hypothesis_assessment_policy,
     record_competing_explanation_review,
     record_hypothesis_challenge_review,
+)
+from .hypothesis_recurrence import (
+    assess_hypothesis_recurrence as _assess_hypothesis_recurrence,
 )
 from .hypothesis_recurrence_model import (
     CompetingExplanationReview,
