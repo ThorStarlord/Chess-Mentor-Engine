@@ -35,9 +35,11 @@ The repository is no longer a minimal package. Milestones M1 through M9 are impl
 - **M8:** replayable Evidence-Aware Tutor Session orchestration with hard pre-reveal information boundaries and explanation provenance;
 - **M9:** versioned Training Intervention Registry, explicit hypothesis-to-intervention applicability mappings, and deterministic `selected / ineligible / unclear` decisions.
 
-M10 Transfer / Mastery Evidence, longitudinal learner state, persistence, CLI/UI productization, and broader end-user workflows remain outside the qualified claim surface.
+Bounded local durability is available through `chess_mentor_engine.storage`: immutable SQLite-backed JSON artifacts, exact prompt dependencies, and verified M8 session recovery. This adds recovery infrastructure without introducing a new diagnostic or learning milestone.
 
-See [the current build-status record](docs/product/repository-build-status.md) and [the M7-M9 milestone runbook](docs/runbooks/m7-m9-milestone-runbook.md).
+M10 Transfer / Mastery Evidence, longitudinal learner state, production-grade persistence services, CLI/UI productization, and broader end-user workflows remain outside the qualified claim surface.
+
+See [the current build-status record](docs/product/repository-build-status.md), [the M7-M9 milestone runbook](docs/runbooks/m7-m9-milestone-runbook.md), and [the local storage architecture](docs/architecture/durable-artifacts-and-replay.md).
 
 ## Development principles
 
@@ -114,14 +116,21 @@ A current active M7 hypothesis with `supported_recurrence` is necessary but not 
 
 See `tests/test_m9_qualification.py` for executable examples.
 
+### Local durability and M8 recovery
+
+Use `LocalArtifactStore`, `save_tutor_session`, and `load_tutor_session` from `chess_mentor_engine.storage`. Saving requires the exact definitions for every planned prompt. Recovery checks storage integrity and replays the existing M8 transitions before returning a resumable session; advancing and saving creates a new snapshot rather than overwriting earlier evidence.
+
+See [the storage/recovery runbook](docs/runbooks/durable-artifacts-and-replay.md) for usage and failure handling. The local database is plaintext, participant scoping is not authentication, and external archival dependencies beyond embedded M8 inputs and prompts must be supplied explicitly. Recovery does not establish learning, mastery, or independent qualification of every upstream claim.
+
 ## Validation commands
 
-Run the focused milestone suites:
+Run the focused milestone and storage suites:
 
 ```bash
 pytest tests/test_m7_qualification.py
 pytest tests/test_m8_qualification.py
 pytest tests/test_m9_qualification.py
+pytest tests/test_artifact_store.py tests/test_tutor_storage.py
 ```
 
 Run the full regression and lint gates:
@@ -157,6 +166,7 @@ The detailed operational checklist is in [the M7-M9 milestone runbook](docs/runb
 - [M8 Evidence-Aware Tutor Session](docs/architecture/evidence-aware-tutor-session.md) — tutoring-session architecture and qualification.
 - [M9 Training Intervention Registry](docs/architecture/training-intervention-registry.md) — intervention registry, applicability, selection, and qualification.
 - [M7-M9 milestone runbook](docs/runbooks/m7-m9-milestone-runbook.md) — setup, validation commands, usage order, and human protocols.
+- [Durable artifacts and verified replay](docs/architecture/durable-artifacts-and-replay.md) — local storage, recovery, legacy compatibility, and claim limits.
 - [Decision records](docs/decisions/README.md) — architecture decision-record conventions.
 - [CONTEXT.md](CONTEXT.md) — orientation for contributors and coding agents.
 - [Product definition](docs/product/product-definition.md) and [product discovery](docs/product/product-discovery.md) — product hypotheses and validation direction.

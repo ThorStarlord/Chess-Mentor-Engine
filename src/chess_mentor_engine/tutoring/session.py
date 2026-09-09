@@ -457,11 +457,12 @@ def record_tutor_reasoning_comparison(
         raise TutorSessionError("M6 assessment cannot predate reasoning context")
     if _parse_timestamp(recorded_at) < _parse_timestamp(assessment.created_at):
         raise TutorSessionError("comparison record cannot predate M6 assessment")
+    ordered = tuple(sorted(assertions, key=lambda item: item.assertion_id))
     payload = {
         "tutor_session_id": session.tutor_session_id,
         "reasoning_context": reasoning_context.to_dict(),
         "assessment": assessment.to_dict(),
-        "assertions": [item.to_dict() for item in assertions],
+        "assertions": [item.to_dict() for item in ordered],
         "recorded_at": recorded_at,
     }
     fingerprint = _fingerprint(payload)
@@ -471,7 +472,7 @@ def record_tutor_reasoning_comparison(
         tutor_session_id=session.tutor_session_id,
         reasoning_context=reasoning_context,
         assessment=assessment,
-        assertions=tuple(sorted(assertions, key=lambda item: item.assertion_id)),
+        assertions=ordered,
         recorded_at=recorded_at,
     )
     updated = _advance(
