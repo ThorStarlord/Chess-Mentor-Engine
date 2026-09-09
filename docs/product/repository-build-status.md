@@ -1,223 +1,206 @@
-# Chess Mentor Engine - Current Build Status
+# Chess Mentor Engine — Current Build Status
 
-**Status authority:** current implementation and qualification status.  
-**Updated for:** post-Feature-3 documentation and runbook consolidation.  
-**Merged implementation baseline:** `f8adde83400fb77ecf2a1e3cb9a5ead820136ab6`.  
-**Implementation tree:** `451220b24fcc4da5adde7560bd4adf8543d5b24c`.
+**Status authority:** current implementation and qualification boundary.  
+**Current package:** M14 — Engine-Backed Analysis CLI, PR #46.  
+**Pre-M14 merged baseline:** `1d9ffdd587eada992afd8ca613351895f240e3f5` (M13 merge).  
 
-This is the concise current authority. The baseline above identifies the completed
-runtime milestone, not a moving pointer to later documentation commits. Detailed
-contracts and historical qualification remain in architecture/decision records
+This file is the concise moving authority for repository state. Historical
+qualification details remain in feature PRs, ADRs, architecture records, runbooks,
 and Git history. Software qualification is not empirical tutoring efficacy.
-Use the [post-M10 milestone runbook](../runbooks/post-m10-milestone-runbook.md) for
-installation, API operation, validation commands and human handoff.
 
-## Current milestone board
+## Milestone board
 
 ```text
-M1 - Trustworthy Chess Evidence Substrate       QUALIFIED
-M2 - Deterministic Chess Feature Extraction     QUALIFIED
-M3 - Engine Evidence                            QUALIFIED
-M4 - Diagnostic Position Selection              QUALIFIED
-M5 - Player Decision Evidence                   QUALIFIED
-M6 - Reasoning Discrepancy                       QUALIFIED
-M7 - Learner Hypothesis Ledger / M7Q             QUALIFIED
-M8 - Evidence-Aware Tutor Session                QUALIFIED
-M9 - Training Intervention Registry              QUALIFIED
-UCI evidence contract repair (provider 0.2)      MERGED - PR #39
-Local artifacts / verified M8 recovery           MERGED - PR #40
-M10 - Bounded Outcome / Transfer Evidence        QUALIFIED - MERGED - PR #41
-M11 - Longitudinal Learner State                 NOT STARTED
-M12+ - CLI/UI/richer LLM productization          NOT STARTED
+M1  - Trustworthy Chess Evidence Substrate       QUALIFIED
+M2  - Deterministic Chess Feature Extraction     QUALIFIED
+M3  - Engine Evidence                            QUALIFIED
+M4  - Diagnostic Position Selection              QUALIFIED
+M5  - Player Decision Evidence                   QUALIFIED
+M6  - Reasoning Discrepancy                      QUALIFIED
+M7  - Learner Hypothesis Ledger / M7Q            QUALIFIED
+M8  - Evidence-Aware Tutor Session               QUALIFIED
+M9  - Training Intervention Registry             QUALIFIED
+M10 - Bounded Outcome / Transfer Evidence        QUALIFIED - MERGED PR #41
+M11 - Longitudinal Learner State                 QUALIFIED - MERGED PR #43
+M12 - Local Evidence CLI                         QUALIFIED - MERGED PR #44
+M13 - Persistent Tutor Session CLI               QUALIFIED - MERGED PR #45
+M14 - Engine-Backed Analysis CLI                 CURRENT PACKAGE - PR #46
 ```
 
-### Completed Feature Queue
+Supporting repairs/capabilities remain part of this baseline:
 
-- [x] Feature 1: UCI Evidence Contract Repair - White-perspective bounds, strict explicit MultiPV ranks, provider `0.2` provenance and regression coverage; PR #39.
-- [x] Feature 2: Durable Artifacts and Verified Replay - Immutable local storage, strict reconstruction, declared dependencies, verified M8 recovery and canonical comparison fingerprints; PR #40.
-- [x] Feature 3: M10 Outcome and Transfer Evidence - Frozen attempts, completion and observation records, exposure/reuse gates and conservative independent assessments; PR #41.
+```text
+UCI evidence contract repair / provider 0.2      MERGED - PR #39
+Durable artifacts + verified M8 replay           MERGED - PR #40
+Post-M10 documentation consolidation             MERGED - PR #42
+```
 
-This queue is complete. Consolidating its documentation does not implement or
-authorize M11, automatic mastery, a new product CLI, or a learner experiment.
+## Recent promotion provenance
 
-## Evidence path and authority boundaries
+| Milestone | Qualified/final head | Merged commit | Qualification |
+| --- | --- | --- | --- |
+| M10 / PR #41 | `a1aaebd086e1a3006e2ec67c8e8584f495ff6bb4` | `f8adde83400fb77ecf2a1e3cb9a5ead820136ab6` | implementation run `34347340917`; post-merge run `34347734365` |
+| M11 / PR #43 | `975fbbf70a62ba2a0ca11a8fae7afbc06d8179eb` | `aa62bb4e7e1f83433086c2c77fc4af3fc6ed2b62` | run `34373923454` |
+| M12 / PR #44 | `36f86d92e4c698b6898f337b54a7bdf6da25fd00` | `ff66e7e8768d3f95422c2bb0172f54f01cc72da7` | run `34375086055` |
+| M13 / PR #45 | `c42a9acc435395909cb8760d9cb1e81ef653796b` | `1d9ffdd587eada992afd8ca613351895f240e3f5` | run `34378413147` |
+| M14 / PR #46 | runtime candidate `d36b20e4747a39cc2257e47b04b5be98ad8131e7` | pending exact final-head gate | runtime run `34411545018`: native test/lint PASS + independent Stockfish PASS |
+
+The documentation-bearing final M14 candidate must pass the same repository CI jobs
+before PR #46 may merge. The PR and Git history are authoritative for that final
+exact-head run and merge SHA.
+
+## Current evidence path
 
 ```text
 PGN / canonical position
--> objective chess + provenance-bound engine evidence
--> decision comparison / diagnostic selection
--> frozen player decision evidence
+-> deterministic chess context
+-> provenance-bound engine evidence
+-> objective played-decision comparison / bounded diagnostic selection
+-> frozen participant decision evidence
 -> position-local reasoning discrepancy
--> participant-specific recurring descriptive hypothesis
--> controlled evidence-aware tutoring
--> explicit hypothesis/intervention applicability
--> selected / ineligible / unclear
--> predeclared outcome protocol for the exact selected intervention
--> frozen attempts / documented practice / authored scoring evidence
--> separate practice, near, far and real-game evidence assessments
+-> participant-specific hypothesis + contradiction/challenge evidence
+-> controlled evidence-aware tutor session
+-> explicit training applicability / selected | ineligible | unclear
+-> predeclared outcome protocol
+-> practice / near / far / real-game outcome evidence
+-> append-only longitudinal learner state
 ```
 
-Downstream results do not rewrite or strengthen upstream semantic authority.
-This map is not an automatically invoked end-to-end application workflow.
+M12-M14 expose selected portions of this stack through the local `cme` command.
+They do not collapse the authority boundaries above.
 
-## M7 - Learner Hypothesis Ledger
+## M11 — Longitudinal learner state
 
-M7 is qualified under ADR 0006. It supplies stable participant-specific lineages,
-append-only revisions/lifecycle, exact M6 evidence mappings, versioned recurrence,
-one participant-position per unit, support/contradiction/counterexample/context
-exception relations, explicit challenge review and rebuildable snapshots.
+M11 records exact participant-specific M7 state over time and may attach exact M10
+outcome evidence only for the same hypothesis revision. The event/ledger model is
+append-oriented and deterministic. Exact retries are idempotent; conflicting event
+identity reuse, revision regression, participant mismatch, stale snapshots, and
+terminal lifecycle resurrection fail closed.
 
-Statuses remain `insufficient`, `isolated`, `candidate_recurrence`,
-`supported_recurrence`, `contradicted`, and `unclear`. Supported recurrence is not
-a causal cognitive mechanism, permanent trait, universal weakness score, or
-automatic training eligibility.
+M11 preserves M7 lifecycle/status authority and M10 outcome dimensions. It does not
+create a scalar weakness score, infer causal learning, assert mastery, automatically
+revise M7, or carry old M10 evidence onto a newer M7 revision.
 
-Historical qualification: PR #35, corpus head
-`334f9c769e50046078d5508ecce4fac9d52cd70a`, merged
-`5db3a518afdec38ee052ec3c5dbb453a03c8a739`; 307 passed, 8 intentional
-external-engine skips, 13 focused M7Q tests, Ruff and Stockfish passed.
-See [M7 qualification](../architecture/m7-qualification.md).
+See the [M11 runbook](../runbooks/m11-longitudinal-learner-state.md) and ADR 0010.
 
-## M8 - Evidence-Aware Tutor Session
+## M12 — Local evidence CLI
 
-M8 is qualified under ADR 0007. It enforces exact position presentation,
-minimal-response/optional-probe capture, complete pre-reveal freezes, objective
-reveal, exact final-capture M6 comparison, complete active M7 context when attached,
-authored explanation provenance and immutable event/snapshot histories.
-
-Historical qualification: PR #36, head
-`055325360b14e955b2e94c5c4fcdfd739ba8c430`, merged
-`84edce598b55176bbded422fc88cc8f8101d5575`; 320 passed, 8 intentional
-skips, 13 focused M8 tests, Ruff, Stockfish and post-merge CI passed.
-See [M8 architecture](../architecture/evidence-aware-tutor-session.md).
-
-PR #40 adds SQLite-backed immutable artifacts and verified fresh-process M8
-recovery. Typed recovery covers M8, its embedded records and required prompts;
-additional archival closure must be declared explicitly. It is local plaintext,
-not an authenticated hosted service. See
-[durability scope](../architecture/durable-artifacts-and-replay.md).
-
-## M9 - Training Intervention Registry
-
-M9 is qualified under ADR 0008. Versioned exercises/interventions, a registry,
-explicit participant-specific applicability mappings and a deterministic policy
-produce `selected`, `ineligible`, or `unclear`. Current active supported recurrence
-is necessary but not sufficient. Multiple applicable mappings remain unclear;
-there is no opaque free-text ranking or efficacy inference.
-
-Historical qualification: PR #37, head
-`f5e671b56fd977818aaa33b4e4e5fd7bb967316b`, merged
-`5d880ef878154e3b20195044314346054214eb1b`; 336 passed, 8 intentional
-skips, 16 focused M9 tests, Ruff, Stockfish and post-merge CI passed.
-See [M9 architecture](../architecture/training-intervention-registry.md).
-
-## M10 - Bounded outcome and transfer evidence
-
-The `evaluation` package implements exact selected-M9 binding, an authored
-versioned criterion/rubric/context policy, frozen attempts, documented practice
-completion, scored observations and immutable ledger snapshots. Assessment keeps
-practice, near transfer, far transfer and real-game evidence independent.
-
-Freshness is conditional on declared exposure scope and the supplied complete
-known history. The implementation rejects promotion from nonselected M9 results,
-exercise/rubric/version mismatches and invalid chronology. It excludes exposed,
-unknown, assisted, early-feedback, premature or reused-position evidence from
-transfer support. Repetition and multiple coders do not inflate independent
-counts; disagreement, failures, missing scores and unscorable evidence remain
-visible. Real-game independence uses game IDs rather than relabeled sessions.
-
-Each dimension reports `insufficient`, `supported`, `not_supported`, `mixed`, or
-`unclear`, with counts and included/excluded evidence references. `Supported` is
-conditional evidence under the declared criterion, not proof of caused learning.
-`mastery` and `causal_effect` remain `not_established`, even when all dimensions
-are supported. M10 does not automatically revise M7 or implement M11.
-
-See [ADR 0009](../decisions/0009-outcome-transfer-evidence-contract.md),
-[M10 architecture](../architecture/outcome-transfer-evidence.md), and
-[the M10 runbook](../runbooks/m10-outcome-transfer-evidence.md).
-
-## Three-feature merge and qualification provenance
-
-| Feature | Final feature head | Merged implementation commit | Completed qualification run |
-| --- | --- | --- | --- |
-| [#39 - UCI repair](https://github.com/ThorStarlord/Chess-Mentor-Engine/pull/39) | `7e2f35a19fbbf1c67a7f1a252b2875aec5ed629f` | `c67acfac0d566298332900ee1e1190ea8aa89adc` | [34339642821](https://github.com/ThorStarlord/Chess-Mentor-Engine/actions/runs/34339642821) |
-| [#40 - Storage/replay](https://github.com/ThorStarlord/Chess-Mentor-Engine/pull/40) | `18517ac8cc96f6ca60792af351b91e1fb1384caf` | `078fa663feb83b21b57fcab7a0f8d7a66f7d9286` | [34343954666](https://github.com/ThorStarlord/Chess-Mentor-Engine/actions/runs/34343954666) |
-| [#41 - M10](https://github.com/ThorStarlord/Chess-Mentor-Engine/pull/41) | `a1aaebd086e1a3006e2ec67c8e8584f495ff6bb4` | `f8adde83400fb77ecf2a1e3cb9a5ead820136ab6` | [34347340917](https://github.com/ThorStarlord/Chess-Mentor-Engine/actions/runs/34347340917), with the implementation/final-head distinction below |
-
-| Qualification | Main test job | Added feature cases | Independent Stockfish |
-| --- | --- | --- | --- |
-| Feature 1 | 389 passed, 8 intentional skips | 53 | 8 passed, no skips |
-| Feature 2 | 438 passed, 8 intentional skips | 49 | 8 passed, no skips |
-| Feature 3 | 514 passed, 8 intentional skips | 76 | 8 passed, no skips |
-
-Ruff and editable package build/install passed in all three qualification runs.
-Counts describe the recorded baselines, not an assertion that every later test run
-has already occurred or must retain the same count. The three features added 178
-cases in total. Python 3.11/Ubuntu was the complete CI qualification surface.
-
-### M10 implementation and final-head distinction
+M12 introduced the installed `cme` command with bounded read-only operations:
 
 ```text
-implementation base: 078fa663feb83b21b57fcab7a0f8d7a66f7d9286
-implementation head: 2e0c18b866eed3affc36ef6e0f6e2f5a1a57b77b
-implementation tree: 4911e7ba7eb85ecdc7d7807089b3eaaeaa29f8ba
-implementation CI run: 34347340917
-synthetic PR merge: 27de38659ac7fd03c0ec350a5b8853ffe32a790d
-final feature head: a1aaebd086e1a3006e2ec67c8e8584f495ff6bb4
-final feature / merged tree: 451220b24fcc4da5adde7560bd4adf8543d5b24c
-merged implementation: f8adde83400fb77ecf2a1e3cb9a5ead820136ab6
-post-merge CI run: 34347734365 - both jobs PASS
+cme games inspect
+cme position packet
+cme artifacts list
+cme artifacts show
+cme artifacts verify
 ```
 
-The final feature commit changed only README/build-status documentation; all
-production code, tests and workflow configuration matched the tested implementation.
-No PR-triggered run was returned for that documentation-only head before merge.
-The subsequent [post-merge run](https://github.com/ThorStarlord/Chess-Mentor-Engine/actions/runs/34347734365)
-completed both test/lint and independent Stockfish jobs on the exact merged commit.
-That result is distinct from checks on this later consolidation PR.
+The position packet is deterministic and engine-free. Artifact operations require
+an exact participant scope and an existing database; missing databases are not
+created by reads. See the [M12 runbook](../runbooks/m12-local-evidence-cli.md).
 
-The M10 contract suite also passed locally on Python 3.13; syntax compilation
-passed. No standalone static type checker was run. Existing M7 fixture inputs in
-the M9 bridge remain synthetic. Qualification is not empirical efficacy evidence.
+## M13 — Persistent tutor session CLI
+
+M13 added controlled append-only `cme tutor ...` mutations over the qualified M8
+state machine. Every mutation:
+
+```text
+exact prior M8 checkpoint
+-> verified local read
+-> typed replay
+-> one native M8 transition
+-> replay validation
+-> immutable successor checkpoint
+```
+
+M13 does not generate prompts, engine analysis, M6 assessments, M7 hypotheses,
+mentor prose, M11 learner-state mutations, or training decisions. See the
+[M13 runbook](../runbooks/m13-persistent-tutor-cli.md).
+
+## M14 — Engine-backed analysis CLI
+
+M14 adds:
+
+```text
+cme analyze <pgn> --ply-index N --engine <uci> ...
+```
+
+The command runs the exact canonical root through the qualified M3 UCI provider and
+passes the result to native M4 played-decision comparison. When a complete root
+MultiPV does not contain the canonical played move, M14 reanalyzes the exact
+canonical child under the same request/provider configuration. M4 remains the
+authority for whether root/child regimes are compatible.
+
+The output preserves native M3/M4 evidence, including:
+
+- White-perspective centipawn and symbolic mate records;
+- mover-relative exact centipawn delta when legitimately comparable;
+- score bounds;
+- partial evidence;
+- terminal relations;
+- engine-evidence inversion;
+- incompatible analysis regimes;
+- explicit engine failures/provenance.
+
+M14 may optionally archive the complete package as
+`m14.analysis-package.v1` in an **existing** participant-scoped artifact database.
+It does not implicitly create a database or mutate M7, M8, M9, M10, or M11.
+
+The M14 rejection suite covers White/Black perspective, symbolic mate, bounds,
+partial evidence, out-of-MultiPV child analysis, incompatible engine identity,
+invalid MultiPV output, missing engines, target/provenance mismatch, participant
+archive boundaries, idempotent exact archival, and no-played-move positions.
+
+See the [M14 runbook](../runbooks/m14-engine-analysis-cli.md).
 
 ## Qualification commands
 
-From the repository root after installing `.[dev]` in the selected environment:
+Focused current product surface:
+
+```bash
+python -m pytest tests/test_m11_qualification.py
+python -m pytest tests/test_m12_cli.py
+python -m pytest tests/test_m13_persistent_tutor_cli.py
+python -m pytest tests/test_m14_engine_analysis_cli.py
+```
+
+Engine/comparison contracts:
 
 ```bash
 python -m pytest tests/test_uci_provider.py tests/test_uci_evidence_contract.py
-python -m pytest tests/test_artifact_store.py tests/test_tutor_storage.py
-python -m pytest tests/test_outcome_evidence.py tests/test_m10_qualification.py
-python -m pytest tests/test_m7_qualification.py tests/test_m8_qualification.py tests/test_m9_qualification.py
+python -m pytest tests/test_decision_comparison.py
+```
+
+Full merge gate:
+
+```bash
 python -m pytest -rs
 python -m ruff check .
 python -m compileall -q src tests
 python -m pytest tests/integration/test_stockfish_uci.py -rs
 ```
 
-Configure `STOCKFISH_EXECUTABLE` for the final command; eight skips are not an
-external-engine pass. Setup, API use, exact dependency recovery, backup practices,
-exposure/scoring protocols and human review steps are in the
-[consolidated runbook](../runbooks/post-m10-milestone-runbook.md). The M7-M9
-operational protocol remains in [its runbook](../runbooks/m7-m9-milestone-runbook.md).
-There is no end-user CLI or TypeScript build. Supplemental syntax checks are not a
-static type-checker qualification.
+The final command requires `STOCKFISH_EXECUTABLE`; skips are not an independent
+engine pass. CI runs Python 3.11 native tests/lint plus a separate external
+Stockfish witness. No standalone static type checker is configured.
 
-## Current claim ceiling and next boundary
+## Current claim ceiling
 
-The implemented software preserves evidence identity and provenance, bounded
-hypotheses, conservative training selection, verified local M8 recovery, and
-separate protocol-bound outcome evidence. The synthetic corpus qualifies code
-behavior; it is not a new participant trial. Frozen research artifacts remain
-unchanged by the three-feature implementation and this documentation pass.
+The repository now has a real local CLI and qualified longitudinal-state software,
+but it does **not** claim:
 
-The repository does not claim causal cognitive diagnosis, permanent learner
-traits, optimal/effective intervention selection, intervention-caused improvement,
-automatic mastery, validated universal thresholds, globally complete exposure
-history, a qualified longitudinal learner-state model, or an end-user CLI/UI.
-Generic M10 JSON can be archived with the existing store; typed M10 recovery and
-automatic schema migration remain outside this milestone.
+- causal cognitive diagnosis or permanent learner traits;
+- optimal/effective intervention selection;
+- intervention-caused improvement or automatic mastery;
+- universal engine-evaluation thresholds;
+- globally complete exposure history;
+- a final UI-safe evaluation/read-model contract;
+- automatic M6 diagnosis generation from engine output;
+- automatically generated grounded mentor explanation;
+- autonomous M7/M11 mutation from tutor or analysis commands;
+- a web UI, authenticated hosted service, or production multi-user persistence;
+- empirical tutoring efficacy.
 
-The three-feature queue ends here. M11 remains unstarted and requires separate
-authorization. Neither documentation consolidation nor a supported outcome
-assessment authorizes autonomous learner-state changes.
+M14 ends at trustworthy objective analysis packaging. Evaluation presentation and
+grounded mentor feedback remain separate downstream packages and are not authorized
+by M14 itself.
