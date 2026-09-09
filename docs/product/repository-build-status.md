@@ -22,14 +22,14 @@ M8 - Evidence-Aware Tutor Session                QUALIFIED
 M9 - Training Intervention Registry              QUALIFIED
 UCI evidence contract repair (provider 0.2)      MERGED - PR #39
 Local artifacts / verified M8 recovery           MERGED - PR #40
-M10 - Bounded Outcome / Transfer Evidence        IMPLEMENTED - CI QUALIFICATION PENDING
+M10 - Bounded Outcome / Transfer Evidence        QUALIFIED (bounded software contract)
 M11 - Longitudinal Learner State                 NOT STARTED
 M12+ - CLI/UI/richer LLM productization          NOT STARTED
 ```
 
 M10 implements the bounded evidence contract in ADR 0009. It does not establish
-mastery, causal effectiveness, empirical learner improvement, or M11. Its final
-qualification requires the complete regression/lint and external Stockfish gates.
+mastery, causal effectiveness, empirical learner improvement, or M11. The full
+regression/lint and external Stockfish gates passed for the implementation below.
 
 ## Evidence path and authority boundaries
 
@@ -125,6 +125,27 @@ are supported. M10 does not automatically revise M7 or implement M11.
 See [ADR 0009](../decisions/0009-outcome-transfer-evidence-contract.md),
 [M10 architecture](../architecture/outcome-transfer-evidence.md), and
 [the M10 runbook](../runbooks/m10-outcome-transfer-evidence.md).
+
+## M10 qualification provenance
+
+```text
+PR #41
+implementation head: 2e0c18b866eed3affc36ef6e0f6e2f5a1a57b77b
+implementation tree: 4911e7ba7eb85ecdc7d7807089b3eaaeaa29f8ba
+CI run: 34347340917
+synthetic PR merge: 27de38659ac7fd03c0ec350a5b8853ffe32a790d
+514 passed; 8 intentional external-engine skips
+76 new M10 cases: 65 contract + 11 integration
+Ruff PASS; editable package build/install PASS
+independent Stockfish: 8 passed, no skips
+```
+
+The CI merge combines the exact implementation head with the implementation base
+above. This status update is documentation-only; the final PR head is separately
+checked before merge. The contract suite also passed locally on Python 3.13;
+full-package verification used Python 3.11 in GitHub Actions. Syntax compilation
+passed; no standalone static type checker was run. Existing M7 fixture inputs in
+the M9 bridge remain synthetic. Qualification is not empirical efficacy evidence.
 
 ## Qualification commands
 
