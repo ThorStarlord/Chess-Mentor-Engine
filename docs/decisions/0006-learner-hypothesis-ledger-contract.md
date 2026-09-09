@@ -105,12 +105,19 @@ deterministic chess fact
 
 Every M7 evidence relation must cite exact qualified upstream identities.
 
-## Decision 3 — Hypothesis identity and hypothesis revision are separate
+## Decision 3 — Hypothesis identity, revision, and lifecycle are separate
 
-`LearnerHypothesis` provides stable lineage identity.
+`LearnerHypothesis` provides stable lineage identity from participant identity plus an
+origin proposal fingerprint/provenance. It does not depend on a circular reference to
+its first revision.
 
 Material changes to statement or scope are represented by append-only
 `HypothesisRevision` records. Earlier revisions remain immutable.
+
+Authority changes are represented separately through append-only
+`HypothesisLifecycleEvent` records. A new hypothesis is active by default; retirement
+or supersession is an explicit event. Supersession cites the replacing hypothesis
+lineage.
 
 If a proposition is materially different rather than a genuine refinement of the same
 lineage, it receives a new hypothesis identity.
@@ -310,7 +317,11 @@ superseded
 ```
 
 A hypothesis may remain active while contradicted or unclear. Retirement/supersession
-is explicit append-only authority history, not an automatic destructive mutation.
+is explicit append-only `HypothesisLifecycleEvent` history, not an automatic destructive
+mutation.
+
+M7A does not freeze an automatic reactivation rule. A future reactivation transition
+would require an explicit versioned extension.
 
 ## Decision 17 — Assessment status meanings are narrow
 
@@ -356,16 +367,20 @@ The initial semantic record set is:
 ```text
 LearnerHypothesis
 HypothesisRevision
+HypothesisLifecycleEvent
 HypothesisEvidenceLink
 HypothesisAssessmentPolicy
 HypothesisAssessment
 HypothesisLedgerSnapshot
 ```
 
-Current state is derived from immutable history.
+Current state is derived from immutable history. A ledger snapshot contains per-
+hypothesis entries binding current revision, latest assessment, current authority
+lifecycle state, and latest lifecycle-event reference.
 
 A later revision, assessment, retirement, or supersession may not rewrite prior M6
-records, prior evidence links, prior revisions, or prior assessments.
+records, prior evidence links, prior revisions, prior lifecycle events, or prior
+assessments.
 
 ## Decision 21 — Nondeterministic semantic work is isolated
 
@@ -374,9 +389,9 @@ nondeterministic.
 
 Such work must be frozen in immutable provenance-bound records.
 
-Given identical frozen upstream evidence, hypothesis revision, evidence links, and
-assessment policy, the assessment and ledger snapshot should serialize/fingerprint
-deterministically.
+Given identical frozen upstream evidence, hypothesis revision, evidence links, lifecycle
+events, and assessment policy, the assessment and ledger snapshot should serialize/
+fingerprint deterministically.
 
 Live model invocation is not required for initial M7 qualification.
 
@@ -428,8 +443,8 @@ M7B immutable hypothesis/evidence ledger
 
 ### M7B
 
-Implement stable hypothesis identity, append-only revisions, evidence links, mapping
-provenance, and lifecycle history only.
+Implement stable hypothesis identity, append-only revisions, append-only lifecycle
+events, evidence links, mapping provenance, and deterministic identities only.
 
 Initial qualification may use precomputed/human-supplied semantic mappings.
 
@@ -437,7 +452,7 @@ Initial qualification may use precomputed/human-supplied semantic mappings.
 
 Implement versioned cross-position assessment policy, recurrence/independence
 accounting, compatibility/context rules, assessment states, evidence summaries, and
-derived snapshots.
+derived snapshots including lifecycle state.
 
 ### M7Q
 
@@ -511,6 +526,12 @@ longitudinal mastery. Those later concepts remain outside M7.
 
 Rejected. Revisions and lifecycle actions are append-only and historical assessments
 must retain their original meaning.
+
+### Encode lifecycle state only inside snapshots
+
+Rejected. Current lifecycle state would not be reconstructable from append-only
+history. `HypothesisLifecycleEvent` is first-class evidence/authority history, while the
+snapshot is only a derived view.
 
 ## Related records
 
