@@ -109,7 +109,9 @@ def _existing_store(path_value: str) -> LocalArtifactStore:
     return LocalArtifactStore(path)
 
 
-def _start_store(path_value: str, *, create_db: bool) -> tuple[LocalArtifactStore, bool]:
+def _start_store(
+    path_value: str, *, create_db: bool
+) -> tuple[LocalArtifactStore, bool]:
     path = Path(path_value).expanduser()
     if path.exists():
         if not path.is_file():
@@ -214,7 +216,9 @@ def _cmd_tutor_start(args: argparse.Namespace) -> dict[str, Any]:
     if context.participant_id != args.participant:
         raise TutorCliError("context participant does not match CLI participant scope")
     if any(item.participant_id != args.participant for item in dependencies):
-        raise TutorCliError("dependency participant does not match CLI participant scope")
+        raise TutorCliError(
+            "dependency participant does not match CLI participant scope"
+        )
     store, created = _start_store(args.db, create_db=args.create_db)
     session = start_tutor_session(
         context=context,
@@ -471,7 +475,9 @@ def _add_checkpoint(parser: argparse.ArgumentParser) -> None:
 def add_tutor_commands(surfaces) -> None:
     tutor = surfaces.add_parser(
         "tutor",
-        help="Persist and advance verified M8 tutor sessions without generating content.",
+        help=(
+            "Persist and advance verified M8 tutor sessions without generating content."
+        ),
     )
     commands = tutor.add_subparsers(dest="tutor_command", required=True)
 
