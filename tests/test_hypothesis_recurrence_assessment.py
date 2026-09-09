@@ -79,46 +79,64 @@ def _make_context(
             context_fingerprint="pending",
             participant_id="P01",
             player_decision_context_ref=_evidence_ref(
-                "m5_participant", "player_decision_context", f"pdc-{index}"
+                "m5_participant",
+                "player_decision_context",
+                f"pdc-{index}",
             ),
             position_id=position_id,
             game_id=game_id,
             diagnostic_candidate_ref=_evidence_ref(
-                "m4_objective", "diagnostic_candidate", f"candidate-{index}"
+                "m4_objective",
+                "diagnostic_candidate",
+                f"candidate-{index}",
             ),
             diagnostic_batch_ref=None,
             capture_session_ref=_evidence_ref(
-                "m5_participant", "capture_session", f"capture-{index}"
+                "m5_participant",
+                "capture_session",
+                f"capture-{index}",
             ),
             assessment_stage_ids=stage_ids,
             player_response_refs=(
                 _evidence_ref(
-                    "m5_participant", "player_response", f"response-{index}"
+                    "m5_participant",
+                    "player_response",
+                    f"response-{index}",
                 ),
             ),
             evidence_freeze_refs=(
                 _evidence_ref(
-                    "m5_participant", "evidence_freeze", f"freeze-{index}"
+                    "m5_participant",
+                    "evidence_freeze",
+                    f"freeze-{index}",
                 ),
             ),
             prompt_presentation_refs=(
                 _evidence_ref(
-                    "m5_participant", "prompt_presentation", f"prompt-{index}"
+                    "m5_participant",
+                    "prompt_presentation",
+                    f"prompt-{index}",
                 ),
             ),
             exposure_refs=(),
             protocol_deviation_refs=(),
             canonical_position_ref=_evidence_ref(
-                "deterministic_chess", "canonical_position", position_id
+                "deterministic_chess",
+                "canonical_position",
+                position_id,
             ),
             position_feature_packet_ref=None,
             position_analysis_refs=(
                 _evidence_ref(
-                    "engine_evidence", "position_analysis", f"analysis-{index}"
+                    "engine_evidence",
+                    "position_analysis",
+                    f"analysis-{index}",
                 ),
             ),
             decision_comparison_ref=_evidence_ref(
-                "m4_objective", "decision_comparison", f"comparison-{index}"
+                "m4_objective",
+                "decision_comparison",
+                f"comparison-{index}",
             ),
             selection_signal_refs=(),
             measurement_condition=condition,  # type: ignore[arg-type]
@@ -185,7 +203,7 @@ def _make_m6(
                 reasoning_context_id=context.reasoning_context_id,
                 assessment_policy_ref=policy_ref,
                 code="EXPECTED_OPPONENT_REPLY_CONFLICT",
-                statement="Expected opponent reply conflicts with qualified evidence.",
+                statement="Expected reply conflicts with qualified evidence.",
                 stage_ids=stage_ids,
                 supporting_fact_refs=(fact,),
                 supporting_coding_refs=(),
@@ -224,16 +242,20 @@ def _make_m6(
 
 
 def _make_hypothesis(*, broad: bool = False):
-    contexts = () if broad else (
-        HypothesisContextRef(
-            ref_id="forcing-reply-context",
-            fingerprint=_fingerprint({"context": "forcing-reply"}),
-        ),
-    )
+    contexts = ()
+    if not broad:
+        contexts = (
+            HypothesisContextRef(
+                ref_id="forcing-reply-context",
+                fingerprint=_fingerprint({"context": "forcing-reply"}),
+            ),
+        )
     return create_learner_hypothesis(
         participant_id="P01",
         statement="In forcing-reply positions, the strongest reply is often omitted.",
-        scope_definition="forcing-reply positions" if not broad else "all sampled positions",
+        scope_definition=(
+            "all sampled positions" if broad else "forcing-reply positions"
+        ),
         context_definition_refs=contexts,
         origin_provenance=_actor(),
         created_at="2026-09-09T03:00:00+00:00",
@@ -316,8 +338,16 @@ def _review(revision, *, completed: bool = True):
 
 def _assess(hypothesis, revision, policy, units, *, review=None):
     links = tuple(item[0] for item in units)
-    assessments = tuple(item[1] for item in units)
-    assertions = tuple(assertion for item in units for assertion in item[2])
+    assessment_map = {
+        (item[1].assessment_id, item[1].fingerprint): item[1] for item in units
+    }
+    assertion_map = {
+        (assertion.assertion_id, assertion.fingerprint): assertion
+        for item in units
+        for assertion in item[2]
+    }
+    assessments = tuple(assessment_map[key] for key in sorted(assessment_map))
+    assertions = tuple(assertion_map[key] for key in sorted(assertion_map))
     return assess_hypothesis_recurrence(
         hypothesis=hypothesis,
         revision=revision,
@@ -328,6 +358,36 @@ def _assess(hypothesis, revision, policy, units, *, review=None):
         competing_explanation_review=review or _review(revision),
         created_at="2026-09-09T06:00:00+00:00",
     )
+
+
+def _support_units(hypothesis, revision, count: int):
+    return tuple(
+        _make_link(
+            hypothesis=hypothesis,
+            revision=revision,
+            index=index,
+            relation="supports",
+            game_id=f"g{index}",
+        )
+        for index in range(1, count + 1)
+    )
+
+
+def _retag_link(unit, relation: str, mapping_id: str):
+    link, assessment, assertions = unit
+    mapping = HypothesisMappingProvenance(
+        basis_kind="deterministic_mapping",
+        ref_id=mapping_id,
+        fingerprint=_fingerprint({"mapping": mapping_id}),
+    )
+    changed = replace(link, relation=relation, mapping_provenance=mapping)
+    fingerprint = _fingerprint(changed.to_dict(include_identity=False))
+    changed = replace(
+        changed,
+        link_id=f"hypothesis_evidence_{fingerprint[:20]}",
+        fingerprint=fingerprint,
+    )
+    return changed, assessment, assertions
 
 
 def test_policy_identity_is_deterministic_and_threshold_is_explicit() -> None:
@@ -345,7 +405,7 @@ def test_one_support_is_isolated_not_recurrence() -> None:
         hypothesis,
         revision,
         _policy(),
-        (_make_link(hypothesis=hypothesis, revision=revision, index=1, relation="supports", game_id="g1"),),
+        _support_units(hypothesis, revision, 1),
     )
     assert result.status == "isolated"
     assert result.evidence_summary.support_unit_count == 1
@@ -354,34 +414,9 @@ def test_one_support_is_isolated_not_recurrence() -> None:
 
 def test_repeated_support_links_on_one_position_do_not_double_count() -> None:
     hypothesis, revision = _make_hypothesis()
-    first = _make_link(
-        hypothesis=hypothesis,
-        revision=revision,
-        index=1,
-        relation="supports",
-        game_id="g1",
-    )
-    second_link = replace(
-        first[0],
-        mapping_provenance=HypothesisMappingProvenance(
-            basis_kind="deterministic_mapping",
-            ref_id="m7-map-2",
-            fingerprint=_fingerprint({"mapping": "m7-map-2"}),
-        ),
-    )
-    payload = second_link.to_dict(include_identity=False)
-    fingerprint = _fingerprint(payload)
-    second_link = replace(
-        second_link,
-        link_id=f"hypothesis_evidence_{fingerprint[:20]}",
-        fingerprint=fingerprint,
-    )
-    result = _assess(
-        hypothesis,
-        revision,
-        _policy(),
-        (first, (second_link, first[1], first[2])),
-    )
+    first = _support_units(hypothesis, revision, 1)[0]
+    second = _retag_link(first, "supports", "m7-map-2")
+    result = _assess(hypothesis, revision, _policy(), (first, second))
     assert result.status == "isolated"
     assert len(result.recurrence_units) == 1
     assert result.evidence_summary.support_unit_count == 1
@@ -407,51 +442,41 @@ def test_two_positions_same_game_do_not_satisfy_independence_rule() -> None:
 
 def test_two_independent_supports_are_candidate_recurrence() -> None:
     hypothesis, revision = _make_hypothesis()
-    units = tuple(
-        _make_link(
-            hypothesis=hypothesis,
-            revision=revision,
-            index=index,
-            relation="supports",
-            game_id=f"g{index}",
-        )
-        for index in (1, 2)
+    result = _assess(
+        hypothesis,
+        revision,
+        _policy(),
+        _support_units(hypothesis, revision, 2),
     )
-    result = _assess(hypothesis, revision, _policy(), units)
     assert result.status == "candidate_recurrence"
     assert result.evidence_summary.independent_support_count == 2
 
 
 def test_three_independent_supports_with_review_are_supported_recurrence() -> None:
     hypothesis, revision = _make_hypothesis()
-    units = tuple(
-        _make_link(
-            hypothesis=hypothesis,
-            revision=revision,
-            index=index,
-            relation="supports",
-            game_id=f"g{index}",
-        )
-        for index in (1, 2, 3)
+    result = _assess(
+        hypothesis,
+        revision,
+        _policy(),
+        _support_units(hypothesis, revision, 3),
     )
-    result = _assess(hypothesis, revision, _policy(), units)
     assert result.status == "supported_recurrence"
     assert "all_supported_recurrence_policy_gates_met" in result.status_reasons
 
 
 def test_contradiction_is_retained_and_can_dominate_status() -> None:
     hypothesis, revision = _make_hypothesis()
-    units = tuple(
+    units = list(_support_units(hypothesis, revision, 3))
+    units.append(
         _make_link(
             hypothesis=hypothesis,
             revision=revision,
-            index=index,
-            relation="contradicts" if index == 4 else "supports",
-            game_id=f"g{index}",
+            index=4,
+            relation="contradicts",
+            game_id="g4",
         )
-        for index in (1, 2, 3, 4)
     )
-    result = _assess(hypothesis, revision, _policy(), units)
+    result = _assess(hypothesis, revision, _policy(), tuple(units))
     assert result.status == "contradicted"
     assert len(result.contradiction_link_refs) == 1
     assert result.evidence_summary.independent_support_count == 3
@@ -460,13 +485,7 @@ def test_contradiction_is_retained_and_can_dominate_status() -> None:
 def test_counterexample_can_be_policy_defined_as_contradiction() -> None:
     hypothesis, revision = _make_hypothesis()
     units = (
-        _make_link(
-            hypothesis=hypothesis,
-            revision=revision,
-            index=1,
-            relation="supports",
-            game_id="g1",
-        ),
+        _support_units(hypothesis, revision, 1)[0],
         _make_link(
             hypothesis=hypothesis,
             revision=revision,
@@ -489,61 +508,43 @@ def test_counterexample_can_be_policy_defined_as_contradiction() -> None:
 
 def test_context_exception_blocks_supported_status_but_preserves_candidate() -> None:
     hypothesis, revision = _make_hypothesis()
-    units = tuple(
+    units = list(_support_units(hypothesis, revision, 3))
+    units.append(
         _make_link(
             hypothesis=hypothesis,
             revision=revision,
-            index=index,
-            relation="context_exception" if index == 4 else "supports",
-            game_id=f"g{index}",
+            index=4,
+            relation="context_exception",
+            game_id="g4",
         )
-        for index in (1, 2, 3, 4)
     )
-    result = _assess(hypothesis, revision, _policy(), units)
+    result = _assess(hypothesis, revision, _policy(), tuple(units))
     assert result.status == "candidate_recurrence"
     assert "context_exception_present" in result.status_reasons
 
 
 def test_unclear_evidence_blocks_supported_status() -> None:
     hypothesis, revision = _make_hypothesis()
-    units = tuple(
+    units = list(_support_units(hypothesis, revision, 3))
+    units.append(
         _make_link(
             hypothesis=hypothesis,
             revision=revision,
-            index=index,
-            relation="unclear" if index == 4 else "supports",
-            game_id=f"g{index}",
+            index=4,
+            relation="unclear",
+            game_id="g4",
         )
-        for index in (1, 2, 3, 4)
     )
-    result = _assess(hypothesis, revision, _policy(), units)
+    result = _assess(hypothesis, revision, _policy(), tuple(units))
     assert result.status == "candidate_recurrence"
     assert "unclear_evidence_present" in result.status_reasons
 
 
 def test_conflicting_relations_on_same_position_become_unclear_unit() -> None:
     hypothesis, revision = _make_hypothesis()
-    support = _make_link(
-        hypothesis=hypothesis,
-        revision=revision,
-        index=1,
-        relation="supports",
-        game_id="g1",
-    )
-    unclear_link = replace(support[0], relation="unclear")
-    payload = unclear_link.to_dict(include_identity=False)
-    fingerprint = _fingerprint(payload)
-    unclear_link = replace(
-        unclear_link,
-        link_id=f"hypothesis_evidence_{fingerprint[:20]}",
-        fingerprint=fingerprint,
-    )
-    result = _assess(
-        hypothesis,
-        revision,
-        _policy(),
-        (support, (unclear_link, support[1], support[2])),
-    )
+    support = _support_units(hypothesis, revision, 1)[0]
+    unclear = _retag_link(support, "unclear", "m7-map-unclear")
+    result = _assess(hypothesis, revision, _policy(), (support, unclear))
     assert result.status == "unclear"
     assert result.evidence_summary.mixed_unit_count == 1
 
@@ -592,7 +593,14 @@ def test_declared_m6_policy_families_can_mix_explicitly() -> None:
         game_id="g2",
         policy_fingerprint="policy-b",
     )
-    allowed = tuple(sorted({first[1].assessment_policy_ref.fingerprint, second[1].assessment_policy_ref.fingerprint}))
+    allowed = tuple(
+        sorted(
+            {
+                first[1].assessment_policy_ref.fingerprint,
+                second[1].assessment_policy_ref.fingerprint,
+            }
+        )
+    )
     policy = _policy(
         m6_policy_compatibility_rule="declared_policy_fingerprints",
         compatible_m6_policy_fingerprints=allowed,
@@ -668,23 +676,13 @@ def test_disallowed_measurement_condition_is_excluded_not_erased() -> None:
     result = _assess(hypothesis, revision, _policy(), (unit,))
     assert result.status == "insufficient"
     assert result.evidence_summary.excluded_link_count == 1
-    assert "measurement_condition_not_allowed:contaminated" in (
-        result.evidence_summary.exclusion_reasons[0][1]
-    )
+    reasons = result.evidence_summary.exclusion_reasons[0][1]
+    assert "measurement_condition_not_allowed:contaminated" in reasons
 
 
 def test_broad_scope_policy_is_explicit_and_deterministic() -> None:
     hypothesis, revision = _make_hypothesis(broad=True)
-    units = tuple(
-        _make_link(
-            hypothesis=hypothesis,
-            revision=revision,
-            index=index,
-            relation="supports",
-            game_id=f"g{index}",
-        )
-        for index in (1, 2)
-    )
+    units = _support_units(hypothesis, revision, 2)
     policy = _policy(context_match_rule="broad_scope")
     first = _assess(hypothesis, revision, policy, units)
     second = _assess(hypothesis, revision, policy, tuple(reversed(units)))
@@ -694,21 +692,11 @@ def test_broad_scope_policy_is_explicit_and_deterministic() -> None:
 
 def test_required_competing_explanation_review_blocks_supported_status() -> None:
     hypothesis, revision = _make_hypothesis()
-    units = tuple(
-        _make_link(
-            hypothesis=hypothesis,
-            revision=revision,
-            index=index,
-            relation="supports",
-            game_id=f"g{index}",
-        )
-        for index in (1, 2, 3)
-    )
     result = _assess(
         hypothesis,
         revision,
         _policy(),
-        units,
+        _support_units(hypothesis, revision, 3),
         review=_review(revision, completed=False),
     )
     assert result.status == "candidate_recurrence"
