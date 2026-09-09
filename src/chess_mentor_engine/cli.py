@@ -1,4 +1,4 @@
-"""M12 read-only local CLI over already-qualified evidence capabilities."""
+"""Local CLI over qualified evidence plus controlled persistent tutor transitions."""
 
 from __future__ import annotations
 
@@ -15,7 +15,10 @@ from chess_mentor_engine.chess import (
     build_position_context,
     ingest_pgn,
 )
+from chess_mentor_engine.evidence import PlayerEvidenceError
 from chess_mentor_engine.storage import LocalArtifactStore, StorageError
+from chess_mentor_engine.tutor_cli import TutorCliError, add_tutor_commands
+from chess_mentor_engine.tutoring import TutorSessionError
 
 
 class CliError(ValueError):
@@ -151,8 +154,9 @@ def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="cme",
         description=(
-            "Inspect deterministic chess evidence and verified local artifacts. "
-            "M12 is read-only and does not run tutoring or mutate learner state."
+            "Inspect deterministic chess evidence and verified local artifacts, or "
+            "explicitly advance persisted M8 tutor checkpoints. Tutor writes are "
+            "append-only and do not generate diagnoses or learner-state changes."
         ),
         allow_abbrev=False,
     )
@@ -214,6 +218,8 @@ def build_parser() -> argparse.ArgumentParser:
     )
     _add_store_scope_arguments(verify)
     verify.set_defaults(handler=_cmd_artifacts_verify)
+
+    add_tutor_commands(surfaces)
     return parser
 
 
@@ -233,7 +239,17 @@ def main(argv: Sequence[str] | None = None) -> int:
     args = parser.parse_args(argv)
     try:
         payload = args.handler(args)
-    except (ChessEvidenceError, CliError, OSError, StorageError) as exc:
+    except (
+        ChessEvidenceError,
+        CliError,
+        json.JSONDecodeError,
+        OSError,
+        PlayerEvidenceError,
+        StorageError,
+        TutorCliError,
+        TutorSessionError,
+        UnicodeError,
+    ) as exc:
         print(f"error: {exc}", file=sys.stderr)
         return 2
     _emit(payload)
