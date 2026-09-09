@@ -1,7 +1,7 @@
 # Chess Mentor Engine — Current Build Status
 
 **Status authority:** current implementation/milestone status only  
-**Updated for:** M6C coded local Reasoning Discrepancy assessment qualification  
+**Updated for:** M6Q full Reasoning Discrepancy qualification  
 **Relationship to roadmap:** this file complements
 `chess-mentor-engine-repository-build-plan.md`. The roadmap preserves the conceptual
 sequence and historical planning rationale; this file is the authority for which
@@ -56,13 +56,13 @@ M5 — Player Decision Evidence                   QUALIFIED
   M5C — Capture/freeze state machine            QUALIFIED
   M5Q — Full M5 qualification                   QUALIFIED
 
-M6 — Reasoning Discrepancy                      IN PROGRESS
+M6 — Reasoning Discrepancy                      QUALIFIED
   M6A — Reasoning Discrepancy contract          FROZEN
   M6B — Deterministic comparison facts          QUALIFIED
   M6C — Coded local discrepancy assessment      QUALIFIED
-  M6Q — Full M6 qualification                   NOT STARTED / NEXT
+  M6Q — Full M6 qualification                   QUALIFIED
 
-M7 — Learner Hypothesis Ledger                  NOT STARTED / UNAUTHORIZED
+M7 — Learner Hypothesis Ledger                  NOT STARTED / NEXT
 M8 — Evidence-aware Tutor Session               NOT STARTED
 M9 — Training Interventions                     NOT STARTED
 M10 — Transfer / Mastery Evidence               NOT STARTED
@@ -190,12 +190,9 @@ See:
 - `docs/architecture/m5-qualification.md` — full M5Q qualification;
 - `docs/decisions/0004-player-decision-evidence-contract.md` — ADR 0004.
 
-## M6 Reasoning Discrepancy boundary and current implementation
+## Qualified M6 Reasoning Discrepancy
 
-M6A remains frozen by:
-
-- `docs/architecture/reasoning-discrepancy.md`;
-- `docs/decisions/0005-reasoning-discrepancy-contract.md`.
+M6 is qualified under the frozen M6A contract and ADR 0005.
 
 M6 is the first production layer authorized to compare qualified objective evidence
 with qualified participant-reported evidence. Its scope remains local to one selected
@@ -414,6 +411,48 @@ unrelated evidence does not make that record acceptable.
 See `docs/architecture/reasoning-discrepancy-assessment.md` for exact implementation,
 superseded-candidate, qualification, merge, and post-merge provenance.
 
+### M6Q full qualification
+
+M6Q qualifies the complete frozen M6A surface across M6B + M6C without adding new
+production behavior. Its focused 20-case corpus proves together:
+
+- deterministic, coded, and mixed assertion paths;
+- all four assessment statuses;
+- dimension-bounded `no_supported_discrepancy`;
+- missing evidence as `not_observed` rather than a false discrepancy;
+- ambiguous evidence without guessed normalization;
+- unavailable comparable objective evidence as `not_comparable`;
+- incompatible objective provenance rejection;
+- deterministic legality conflicts for impossible replies/continuations;
+- A1/A2 stage separation and post-reveal isolation;
+- clean instrument-aware, deviating, and contaminated measurement conditions;
+- explicit policy gating for deviating/contaminated evidence;
+- same-stage coding disagreement preserved as `unclear`;
+- raw prose not overriding structured deterministic comparison;
+- a successful M4 control that still contains a position-local reasoning discrepancy;
+- deterministic full-chain replay/identity;
+- byte-identical preservation of the seven frozen Pilot 003/004 research artifacts.
+
+The exact qualification-corpus head was:
+
+```text
+d500cb19bb8e16775ca829fda69b7accfa93d629
+```
+
+with GitHub Actions run `34304053934`:
+
+```text
+227 passed
+8 intentional external-engine skips in the normal suite
+20 / 20 M6Q focused cases passed
+Ruff PASS
+external Stockfish integration PASS
+```
+
+No production source change was required to close M6Q.
+
+See `docs/architecture/m6-qualification.md` for the complete qualification record.
+
 ### Research boundary
 
 Pilot 004's discrepancy taxonomy informed M6A, but its research codes remain historical
@@ -428,34 +467,24 @@ belong to M7.
 
 ## Current authorized next task
 
-> **M6Q — full Reasoning Discrepancy qualification only.**
+> **M7 — Learner Hypothesis Ledger.**
 
-M6Q may build the bounded qualification corpus/harness needed to prove the complete
-frozen M6A surface across the already implemented M6B + M6C layers, including:
+M7 is the first milestone authorized to reason across multiple qualified position-local
+M6 assessments. Its design must separately freeze how recurrence, controls,
+contradictions, competing explanations, confidence, and hypothesis lifecycle are
+represented before implementation broadens the claim surface.
 
-- deterministic-versus-coded authority separation;
-- deterministic, coded, and mixed assertion paths;
-- all four assessment statuses;
-- missing/ambiguous/incompatible evidence behavior;
-- A1/A2 stage separation;
-- clean/instrument-aware/deviating/contaminated measurement conditions;
-- coder disagreement and contradiction preservation;
-- exact provenance and deterministic replay/identity;
-- full M1→M6 regression and external Stockfish witness;
-- the M6 position-local claim ceiling.
+M7 must preserve the completed M6 authority boundary:
 
-M6Q must **not**:
+```text
+position-local M6 discrepancy
+!= recurring learner weakness
+!= causal learner explanation
+```
 
-- add cross-position recurrence semantics;
-- aggregate local assertions into stable learner weaknesses;
-- infer causal cognitive traits;
-- create or confirm the M7 Learner Hypothesis Ledger;
-- turn controls into hypothesis support/contradiction accounting;
-- prescribe training;
-- claim pedagogical effectiveness, learning, transfer, or mastery.
-
-M7 remains unauthorized until M6Q itself is qualified, merged from the exact qualified
-head, passes post-merge CI, and the status authorities are reconciled.
+M7 may not silently convert one local discrepancy into a stable trait, and it may not
+turn M4 operational controls into hypothesis evidence without an explicit frozen M7
+rule. Pedagogy, intervention efficacy, transfer, and mastery remain later milestones.
 
 ## Current claim ceiling
 
@@ -468,13 +497,12 @@ The repository may claim that it has:
 - qualified objective `DecisionComparison`, `SelectionSignal`, `SelectionPolicy`, and
   `DiagnosticCandidateBatch` evidence;
 - a fully qualified M5 Player Decision Evidence milestone;
-- a frozen M6A production contract for position-local Reasoning Discrepancy;
-- a qualified M6B deterministic context/fact layer for exact structured M4/M5
-  comparison evidence;
-- a qualified M6C coded position-local interpretation/assessment layer with explicit
-  policy, provenance, uncertainty, contradiction, and measurement-condition handling.
+- a fully qualified M6 Reasoning Discrepancy milestone;
+- a frozen M6A contract, qualified M6B deterministic context/fact layer, qualified M6C
+  coded local assessment layer, and full M6Q end-to-end qualification.
 
-M6B/M6C may report or preserve local evidence/assessment statements such as:
+Qualified M6 may report or preserve position-local evidence/assessment statements such
+as:
 
 - an explicitly structured selected move matches a cited engine rank-1 move;
 - the canonical played move conflicts with the cited qualified M4 comparison;
@@ -492,7 +520,9 @@ M6B/M6C may report or preserve local evidence/assessment statements such as:
 - no supported discrepancy exists **within the assessed dimensions**;
 - the local assessment is unclear or unscorable;
 - the exact M5 measurement condition remains clean, instrument-aware, deviating, or
-  contaminated.
+  contaminated;
+- an objectively successful M4 control can still contain a separately supported
+  position-local reasoning discrepancy.
 
 The repository may **not** yet claim that:
 
@@ -508,8 +538,7 @@ The repository may **not** yet claim that:
 
 ## Stop boundary
 
-M5 is fully qualified. M6A is frozen. **M6B deterministic comparison facts and M6C
-coded local discrepancy assessment are qualified. M6Q full M6 qualification is the
-only next authorized slice.** M7 remains unauthorized. Do not advance from a local M6
-assessment into recurrence, learner diagnosis, or pedagogy before M6Q closes the full
-M6 qualification boundary.
+M5 and M6 are fully qualified. **M7 Learner Hypothesis Ledger is the only next
+authorized milestone, and it has not started.** Do not advance from one position-local
+M6 assessment into recurrence, learner-hypothesis support, stable learner diagnosis, or
+pedagogy without a separately frozen M7 contract and qualification plan.
