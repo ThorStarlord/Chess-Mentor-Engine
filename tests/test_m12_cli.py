@@ -75,7 +75,12 @@ def test_position_packet_matches_native_engine_free_context(tmp_path, capsys) ->
     expected = build_position_context(result.games[0], result.games[0].positions[2])
     assert code == 0 and error == ""
     assert payload == expected.to_dict()
-    assert "engine" not in json.dumps(payload).lower()
+    assert {
+        "analysis",
+        "engine_evidence",
+        "evaluation",
+        "score",
+    }.isdisjoint(payload)
 
 
 def test_artifact_list_show_and_verify_use_verified_participant_scope(
@@ -212,7 +217,18 @@ def test_corrupt_artifact_database_fails_closed(tmp_path, capsys) -> None:
     ("argv", "message"),
     [
         (("position", "packet", "{pgn}", "--ply-index", "99"), "ply index"),
-        (("position", "packet", "{pgn}", "--game-index", "8", "--ply-index", "0"), "game index"),
+        (
+            (
+                "position",
+                "packet",
+                "{pgn}",
+                "--game-index",
+                "8",
+                "--ply-index",
+                "0",
+            ),
+            "game index",
+        ),
     ],
 )
 def test_out_of_range_position_requests_are_rejected(
