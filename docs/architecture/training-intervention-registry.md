@@ -1,6 +1,6 @@
 # M9 — Training Intervention Registry
 
-**Status:** implemented and qualification-backed on the M9 feature branch  
+**Status:** qualified  
 **Contract:** ADR 0008  
 **Production package:** `src/chess_mentor_engine/training/`
 
@@ -202,6 +202,22 @@ outside the exact registry are rejected rather than converted into a decision.
 14. material policy-version identity;
 15. upstream boundary fingerprint tamper rejection;
 16. absence of effect/learning/transfer/mastery authority in selection state.
+
+The first complete implementation head was:
+
+```text
+ff89457eed84a6ecf582095e9363837e175fe6ac
+```
+
+GitHub Actions run `34329397446` qualified that implementation with:
+
+```text
+336 passed
+8 intentional external-engine skips in the normal suite
+16 / 16 focused M9 qualification tests passed
+Ruff PASS
+external Stockfish integration PASS
+```
 
 The full repository suite and external Stockfish witness remain the regression gates.
 
