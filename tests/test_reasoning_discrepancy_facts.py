@@ -428,7 +428,7 @@ def test_measurement_condition_preserves_clean_awareness_and_deviation_state() -
     clean = _capture(upstream)
     assert _context(upstream, clean).measurement_condition == "clean"
 
-    aware = record_capture_exposure(
+    aware, _ = record_capture_exposure(
         clean,
         kind="INSTRUMENT_AWARENESS_RECORDED",
         occurred_at=T7,
