@@ -1,7 +1,7 @@
 # Chess Mentor Engine — Current Build Status
 
 **Status authority:** current implementation/milestone status only  
-**Updated for:** M6Q full Reasoning Discrepancy qualification  
+**Updated for:** M7A Learner Hypothesis Ledger contract freeze  
 **Relationship to roadmap:** this file complements
 `chess-mentor-engine-repository-build-plan.md`. The roadmap preserves the conceptual
 sequence and historical planning rationale; this file is the authority for which
@@ -62,8 +62,13 @@ M6 — Reasoning Discrepancy                      QUALIFIED
   M6C — Coded local discrepancy assessment      QUALIFIED
   M6Q — Full M6 qualification                   QUALIFIED
 
-M7 — Learner Hypothesis Ledger                  NOT STARTED / NEXT
-M8 — Evidence-aware Tutor Session               NOT STARTED
+M7 — Learner Hypothesis Ledger                  IN PROGRESS
+  M7A — Learner Hypothesis Ledger contract      FROZEN
+  M7B — Immutable hypothesis/evidence ledger    NOT STARTED / NEXT
+  M7C — Recurrence assessment + ledger state    NOT STARTED
+  M7Q — Full M7 qualification                   NOT STARTED
+
+M8 — Evidence-aware Tutor Session               NOT STARTED / UNAUTHORIZED
 M9 — Training Interventions                     NOT STARTED
 M10 — Transfer / Mastery Evidence               NOT STARTED
 M11 — Longitudinal Learner State                NOT STARTED
@@ -465,26 +470,109 @@ Pilot 004's recurrence policy remains outside M6. Cross-position recurrence, con
 and contradictions across positions, competing explanations, and learner hypotheses
 belong to M7.
 
-## Current authorized next task
+## M7 Learner Hypothesis Ledger boundary
 
-> **M7 — Learner Hypothesis Ledger.**
+M7A freezes the first production contract for cross-position learner hypotheses in:
 
-M7 is the first milestone authorized to reason across multiple qualified position-local
-M6 assessments. Its design must separately freeze how recurrence, controls,
-contradictions, competing explanations, confidence, and hypothesis lifecycle are
-represented before implementation broadens the claim surface.
+- `docs/architecture/learner-hypothesis-ledger.md`;
+- `docs/decisions/0006-learner-hypothesis-ledger-contract.md`.
 
-M7 must preserve the completed M6 authority boundary:
+The governing escalation is:
 
 ```text
-position-local M6 discrepancy
-!= recurring learner weakness
-!= causal learner explanation
+qualified position-local M6 evidence
+        ↓
+explicit hypothesis/evidence mapping
+        ↓
+versioned cross-position assessment policy
+        ↓
+participant-specific recurrence assessment
+        ↓
+append-only hypothesis history
 ```
 
-M7 may not silently convert one local discrepancy into a stable trait, and it may not
-turn M4 operational controls into hypothesis evidence without an explicit frozen M7
-rule. Pedagogy, intervention efficacy, transfer, and mastery remain later milestones.
+while preserving:
+
+```text
+local discrepancy
+!= recurring pattern
+!= causal cognitive mechanism
+!= permanent learner trait
+!= pedagogical prescription
+```
+
+M7A freezes seven semantic records for later bounded implementation:
+
+```text
+LearnerHypothesis
+HypothesisRevision
+HypothesisLifecycleEvent
+HypothesisEvidenceLink
+HypothesisAssessmentPolicy
+HypothesisAssessment
+HypothesisLedgerSnapshot
+```
+
+The initial hypothesis claim kind is `descriptive_pattern`. Evidence relations are
+`supports`, `contradicts`, `successful_counterexample`, `context_exception`, and
+`unclear`. Recurrence assessment status is separately
+`insufficient / isolated / candidate_recurrence / supported_recurrence / contradicted /
+unclear`, while authority lifecycle is `active / retired / superseded` and is recorded
+through append-only lifecycle events.
+
+Hard M7A anti-collapse rules include:
+
+```text
+one canonical participant-position
+→ one recurrence unit
+
+M4 operational control
+!= M7 contradiction / successful counterexample
+
+M6 no_supported_discrepancy
+!= M7 contradiction / successful counterexample
+
+supported recurrence
+!= causal explanation
+!= training eligibility
+```
+
+Any control or no-discrepancy case becomes M7 counterevidence only when the exact
+hypothesis-relevant dimension was observed, assessable, comparable, context-matching,
+and explicitly mapped under a versioned M7 rule/coding.
+
+Recurrence requires more than one distinct qualifying position. Common structure,
+independence, M6-policy/stage/measurement compatibility, contradiction handling, and
+review obligations are explicit versioned policy. M7A freezes no universal weakness
+score or confidence scalar.
+
+Pilot 004 remains immutable research authority. M7A preserves its requirements for
+independent positions, traceable common structure, comparable evidence, challenge
+cases, competing explanations, future testing, and hypotheses that may disappear while
+tightening the production authority boundaries above.
+
+M7A is design only. It creates no production recurrence or learner-hypothesis support
+claim.
+
+## Current authorized next task
+
+> **M7B — immutable hypothesis/evidence ledger only.**
+
+M7B may implement stable hypothesis identity, append-only revisions, append-only
+`HypothesisLifecycleEvent` authority history, immutable hypothesis/evidence links,
+exact M6 provenance binding, explicit evidence relations, and deterministic identities.
+
+M7B must **not** yet:
+
+- automatically classify recurrence;
+- implement `HypothesisAssessmentPolicy` aggregation behavior reserved for M7C;
+- create causal cognitive traits;
+- add a universal weakness/confidence score;
+- mark hypotheses training-eligible;
+- prescribe interventions;
+- claim improvement, learning, transfer, or mastery.
+
+M8 remains unauthorized until M7Q fully qualifies and repository status is reconciled.
 
 ## Current claim ceiling
 
@@ -499,7 +587,10 @@ The repository may claim that it has:
 - a fully qualified M5 Player Decision Evidence milestone;
 - a fully qualified M6 Reasoning Discrepancy milestone;
 - a frozen M6A contract, qualified M6B deterministic context/fact layer, qualified M6C
-  coded local assessment layer, and full M6Q end-to-end qualification.
+  coded local assessment layer, and full M6Q end-to-end qualification;
+- a frozen M7A Learner Hypothesis Ledger contract defining future cross-position
+  evidence relations, recurrence states, append-only lifecycle history, comparability,
+  revision, and anti-overclaiming rules.
 
 Qualified M6 may report or preserve position-local evidence/assessment statements such
 as:
@@ -524,21 +615,22 @@ as:
 - an objectively successful M4 control can still contain a separately supported
   position-local reasoning discrepancy.
 
-The repository may **not** yet claim that:
+After M7A alone, the repository may **not** yet claim that:
 
 - an omitted move was never considered, recognized, or generated;
 - a coder/model judgment is objective chess truth;
-- a local coded label establishes a stable learner trait;
-- it knows the causal reason why a player chose a move;
-- recurrence or a stable learner weakness exists;
-- a control confirms or contradicts a learner hypothesis;
+- recurrence exists;
 - a learner hypothesis is supported;
+- a local or recurring coded label establishes a stable learner trait;
+- it knows the causal reason why a player chose a move;
+- a control confirms or contradicts a learner hypothesis without an explicit qualified
+  M7 mapping;
 - an intervention is warranted or effective;
 - learning, transfer, or mastery has occurred.
 
 ## Stop boundary
 
-M5 and M6 are fully qualified. **M7 Learner Hypothesis Ledger is the only next
-authorized milestone, and it has not started.** Do not advance from one position-local
-M6 assessment into recurrence, learner-hypothesis support, stable learner diagnosis, or
-pedagogy without a separately frozen M7 contract and qualification plan.
+M5 and M6 are fully qualified. **M7A Learner Hypothesis Ledger contract is frozen.
+M7B immutable hypothesis/evidence ledger is the only next authorized implementation
+slice.** M7C recurrence assessment and M7Q remain unauthorized until M7B is separately
+qualified. M8 and pedagogy remain unauthorized until M7Q closes the full M7 boundary.
