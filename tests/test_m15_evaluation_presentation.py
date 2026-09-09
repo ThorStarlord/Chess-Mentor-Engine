@@ -241,6 +241,30 @@ def test_partial_root_is_explicitly_non_exact() -> None:
     assert payload["comparison"]["exact_centipawn_delta_for_mover"] is None
 
 
+def test_complete_root_without_candidates_is_unavailable_not_exact() -> None:
+    game = _game()
+    root = _analysis(
+        game.positions[0],
+        (),
+        request=_request(1),
+    )
+    comparison = compare_played_decision(
+        game=game,
+        position=game.positions[0],
+        root_analysis=root,
+    )
+
+    payload = build_evaluation_presentation(
+        root_analysis=root,
+        comparison=comparison,
+    )
+
+    assert payload["root_analysis"]["evidence_quality"] == "unavailable"
+    assert payload["root_analysis"]["candidates"] == []
+    assert payload["comparison"]["comparison_kind"] == "incomparable"
+    assert payload["comparison"]["evidence_quality"] == "unavailable"
+
+
 def test_child_reanalysis_preserves_exact_engine_identity_and_evidence_ref() -> None:
     game = _game()
     request = _request(1)
@@ -348,6 +372,41 @@ def test_child_failure_stays_explicit_and_unavailable() -> None:
     assert payload["played_child_analysis"]["failure"]["code"] == "ENGINE_CRASHED"
     assert payload["comparison"]["evidence_quality"] == "unavailable"
     assert payload["comparison"]["exact_centipawn_delta_for_mover"] is None
+
+
+def test_child_evaluation_drift_is_rejected() -> None:
+    game = _game()
+    request = _request(1)
+    provenance = _provenance()
+    root = _analysis(
+        game.positions[0],
+        (_line(1, "d2d4", CentipawnEvaluation(40), "d7d5"),),
+        request=request,
+        provenance=provenance,
+    )
+    child = _analysis(
+        game.positions[1],
+        (_line(1, "e7e5", CentipawnEvaluation(20), "g1f3"),),
+        request=request,
+        provenance=provenance,
+    )
+    comparison = compare_played_decision(
+        game=game,
+        position=game.positions[0],
+        root_analysis=root,
+        played_analysis=child,
+    )
+    corrupted = replace(
+        comparison,
+        played_evaluation=CentipawnEvaluation(999),
+    )
+
+    with pytest.raises(EvaluationPresentationError, match="child evaluation mismatch"):
+        build_evaluation_presentation(
+            root_analysis=root,
+            comparison=corrupted,
+            played_analysis=child,
+        )
 
 
 def test_root_reference_mismatch_is_rejected() -> None:
