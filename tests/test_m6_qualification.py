@@ -10,18 +10,21 @@ import pytest
 from test_reasoning_discrepancy_assessment import _coding, _policy
 from test_reasoning_discrepancy_facts import (
     T7,
-    _Upstream,
     _ambiguous,
     _capture,
     _context,
     _fact,
     _facts,
     _move,
+    _Upstream,
     _upstream,
 )
 
-from chess_mentor_engine.analysis import CandidateLine, CentipawnEvaluation
-from chess_mentor_engine.analysis import analysis_result_fingerprint
+from chess_mentor_engine.analysis import (
+    CandidateLine,
+    CentipawnEvaluation,
+    analysis_result_fingerprint,
+)
 from chess_mentor_engine.chess import build_position_context
 from chess_mentor_engine.evidence import (
     ParticipantStructuredResponse,
@@ -41,7 +44,6 @@ from chess_mentor_engine.selection import (
     compare_played_decision,
 )
 
-Q1 = "2026-09-08T22:00:00-03:00"
 Q2 = "2026-09-08T22:01:00-03:00"
 
 
@@ -442,12 +444,12 @@ def test_m6q_deviation_condition_requires_explicit_policy_eligibility(
     assert allowed.status == "discrepancy_supported"
 
 
-def test_m6q_post_reveal_stage_cannot_be_promoted_into_primary_assessment_policy() -> None:
+def test_m6q_post_reveal_not_primary() -> None:
     with pytest.raises(ReasoningDiscrepancyError, match="pre-reveal"):
         _policy(eligible_stage_kinds=("POST_REVEAL_REFLECTION",))
 
 
-def test_m6q_unavailable_objective_evidence_stays_not_comparable_and_unscorable() -> None:
+def test_m6q_unavailable_objective_is_not_comparable() -> None:
     upstream = _upstream()
     session = _capture(upstream)
     context = _context(upstream, session, stages=("A2",), analyses=())
@@ -562,7 +564,7 @@ def test_m6q_same_stage_coder_disagreement_is_unclear_and_preserved() -> None:
     }
 
 
-def test_m6q_raw_prose_does_not_override_structured_absence_or_claim_hidden_cognition() -> None:
+def test_m6q_raw_prose_does_not_override_structured_absence() -> None:
     upstream = _upstream()
     structured = ParticipantStructuredResponse(
         selected_move=_move("e2e4"),
@@ -661,11 +663,22 @@ def test_m6q_full_chain_replay_is_content_addressed_and_deterministic() -> None:
         second_facts,
     )
 
-    assert first_upstream.candidate.candidate_id == second_upstream.candidate.candidate_id
+    assert (
+        first_upstream.candidate.candidate_id
+        == second_upstream.candidate.candidate_id
+    )
     assert first_upstream.batch.batch_id == second_upstream.batch.batch_id
-    assert first_session.snapshot_fingerprint == second_session.snapshot_fingerprint
-    assert first_context.reasoning_context_id == second_context.reasoning_context_id
-    assert [item.fact_id for item in first_facts] == [item.fact_id for item in second_facts]
+    assert (
+        first_session.snapshot_fingerprint
+        == second_session.snapshot_fingerprint
+    )
+    assert (
+        first_context.reasoning_context_id
+        == second_context.reasoning_context_id
+    )
+    assert [item.fact_id for item in first_facts] == [
+        item.fact_id for item in second_facts
+    ]
     assert first_assessment.assessment_id == second_assessment.assessment_id
     assert first_assessment.fingerprint == second_assessment.fingerprint
     assert first_assertions == second_assertions
@@ -673,7 +686,12 @@ def test_m6q_full_chain_replay_is_content_addressed_and_deterministic() -> None:
 
 def test_m6q_historical_pilot_003_004_artifacts_remain_byte_identical() -> None:
     repository_root = Path(__file__).parents[1]
-    fixture_path = repository_root / "tests" / "fixtures" / "m5q_player_evidence_corpus.json"
+    fixture_path = (
+        repository_root
+        / "tests"
+        / "fixtures"
+        / "m5q_player_evidence_corpus.json"
+    )
     corpus = json.loads(fixture_path.read_text(encoding="utf-8"))
     expected = corpus["research_artifact_git_blob_shas"]
 
