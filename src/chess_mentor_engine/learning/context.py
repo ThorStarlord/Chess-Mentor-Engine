@@ -5,7 +5,11 @@ from __future__ import annotations
 import hashlib
 
 from chess_mentor_engine.analysis import AnalysisFailure, PositionAnalysis
-from chess_mentor_engine.chess import CanonicalPosition, PositionFeaturePacket, canonical_json
+from chess_mentor_engine.chess import (
+    CanonicalPosition,
+    PositionFeaturePacket,
+    canonical_json,
+)
 from chess_mentor_engine.evidence import EvidenceCaptureSession
 from chess_mentor_engine.selection import (
     DecisionComparison,
@@ -14,8 +18,8 @@ from chess_mentor_engine.selection import (
     SelectionSignal,
 )
 
+from .facts import ReasoningDiscrepancyError
 from .facts import (
-    ReasoningDiscrepancyError,
     build_reasoning_discrepancy_context as _build_context,
 )
 from .model import ReasoningDiscrepancyContext
@@ -42,8 +46,13 @@ def build_reasoning_discrepancy_context(
 ) -> ReasoningDiscrepancyContext:
     """Bind M6B only after proving the exact M4 candidate/batch relationship."""
     m5_context = capture_session.context
-    if diagnostic_candidate.candidate_id != m5_context.diagnostic_candidate_ref.ref_id:
-        raise ReasoningDiscrepancyError("diagnostic candidate ID does not match M5 context")
+    if (
+        diagnostic_candidate.candidate_id
+        != m5_context.diagnostic_candidate_ref.ref_id
+    ):
+        raise ReasoningDiscrepancyError(
+            "diagnostic candidate ID does not match M5 context"
+        )
     if _fingerprint(diagnostic_candidate.to_dict()) != (
         m5_context.diagnostic_candidate_ref.fingerprint
     ):
@@ -70,7 +79,9 @@ def build_reasoning_discrepancy_context(
                 "M5 context batch reference requires supplied diagnostic batch"
             )
         if diagnostic_batch.batch_id != m5_context.diagnostic_batch_ref.ref_id:
-            raise ReasoningDiscrepancyError("diagnostic batch ID does not match M5 context")
+            raise ReasoningDiscrepancyError(
+                "diagnostic batch ID does not match M5 context"
+            )
         if _fingerprint(diagnostic_batch.to_dict()) != (
             m5_context.diagnostic_batch_ref.fingerprint
         ):
