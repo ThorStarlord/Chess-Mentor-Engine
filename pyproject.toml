@@ -12,6 +12,9 @@ license = { file = "LICENSE" }
 authors = [{ name = "ThorStarlord" }]
 dependencies = []
 
+[project.scripts]
+cme = "chess_mentor_engine.cli:main"
+
 [project.optional-dependencies]
 dev = [
     "pytest>=7",
@@ -33,4 +36,3 @@ target-version = "py311"
 
 [tool.ruff.lint]
 select = ["E", "F", "I"]
-
