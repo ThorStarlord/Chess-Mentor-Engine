@@ -3,12 +3,6 @@ from __future__ import annotations
 from dataclasses import replace
 
 import pytest
-
-from chess_mentor_engine.learning import (
-    ReasoningArtifactRef,
-    ReasoningDiscrepancyError,
-    assess_reasoning_discrepancy,
-)
 from test_reasoning_discrepancy_assessment import (
     T2,
     _coding,
@@ -18,6 +12,12 @@ from test_reasoning_discrepancy_assessment import (
     _policy,
     _ref,
     _session,
+)
+
+from chess_mentor_engine.learning import (
+    ReasoningArtifactRef,
+    ReasoningDiscrepancyError,
+    assess_reasoning_discrepancy,
 )
 
 
@@ -188,7 +188,10 @@ def test_assessment_revalidates_manually_constructed_fact_semantics() -> None:
     )
     forged = _reidentify_fact(replace(fact, relation="invented-relation"))
 
-    with pytest.raises(ReasoningDiscrepancyError, match="unknown M6B discrepancy relation"):
+    with pytest.raises(
+        ReasoningDiscrepancyError,
+        match="unknown M6B discrepancy relation",
+    ):
         assess_reasoning_discrepancy(
             context=context,
             capture_session=_session(context),
