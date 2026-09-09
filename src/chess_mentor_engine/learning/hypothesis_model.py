@@ -27,6 +27,31 @@ HypothesisM6EvidenceKind: TypeAlias = Literal[
     "reasoning_assertion",
 ]
 
+_ACTOR_KINDS = frozenset({"human", "model", "system"})
+_LIFECYCLE_KINDS = frozenset({"retired", "superseded"})
+_EVIDENCE_RELATIONS = frozenset(
+    {
+        "supports",
+        "contradicts",
+        "successful_counterexample",
+        "context_exception",
+        "unclear",
+    }
+)
+_BASIS_KINDS = frozenset({"deterministic_mapping", "coded_mapping"})
+_M6_EVIDENCE_KINDS = frozenset(
+    {"reasoning_context", "reasoning_assessment", "reasoning_assertion"}
+)
+_MEASUREMENT_CONDITIONS = frozenset(
+    {
+        "clean",
+        "instrument_aware_clean",
+        "deviating",
+        "contaminated",
+        "unknown",
+    }
+)
+
 
 def _require_nonempty(name: str, value: str) -> None:
     if not value:
@@ -51,6 +76,8 @@ class HypothesisActorProvenance:
     run_id: str | None = None
 
     def __post_init__(self) -> None:
+        if self.actor_kind not in _ACTOR_KINDS:
+            raise ValueError("unknown hypothesis actor kind")
         for name, value in (
             ("actor_id", self.actor_id),
             ("actor_version", self.actor_version),
@@ -77,7 +104,7 @@ class HypothesisActorProvenance:
 
 @dataclass(frozen=True, slots=True)
 class HypothesisContextRef:
-    """Exact reference to one context definition or provenance-bound context coding."""
+    """Exact context-definition or provenance-bound context-coding reference."""
 
     ref_id: str
     fingerprint: str
@@ -145,6 +172,8 @@ class HypothesisM6EvidenceRef:
     fingerprint: str
 
     def __post_init__(self) -> None:
+        if self.kind not in _M6_EVIDENCE_KINDS:
+            raise ValueError("unknown M6 hypothesis-evidence reference kind")
         _require_nonempty("ref_id", self.ref_id)
         _require_nonempty("fingerprint", self.fingerprint)
 
@@ -166,6 +195,8 @@ class HypothesisMappingProvenance:
     actor_provenance: HypothesisActorProvenance | None = None
 
     def __post_init__(self) -> None:
+        if self.basis_kind not in _BASIS_KINDS:
+            raise ValueError("unknown hypothesis mapping basis kind")
         _require_nonempty("ref_id", self.ref_id)
         _require_nonempty("fingerprint", self.fingerprint)
         if self.basis_kind == "coded_mapping" and self.actor_provenance is None:
@@ -238,6 +269,8 @@ class HypothesisRevision:
     claim_kind: HypothesisClaimKind = "descriptive_pattern"
 
     def __post_init__(self) -> None:
+        if self.claim_kind != "descriptive_pattern":
+            raise ValueError("unknown M7B hypothesis claim kind")
         for name, value in (
             ("revision_id", self.revision_id),
             ("fingerprint", self.fingerprint),
@@ -259,7 +292,8 @@ class HypothesisRevision:
         if len(set(competing_ids)) != len(competing_ids):
             raise ValueError("competing_hypothesis_refs must be unique")
         _require_unique_strings(
-            "unresolved_alternative_notes", self.unresolved_alternative_notes
+            "unresolved_alternative_notes",
+            self.unresolved_alternative_notes,
         )
         if self.revision_number == 1 and self.parent_revision_ref is not None:
             raise ValueError("revision 1 must not have a parent revision")
@@ -311,6 +345,8 @@ class HypothesisLifecycleEvent:
     created_at: str
 
     def __post_init__(self) -> None:
+        if self.kind not in _LIFECYCLE_KINDS:
+            raise ValueError("unknown hypothesis lifecycle event kind")
         for name, value in (
             ("lifecycle_event_id", self.lifecycle_event_id),
             ("fingerprint", self.fingerprint),
@@ -363,6 +399,12 @@ class HypothesisEvidenceLink:
     created_at: str
 
     def __post_init__(self) -> None:
+        if self.relation not in _EVIDENCE_RELATIONS:
+            raise ValueError("unknown hypothesis evidence relation")
+        if self.basis_kind not in _BASIS_KINDS:
+            raise ValueError("unknown hypothesis evidence basis kind")
+        if self.measurement_condition not in _MEASUREMENT_CONDITIONS:
+            raise ValueError("unknown hypothesis measurement condition")
         for name, value in (
             ("link_id", self.link_id),
             ("fingerprint", self.fingerprint),
