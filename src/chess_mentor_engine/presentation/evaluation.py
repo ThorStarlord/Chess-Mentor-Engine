@@ -27,18 +27,20 @@ def _reverse_bound(bound: str) -> str:
     return bound
 
 
-def _present_evaluation(evaluation: object, side_to_move: str) -> dict[str, Any]:
-    if side_to_move not in {"white", "black"}:
-        raise EvaluationPresentationError("invalid side_to_move")
+def _present_evaluation(evaluation: object, decision_mover: str) -> dict[str, Any]:
+    if decision_mover not in {"white", "black"}:
+        raise EvaluationPresentationError("invalid decision mover")
+    if not isinstance(evaluation, (CentipawnEvaluation, MateEvaluation)):
+        raise EvaluationPresentationError("unsupported evaluation record")
     mover_bound = (
         evaluation.bound
-        if side_to_move == "white"
+        if decision_mover == "white"
         else _reverse_bound(evaluation.bound)
     )
     if isinstance(evaluation, CentipawnEvaluation):
         mover_cp = (
             evaluation.centipawns
-            if side_to_move == "white"
+            if decision_mover == "white"
             else -evaluation.centipawns
         )
         return {
@@ -48,28 +50,26 @@ def _present_evaluation(evaluation: object, side_to_move: str) -> dict[str, Any]
                 "centipawns": evaluation.centipawns,
                 "bound": evaluation.bound,
             },
-            "side_to_move": {
-                "side": side_to_move,
+            "decision_mover": {
+                "side": decision_mover,
                 "centipawns": mover_cp,
                 "bound": mover_bound,
             },
         }
-    if isinstance(evaluation, MateEvaluation):
-        return {
-            "kind": "mate",
-            "winner": evaluation.winner,
-            "plies_to_mate": evaluation.plies_to_mate,
-            "white": {
-                "favours_perspective": evaluation.winner == "white",
-                "bound": evaluation.bound,
-            },
-            "side_to_move": {
-                "side": side_to_move,
-                "favours_perspective": evaluation.winner == side_to_move,
-                "bound": mover_bound,
-            },
-        }
-    raise EvaluationPresentationError("unsupported evaluation record")
+    return {
+        "kind": "mate",
+        "winner": evaluation.winner,
+        "plies_to_mate": evaluation.plies_to_mate,
+        "white": {
+            "favours_perspective": evaluation.winner == "white",
+            "bound": evaluation.bound,
+        },
+        "decision_mover": {
+            "side": decision_mover,
+            "favours_perspective": evaluation.winner == decision_mover,
+            "bound": mover_bound,
+        },
+    }
 
 
 def _engine_identity(analysis: PositionAnalysis) -> dict[str, Any]:
@@ -100,7 +100,7 @@ def _analysis_quality(analysis: PositionAnalysis) -> str:
 
 def _analysis_presentation(
     outcome: PositionAnalysis | AnalysisFailure,
-    side_to_move: str,
+    decision_mover: str,
 ) -> dict[str, Any]:
     if isinstance(outcome, AnalysisFailure):
         return {
@@ -132,7 +132,10 @@ def _analysis_presentation(
             {
                 "rank": line.rank,
                 "root_move_uci": line.root_move_uci,
-                "evaluation": _present_evaluation(line.evaluation, side_to_move),
+                "evaluation": _present_evaluation(
+                    line.evaluation,
+                    decision_mover,
+                ),
                 "pv_uci": list(line.pv_uci),
             }
             for line in outcome.lines
@@ -254,7 +257,7 @@ def build_evaluation_presentation(
 ) -> dict[str, Any]:
     """Project exact M3/M4 evidence without inventing new chess semantics."""
     _validate_comparison(root_analysis, comparison, played_analysis)
-    side_to_move = comparison.side_to_move
+    decision_mover = comparison.side_to_move
     quality = _comparison_quality(comparison)
 
     return {
@@ -262,21 +265,21 @@ def build_evaluation_presentation(
         "subject": {
             "game_id": comparison.game_id,
             "position_id": comparison.position_id,
-            "side_to_move": side_to_move,
+            "side_to_move": decision_mover,
             "played_move_uci": comparison.played_move_uci,
         },
         "score_semantics": {
             "canonical_engine_perspective": "white",
-            "display_perspective": "side_to_move",
+            "display_perspective": "decision_mover",
             "centipawn_unit": "centipawns",
             "mate_representation": "winner_and_plies_to_mate",
             "bound_semantics": "ordering_bound_in_display_perspective",
         },
-        "root_analysis": _analysis_presentation(root_analysis, side_to_move),
+        "root_analysis": _analysis_presentation(root_analysis, decision_mover),
         "played_child_analysis": (
             None
             if played_analysis is None
-            else _analysis_presentation(played_analysis, side_to_move)
+            else _analysis_presentation(played_analysis, decision_mover)
         ),
         "comparison": {
             "comparison_id": comparison.comparison_id,
@@ -291,12 +294,18 @@ def build_evaluation_presentation(
             "best_evaluation": (
                 None
                 if comparison.best_evaluation is None
-                else _present_evaluation(comparison.best_evaluation, side_to_move)
+                else _present_evaluation(
+                    comparison.best_evaluation,
+                    decision_mover,
+                )
             ),
             "played_evaluation": (
                 None
                 if comparison.played_evaluation is None
-                else _present_evaluation(comparison.played_evaluation, side_to_move)
+                else _present_evaluation(
+                    comparison.played_evaluation,
+                    decision_mover,
+                )
             ),
             "exact_centipawn_delta_for_mover": (
                 comparison.exact_centipawn_delta_for_mover
