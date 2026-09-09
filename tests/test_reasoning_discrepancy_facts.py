@@ -363,7 +363,11 @@ def _facts(upstream: _Upstream, session, context, *, analyses=None):
 
 
 def _fact(facts, stage_id: str, kind: str):
-    return next(item for item in facts if item.stage_id == stage_id and item.kind == kind)
+    return next(
+        item
+        for item in facts
+        if item.stage_id == stage_id and item.kind == kind
+    )
 
 
 def test_context_is_deterministic_and_normalizes_protocol_stage_order() -> None:
@@ -419,7 +423,10 @@ def test_context_requires_selected_primary_response_to_be_frozen() -> None:
         submitted_at=T2,
     )
 
-    with pytest.raises(ReasoningDiscrepancyError, match="presentation, response, and freeze"):
+    with pytest.raises(
+        ReasoningDiscrepancyError,
+        match="presentation, response, and freeze",
+    ):
         _context(upstream, session, stages=("A1",))
 
 
@@ -482,7 +489,10 @@ def test_engine_rank1_selected_move_is_a_descriptive_match() -> None:
 
     selected = _fact(facts, "A1", "REPORTED_SELECTED_MOVE_RELATION")
     assert selected.relation == "match"
-    assert dict(selected.comparison_provenance)["basis"] == "exact_engine_rank1_identity"
+    assert (
+        dict(selected.comparison_provenance)["basis"]
+        == "exact_engine_rank1_identity"
+    )
 
 
 def test_ambiguous_selected_move_remains_ambiguous_without_guessing() -> None:
@@ -586,7 +596,8 @@ def test_missing_candidate_reply_and_continuation_dimensions_are_not_observed() 
     ).relation == "not_observed"
 
 
-def test_expected_reply_matches_cited_engine_pv_but_legal_alternative_is_not_comparable() -> None:
+def test_expected_reply_matches_cited_engine_pv_but_legal_alternative_is_not_comparable(
+) -> None:
     upstream = _upstream()
     session = _capture(upstream)
     context = _context(upstream, session, stages=("A2",))
@@ -726,7 +737,8 @@ def test_mismatched_root_analysis_is_rejected_not_interpolated() -> None:
         _context(upstream, session, analyses=(mismatched,))
 
 
-def test_fact_relations_are_stable_but_identity_retains_raw_response_provenance() -> None:
+def test_fact_relations_are_stable_but_identity_retains_raw_response_provenance(
+) -> None:
     upstream = _upstream()
     first_session = _capture(upstream, a1_raw="I play e4.")
     second_session = _capture(upstream, a1_raw="My choice is e4.")
