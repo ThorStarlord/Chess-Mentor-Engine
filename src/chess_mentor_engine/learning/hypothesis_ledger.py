@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import hashlib
-from dataclasses import replace
 from datetime import datetime
 from typing import Any
 
@@ -31,7 +30,7 @@ from .hypothesis_model import (
 )
 from .model import ReasoningDiscrepancyContext
 
-_RELATIONS: frozenset[str] = frozenset(
+_RELATIONS = frozenset(
     {
         "supports",
         "contradicts",
@@ -40,14 +39,12 @@ _RELATIONS: frozenset[str] = frozenset(
         "unclear",
     }
 )
-_BASIS_KINDS: frozenset[str] = frozenset(
-    {"deterministic_mapping", "coded_mapping"}
-)
-_LIFECYCLE_KINDS: frozenset[str] = frozenset({"retired", "superseded"})
+_BASIS_KINDS = frozenset({"deterministic_mapping", "coded_mapping"})
+_LIFECYCLE_KINDS = frozenset({"retired", "superseded"})
 
 
 class LearnerHypothesisError(ValueError):
-    """Raised when M7B provenance, identity, or append-only invariants fail."""
+    """Raised when M7B identity, provenance, or append-only invariants fail."""
 
 
 def _fingerprint(value: object) -> str:
@@ -108,7 +105,10 @@ def _normalize_hypothesis_refs(
             raise LearnerHypothesisError(
                 "competing hypotheses must belong to the same participant"
             )
-        if current_hypothesis_id is not None and item.hypothesis_id == current_hypothesis_id:
+        if (
+            current_hypothesis_id is not None
+            and item.hypothesis_id == current_hypothesis_id
+        ):
             raise LearnerHypothesisError(
                 "a hypothesis cannot cite itself as a competing hypothesis"
             )
@@ -237,32 +237,32 @@ def _validate_revision_chain(
     if len(set(numbers)) != len(numbers):
         raise LearnerHypothesisError("hypothesis revision numbers must be unique")
     ordered = tuple(sorted(revisions, key=lambda item: item.revision_number))
-    if tuple(item.revision_number for item in ordered) != tuple(
-        range(1, len(ordered) + 1)
-    ):
+    expected_numbers = tuple(range(1, len(ordered) + 1))
+    if tuple(item.revision_number for item in ordered) != expected_numbers:
         raise LearnerHypothesisError(
             "hypothesis revision numbers must form a contiguous sequence"
         )
     previous: HypothesisRevision | None = None
+    hypothesis_created = _parse_timestamp(hypothesis.created_at)
     for revision in ordered:
         _validate_revision(revision)
         if revision.hypothesis_id != hypothesis.hypothesis_id:
             raise LearnerHypothesisError(
                 "hypothesis revision belongs to a different lineage"
             )
-        if _parse_timestamp(revision.created_at) < _parse_timestamp(
-            hypothesis.created_at
-        ):
+        revision_created = _parse_timestamp(revision.created_at)
+        if revision_created < hypothesis_created:
             raise LearnerHypothesisError(
                 "hypothesis revision cannot predate its lineage"
             )
         if previous is None:
             if revision.parent_revision_ref is not None:
                 raise LearnerHypothesisError("revision 1 must not have a parent")
-            if (
-                _revision_proposal_fingerprint(hypothesis.participant_id, revision)
-                != hypothesis.origin_proposal_fingerprint
-            ):
+            proposal = _revision_proposal_fingerprint(
+                hypothesis.participant_id,
+                revision,
+            )
+            if proposal != hypothesis.origin_proposal_fingerprint:
                 raise LearnerHypothesisError(
                     "revision 1 does not match the hypothesis origin proposal"
                 )
@@ -271,14 +271,35 @@ def _validate_revision_chain(
                 raise LearnerHypothesisError(
                     "hypothesis revision parent does not match exact prior revision"
                 )
-            if _parse_timestamp(revision.created_at) < _parse_timestamp(
-                previous.created_at
-            ):
+            if revision_created < _parse_timestamp(previous.created_at):
                 raise LearnerHypothesisError(
                     "hypothesis revision history must be chronological"
                 )
         previous = revision
     return ordered
+
+
+def _validate_link_revision_membership(
+    hypothesis: LearnerHypothesis,
+    revision: HypothesisRevision,
+    revision_history: tuple[HypothesisRevision, ...] | None,
+) -> None:
+    history = (revision,) if revision_history is None else revision_history
+    ordered = _validate_revision_chain(hypothesis, history)
+    exact = [
+        item
+        for item in ordered
+        if item.revision_id == revision.revision_id
+        and item.fingerprint == revision.fingerprint
+    ]
+    if len(exact) != 1:
+        raise LearnerHypothesisError(
+            "evidence link revision is not in the exact hypothesis history"
+        )
+    if revision.revision_number > 1 and revision_history is None:
+        raise LearnerHypothesisError(
+            "later evidence-link revisions require exact revision history"
+        )
 
 
 def _validate_lifecycle_event(
@@ -313,9 +334,7 @@ def _validate_lifecycle_event(
                 "superseding hypothesis must belong to the same participant"
             )
         if replacement.hypothesis_id == hypothesis.hypothesis_id:
-            raise LearnerHypothesisError(
-                "a hypothesis cannot supersede itself"
-            )
+            raise LearnerHypothesisError("a hypothesis cannot supersede itself")
 
 
 def _validate_reasoning_context(context: ReasoningDiscrepancyContext) -> None:
@@ -406,21 +425,24 @@ def _validate_assertion(
     assessment_contradictions = {
         _artifact_key(item) for item in assessment.contradictory_evidence_refs
     }
-    if not {
+    assertion_facts = {
         _artifact_key(item) for item in assertion.supporting_fact_refs
-    }.issubset(assessment_facts):
+    }
+    assertion_codings = {
+        _artifact_key(item) for item in assertion.supporting_coding_refs
+    }
+    assertion_contradictions = {
+        _artifact_key(item) for item in assertion.contradictory_evidence_refs
+    }
+    if not assertion_facts.issubset(assessment_facts):
         raise LearnerHypothesisError(
             "M6 assertion fact provenance is not preserved by assessment"
         )
-    if not {
-        _artifact_key(item) for item in assertion.supporting_coding_refs
-    }.issubset(assessment_codings):
+    if not assertion_codings.issubset(assessment_codings):
         raise LearnerHypothesisError(
             "M6 assertion coding provenance is not preserved by assessment"
         )
-    if not {
-        _artifact_key(item) for item in assertion.contradictory_evidence_refs
-    }.issubset(assessment_contradictions):
+    if not assertion_contradictions.issubset(assessment_contradictions):
         raise LearnerHypothesisError(
             "M6 assertion contradiction provenance is not preserved by assessment"
         )
@@ -437,7 +459,7 @@ def create_learner_hypothesis(
     competing_hypothesis_refs: tuple[LearnerHypothesisRef, ...] = (),
     unresolved_alternative_notes: tuple[str, ...] = (),
 ) -> tuple[LearnerHypothesis, HypothesisRevision]:
-    """Create one stable hypothesis lineage and its immutable revision 1 atomically."""
+    """Create one stable hypothesis lineage and revision 1 atomically."""
 
     _require_nonempty("participant_id", participant_id)
     _require_nonempty("statement", statement)
@@ -445,19 +467,19 @@ def create_learner_hypothesis(
     _parse_timestamp(created_at)
     contexts = _normalize_context_refs(context_definition_refs)
     competing = _normalize_hypothesis_refs(
-        participant_id, competing_hypothesis_refs
+        participant_id,
+        competing_hypothesis_refs,
     )
     notes = _normalize_notes(unresolved_alternative_notes)
-    proposal_fingerprint = _fingerprint(
-        _proposal_payload(
-            participant_id=participant_id,
-            statement=statement,
-            scope_definition=scope_definition,
-            context_definition_refs=contexts,
-            competing_hypothesis_refs=competing,
-            unresolved_alternative_notes=notes,
-        )
+    proposal = _proposal_payload(
+        participant_id=participant_id,
+        statement=statement,
+        scope_definition=scope_definition,
+        context_definition_refs=contexts,
+        competing_hypothesis_refs=competing,
+        unresolved_alternative_notes=notes,
     )
+    proposal_fingerprint = _fingerprint(proposal)
     hypothesis_payload = {
         "participant_id": participant_id,
         "origin_proposal_fingerprint": proposal_fingerprint,
@@ -520,7 +542,7 @@ def record_hypothesis_revision(
     competing_hypothesis_refs: tuple[LearnerHypothesisRef, ...] = (),
     unresolved_alternative_notes: tuple[str, ...] = (),
 ) -> HypothesisRevision:
-    """Append one exact revision without mutating earlier hypothesis history."""
+    """Append one exact revision without mutating earlier history."""
 
     ordered = _validate_revision_chain(hypothesis, existing_revisions)
     _require_nonempty("statement", statement)
@@ -584,7 +606,7 @@ def record_hypothesis_lifecycle_event(
     created_at: str,
     superseding_hypothesis: LearnerHypothesis | None = None,
 ) -> HypothesisLifecycleEvent:
-    """Append one explicit terminal authority event; M7B defines no reactivation."""
+    """Append one explicit terminal lifecycle event; no reactivation is defined."""
 
     _validate_hypothesis(hypothesis)
     if kind not in _LIFECYCLE_KINDS:
@@ -614,7 +636,7 @@ def record_hypothesis_lifecycle_event(
             raise LearnerHypothesisError("a hypothesis cannot supersede itself")
         if _parse_timestamp(superseding_hypothesis.created_at) > created:
             raise LearnerHypothesisError(
-                "superseding hypothesis cannot be created after supersession event"
+                "superseding hypothesis cannot postdate supersession event"
             )
         replacement_ref = _hypothesis_ref(superseding_hypothesis)
     elif superseding_hypothesis is not None:
@@ -658,15 +680,15 @@ def record_hypothesis_evidence_link(
     mapping_provenance: HypothesisMappingProvenance,
     created_at: str,
     context_refs: tuple[HypothesisContextRef, ...] = (),
+    revision_history: tuple[HypothesisRevision, ...] | None = None,
 ) -> HypothesisEvidenceLink:
-    """Record one explicit M6→M7 relation without inferring recurrence status."""
+    """Record one explicit M6→M7 relation without recurrence inference."""
 
-    _validate_hypothesis(hypothesis)
-    _validate_revision(revision)
-    if revision.hypothesis_id != hypothesis.hypothesis_id:
-        raise LearnerHypothesisError(
-            "evidence link revision belongs to a different hypothesis"
-        )
+    _validate_link_revision_membership(
+        hypothesis,
+        revision,
+        revision_history,
+    )
     if relation not in _RELATIONS:
         raise LearnerHypothesisError("unsupported hypothesis evidence relation")
     if basis_kind not in _BASIS_KINDS:
