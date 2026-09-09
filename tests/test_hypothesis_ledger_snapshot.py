@@ -13,12 +13,12 @@ from chess_mentor_engine.learning import (
     HypothesisAssessmentError,
     HypothesisAssessmentPolicyRef,
     HypothesisEvidenceSummary,
-    HypothesisLifecycleEvent,
     HypothesisRevision,
     HypothesisRevisionRef,
     build_hypothesis_ledger_snapshot,
     create_learner_hypothesis,
     record_competing_explanation_review,
+    record_hypothesis_challenge_review,
     record_hypothesis_lifecycle_event,
     record_hypothesis_revision,
 )
@@ -86,6 +86,17 @@ def _not_required_review() -> CompetingExplanationReview:
     )
 
 
+def _challenge_review(kind: str):
+    return record_hypothesis_challenge_review(
+        kind=kind,  # type: ignore[arg-type]
+        state="not_required",
+        reviewed_links=(),
+        review_note="Challenge review not required by fixture policy.",
+        reviewer_provenance=None,
+        created_at="2026-09-09T04:00:00+00:00",
+    )
+
+
 def _stamp_assessment(
     *,
     revision: HypothesisRevision,
@@ -96,7 +107,6 @@ def _stamp_assessment(
         version="1",
         fingerprint=_fingerprint({"policy": "hap-snapshot"}),
     )
-    review = _not_required_review()
     base = HypothesisAssessment(
         hypothesis_assessment_id="pending",
         fingerprint="pending",
@@ -114,7 +124,9 @@ def _stamp_assessment(
         source_position_ids=(),
         source_game_ids=(),
         measurement_conditions=(),
-        competing_explanation_review=review,
+        contradiction_review=_challenge_review("contradiction"),
+        counterexample_review=_challenge_review("successful_counterexample"),
+        competing_explanation_review=_not_required_review(),
         evidence_summary=_empty_summary(),
         status_reasons=("fixture",),
         created_at=created_at,
@@ -127,7 +139,7 @@ def _stamp_assessment(
     )
 
 
-def test_snapshot_uses_current_revision_and_latest_current_revision_assessment() -> None:
+def test_snapshot_uses_latest_assessment_for_current_revision() -> None:
     hypothesis, revision_one = _make_hypothesis()
     revision_two = record_hypothesis_revision(
         hypothesis=hypothesis,
@@ -167,7 +179,7 @@ def test_snapshot_uses_current_revision_and_latest_current_revision_assessment()
     )
 
 
-def test_new_revision_does_not_relabel_old_revision_assessment_as_current() -> None:
+def test_new_revision_does_not_relabel_old_assessment_as_current() -> None:
     hypothesis, revision_one = _make_hypothesis()
     revision_two = record_hypothesis_revision(
         hypothesis=hypothesis,
@@ -193,7 +205,7 @@ def test_new_revision_does_not_relabel_old_revision_assessment_as_current() -> N
     assert snapshot.entries[0].latest_assessment_ref is None
 
 
-def test_retirement_changes_authority_state_without_erasing_assessment() -> None:
+def test_retirement_changes_authority_without_erasing_assessment() -> None:
     hypothesis, revision = _make_hypothesis()
     assessment = _stamp_assessment(
         revision=revision,
@@ -375,6 +387,60 @@ def test_snapshot_rejects_lifecycle_event_for_unknown_hypothesis() -> None:
             participant_id="P01",
             hypotheses=(hypothesis,),
             revisions=(revision,),
+            assessments=(),
+            lifecycle_events=(event,),
+            created_at="2026-09-09T06:00:00+00:00",
+        )
+
+
+def test_snapshot_rejects_assessment_for_unsupplied_revision() -> None:
+    hypothesis, revision = _make_hypothesis()
+    other, other_revision = create_learner_hypothesis(
+        participant_id="P01",
+        statement="Other hypothesis.",
+        scope_definition="other scope",
+        origin_provenance=_actor("other"),
+        created_at="2026-09-09T03:30:00+00:00",
+    )
+    assessment = _stamp_assessment(
+        revision=other_revision,
+        created_at="2026-09-09T04:00:00+00:00",
+    )
+    assert other.hypothesis_id != hypothesis.hypothesis_id
+    with pytest.raises(HypothesisAssessmentError, match="outside snapshot history"):
+        build_hypothesis_ledger_snapshot(
+            participant_id="P01",
+            hypotheses=(hypothesis,),
+            revisions=(revision,),
+            assessments=(assessment,),
+            lifecycle_events=(),
+            created_at="2026-09-09T06:00:00+00:00",
+        )
+
+
+def test_snapshot_requires_superseding_hypothesis_entry() -> None:
+    original, original_revision = _make_hypothesis()
+    replacement, _ = create_learner_hypothesis(
+        participant_id="P01",
+        statement="Replacement proposition.",
+        scope_definition="replacement scope",
+        origin_provenance=_actor("replacement"),
+        created_at="2026-09-09T04:00:00+00:00",
+    )
+    event = record_hypothesis_lifecycle_event(
+        hypothesis=original,
+        existing_events=(),
+        kind="superseded",
+        reason="replacement created",
+        author_provenance=_actor("owner"),
+        superseding_hypothesis=replacement,
+        created_at="2026-09-09T05:00:00+00:00",
+    )
+    with pytest.raises(HypothesisAssessmentError, match="absent from snapshot"):
+        build_hypothesis_ledger_snapshot(
+            participant_id="P01",
+            hypotheses=(original,),
+            revisions=(original_revision,),
             assessments=(),
             lifecycle_events=(event,),
             created_at="2026-09-09T06:00:00+00:00",
