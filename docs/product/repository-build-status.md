@@ -1,7 +1,7 @@
 # Chess Mentor Engine — Current Build Status
 
 **Status authority:** current implementation/milestone status only  
-**Updated for:** M7Q full Learner Hypothesis Ledger qualification  
+**Updated for:** M8 Evidence-Aware Tutor Session qualification  
 **Relationship to roadmap:** this file complements
 `chess-mentor-engine-repository-build-plan.md`. The roadmap preserves the conceptual
 sequence and historical planning rationale; this file is the authority for which
@@ -68,8 +68,8 @@ M7 — Learner Hypothesis Ledger                  QUALIFIED
   M7C — Recurrence assessment + ledger state    QUALIFIED
   M7Q — Full M7 qualification                   QUALIFIED
 
-M8 — Evidence-aware Tutor Session               NOT STARTED / NEXT AUTHORIZED
-M9 — Training Interventions                     NOT STARTED
+M8 — Evidence-aware Tutor Session               QUALIFIED
+M9 — Training Interventions                     NOT STARTED / NEXT AUTHORIZED
 M10 — Transfer / Mastery Evidence               NOT STARTED
 M11 — Longitudinal Learner State                NOT STARTED
 M12+ — CLI/UI/richer LLM productization         NOT STARTED
@@ -732,30 +732,85 @@ No production source change was required to close M7Q.
 
 See `docs/architecture/m7-qualification.md` for the complete qualification record.
 
+## Qualified M8 Evidence-Aware Tutor Session
+
+M8 is qualified under ADR 0007 and the implementation record in
+`docs/architecture/evidence-aware-tutor-session.md`.
+
+The bounded workflow is:
+
+```text
+qualified M4 selected position
++ exact M5 PlayerDecisionContext / CaptureProtocol
+→ deterministic position presentation
+→ minimal participant response
+→ optional standardized diagnostic probe
+→ all planned pre-reveal evidence frozen
+→ qualified objective evidence reveal
+→ exact final-capture-bound M6 comparison
+→ optional complete active-current M7 context
+→ provenance-bearing session-local explanation
+→ immutable completed TutorSession
+```
+
+M8 qualifies `TutorSession`, content-addressed transition events, deterministic
+position presentation, M5-owned capture/freeze/reveal sequencing, exact M6 provenance
+binding, complete active-current M7 context binding, and explanation provenance.
+
+The focused 13-case qualification suite proves:
+
+- deterministic session start without accidental objective reveal;
+- exact deterministic position-packet presentation;
+- rejection of a packet not bound to the M5 context;
+- rejection of pre-reveal tutoring-intervention prompts;
+- objective reveal blocked until every planned pre-reveal stage is frozen;
+- immutable prior snapshots across capture transitions;
+- M6 comparison blocked before reveal;
+- M6 comparison bound to the exact final revealed capture snapshot;
+- M7 context cannot cherry-pick among active current hypotheses;
+- explanation is post-comparison and provenance-bearing;
+- the complete frozen workflow reaches `completed` in exact event order;
+- identical full-session replay is deterministic;
+- serialized M8 state contains no M9 training/intervention/mastery authority.
+
+The first fully green implementation head before status reconciliation was
+`a86110ce517baabaa728c1f32a6b1f0134939960`, with GitHub Actions run
+`34327281542` passing the full test/lint and external Stockfish gates.
+
+M8's claim ceiling remains sequencing/provenance only:
+
+```text
+session-local evidence explanation
+!= training eligibility
+!= intervention selection
+!= intervention efficacy
+!= learning
+!= transfer
+!= mastery
+```
+
 ## Current authorized next task
 
-> **M8 — Evidence-aware Tutor Session only.**
+> **M9 — Training Interventions only.**
 
-M8 is now authorized to define and implement the first bounded tutoring-session
-workflow over the qualified M1→M7 evidence chain. The next slice must preserve
-information sequencing and authority boundaries: player evidence intended to be
-pre-reveal must be frozen before objective chess evidence is revealed, and tutoring
-output must not rewrite historical evidence or silently convert descriptive recurrence
-into causal psychology or pedagogy efficacy.
+M9 is authorized next to define a versioned, inspectable intervention registry and
+selection boundary over explicitly eligible learner evidence. It may decide which
+intervention record applies under an exact policy, but it must keep diagnosis,
+intervention selection, outcome observation, and efficacy claims separate.
 
-M8 is **not started**. This status update authorizes that next milestone; it does not
-implement any tutoring behavior.
+M9 is **not started**. This status update authorizes that next milestone; it does not
+implement any training intervention behavior.
 
-M8 must not silently broaden into:
+M9 must not silently broaden into:
 
-- automatic training eligibility;
-- an intervention-effectiveness claim;
+- claiming that intervention selection proves intervention effectiveness;
 - transfer or mastery state;
 - a universal learner weakness/confidence scalar;
-- claims that tutoring caused improvement;
-- CLI/web productization unrelated to the bounded session contract.
+- claims that training caused improvement without qualified outcome evidence;
+- CLI/web productization unrelated to the bounded intervention contract.
 
-M9 Training Interventions and later pedagogy/transfer milestones remain unqualified.
+M10 Transfer / Mastery Evidence and later longitudinal/productization milestones remain
+unqualified.
 
 ## Current claim ceiling
 
@@ -769,7 +824,8 @@ The repository may claim that it has:
   `DiagnosticCandidateBatch` evidence;
 - a fully qualified M5 Player Decision Evidence milestone;
 - a fully qualified M6 Reasoning Discrepancy milestone;
-- a fully qualified M7 Learner Hypothesis Ledger milestone.
+- a fully qualified M7 Learner Hypothesis Ledger milestone;
+- a qualified, deterministic, replayable M8 Evidence-Aware Tutor Session milestone.
 
 Qualified M7 may report bounded statements such as:
 
@@ -788,7 +844,17 @@ Qualified M7 may report bounded statements such as:
   append-only revisions, assessments, and lifecycle events;
 - authority lifecycle remains distinct from recurrence status.
 
-After M7Q, the repository may **not** yet claim that:
+Qualified M8 may additionally report bounded statements such as:
+
+- the exact deterministic position context shown before response capture;
+- the exact pre-reveal prompt/response/freeze sequence;
+- that objective evidence was revealed only after every planned pre-reveal freeze;
+- the exact M6 comparison attached to the final revealed capture snapshot;
+- the complete active-current M7 context attached to an explanation, when present;
+- the human/model/template provenance of the explanation text;
+- the exact immutable event sequence and snapshot fingerprint of a completed session.
+
+After M8, the repository may **not** yet claim that:
 
 - an omitted move was never considered, recognized, or generated;
 - a coder/model judgment is objective chess truth;
@@ -802,7 +868,7 @@ After M7Q, the repository may **not** yet claim that:
 
 ## Stop boundary
 
-M5, M6, and M7 are fully qualified. **M8 — Evidence-aware Tutor Session — is the only
-next authorized milestone slice and remains NOT STARTED.** M9 training interventions,
-intervention efficacy, transfer/mastery, persistence, CLI/UI, and broader productization
-remain outside the M7Q qualification claim.
+M5, M6, M7, and M8 are fully qualified. **M9 — Training Interventions — is the only
+next authorized milestone slice and remains NOT STARTED.** M10 transfer/mastery,
+longitudinal persistence, CLI/UI, and broader productization remain outside the M8
+qualification claim.
