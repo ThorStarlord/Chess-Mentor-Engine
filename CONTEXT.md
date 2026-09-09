@@ -25,7 +25,7 @@ and pilot artifacts are not superseded by software qualification.
 
 ## Current implementation
 
-The bounded evidence stack now extends through M14:
+The bounded evidence stack now extends through M15:
 
 - **M1-M4:** canonical PGN/game/position provenance, deterministic chess context and
   features, normalized UCI evidence, objective played-decision comparison, and
@@ -49,6 +49,10 @@ The bounded evidence stack now extends through M14:
   canonical child when required for out-of-MultiPV played moves, preserves native
   comparison semantics, and can optionally archive the complete evidence package
   in an existing participant-scoped local artifact store.
+- **M15:** deterministic `chess_mentor_engine.presentation` projection over exact
+  M3/M4 records. It makes White versus original decision-mover score perspective,
+  ordering bounds, symbolic mate, evidence quality, PVs, engine identity, and exact
+  evidence references explicit without creating new chess judgments.
 
 Recent promotion sequence:
 
@@ -56,13 +60,17 @@ Recent promotion sequence:
 M11 Longitudinal Learner State        MERGED - PR #43
 M12 Local Evidence CLI                MERGED - PR #44
 M13 Persistent Tutor Session CLI      MERGED - PR #45
-M14 Engine-Backed Analysis CLI        CURRENT PACKAGE - PR #46
+M14 Engine-Backed Analysis CLI        MERGED - PR #46
+M15 Evaluation Presentation Contract  CURRENT IMPLEMENTATION - PR #47
 ```
 
-The M14 runtime implementation candidate `d36b20e4747a39cc2257e47b04b5be98ad8131e7`
-passed both repository CI jobs in run `34411545018`: native full test/lint and the
-independent external Stockfish witness. The final documentation-bearing candidate
-must pass the same exact-head gates before PR #46 may merge.
+M14 was qualified at exact head `c2e1ded12ae3dd40402c67ddb713db7f6c38fdbc`
+in CI run `34411793232` and merged as
+`6112b3a970c3b2a4b10b58a6cb3b438d332e605e`. The hardened M15 runtime head
+`45dd5706530347a7f74d7e9bb745a3d0dcd2e501` passed both repository CI jobs in
+run `34412594441`: 566 native tests passed with 8 intentional external-engine
+skips, Ruff passed, and the independent Stockfish witness passed. PR #47 remains
+the authority for the final documentation-bearing head and merge provenance.
 
 ## Separation of responsibilities
 
@@ -72,6 +80,13 @@ Engine providers supply versioned evaluation/PV evidence with explicit
 partial/bounded/failure states. M4 comparisons preserve mate, terminal, inversion,
 and compatibility semantics instead of manufacturing a universal human-readable
 score.
+
+**Presentation authority:** M15 may project exact M3/M4 evidence into an explicit
+read model, including a decision-mover score view and evidence-quality labels. It
+must preserve the canonical White evaluation, reverse ordering bounds when the
+perspective reverses, keep mate symbolic, preserve fingerprints/provenance, and
+fail closed on evidence drift. It does not define move-quality thresholds or tutor
+language.
 
 **Participant-evidence authority:** raw/frozen player responses and their exposure
 state remain distinct from objective engine evidence. Later structured coding does
@@ -93,7 +108,7 @@ authentication.
 
 **Human/model judgment:** explanation authorship, semantic discrepancy coding,
 hypothesis evidence relations/challenge review, pedagogical applicability, exposure
-classification, and outcome scoring retain explicit provenance. M13 and M14 do not
+classification, and outcome scoring retain explicit provenance. M13-M15 do not
 fabricate these judgments.
 
 ## Contracts contributors must preserve
@@ -104,18 +119,19 @@ local discrepancy != recurrence != causal learner trait
 supported recurrence != automatic training eligibility
 selected intervention != effective intervention
 practice completion != successful performance != transfer != mastery
-engine analysis != UI presentation semantics != mentor explanation
+engine analysis != evaluation presentation != mentor explanation
 ```
 
-M14 specifically preserves this last separation. Its package exposes the native
-M3/M4 evidence needed downstream, but it is not authorization to turn centipawns,
-mates, bounds, partial results, incompatible regimes, or engine failures into
-unversioned frontend labels.
+M14 owns the engine-backed evidence package. M15 owns only a versioned,
+deterministic projection of exact M3/M4 records. It is not authorization to turn
+centipawns, mates, bounds, partial results, incompatible regimes, or engine failures
+into unversioned frontend labels or learner diagnoses. Grounded mentor language
+remains a separate downstream authority.
 
-## CLI boundaries
+## CLI and API boundaries
 
-The project is a Python 3.11+ package and now has an installed `cme` command.
-Current bounded commands include:
+The project is a Python 3.11+ package and has an installed `cme` command. Current
+bounded commands include:
 
 ```text
 cme games inspect
@@ -129,6 +145,16 @@ cme tutor ...
 an explicit external UCI executable or PATH name. Optional M14 archival requires an
 existing artifact database plus an explicit participant; it never creates a new
 learner or tutor state record.
+
+M15 is currently a Python API rather than a new CLI mutation:
+
+```python
+from chess_mentor_engine.presentation import build_evaluation_presentation
+```
+
+The presentation API consumes exact M3/M4 records. It does not run an engine,
+modify M14 archives, round centipawns into pawn floats, convert PVs to SAN, or
+assign `inaccuracy`, `mistake`, or `blunder` labels.
 
 M13 likewise does not generate engine analysis, M6 assessments, M7 hypotheses,
 explanation prose, training decisions, or automatic M11 mutations. Those records
@@ -157,25 +183,26 @@ python -m pytest tests/test_m11_qualification.py
 python -m pytest tests/test_m12_cli.py
 python -m pytest tests/test_m13_persistent_tutor_cli.py
 python -m pytest tests/test_m14_engine_analysis_cli.py
+python -m pytest tests/test_m15_evaluation_presentation.py
 ```
 
 ## Current claim ceiling and stop boundary
 
-The repository can now preserve a longitudinal evidence history and expose selected
-qualified capabilities through a local CLI. It still does **not** establish:
+The repository can now preserve a longitudinal evidence history, expose selected
+qualified capabilities through a local CLI, and project exact engine/comparison
+evidence into a deterministic UI-safe read model. It still does **not** establish:
 
 - causal cognitive diagnosis or permanent learner traits;
 - intervention-caused improvement, automatic mastery, or universal thresholds;
-- a final UI-safe evaluation/read-model contract;
 - automatic M6 discrepancy generation from engine evidence;
 - automatically generated mentor prose grounded in a validated feedback contract;
 - autonomous M7/M11 mutation from tutoring or M14 analysis;
 - a web UI, authenticated hosted service, or production multi-user persistence;
 - empirical tutoring efficacy.
 
-The next work packages must remain separate: first define evaluation presentation
-semantics, then build grounded mentor feedback over verified evidence. Neither is
-part of M14.
+The next work package is grounded mentor feedback over verified evidence. It must
+remain separate from both M14 engine analysis and M15 presentation semantics; it is
+not part of M15.
 
 ## Research and product hypotheses
 
