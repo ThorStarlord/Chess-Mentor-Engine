@@ -1,7 +1,7 @@
 # Chess Mentor Engine — Current Build Status
 
 **Status authority:** current implementation/milestone status only  
-**Updated for:** M7A Learner Hypothesis Ledger contract freeze  
+**Updated for:** M7B immutable hypothesis/evidence ledger qualification  
 **Relationship to roadmap:** this file complements
 `chess-mentor-engine-repository-build-plan.md`. The roadmap preserves the conceptual
 sequence and historical planning rationale; this file is the authority for which
@@ -64,8 +64,8 @@ M6 — Reasoning Discrepancy                      QUALIFIED
 
 M7 — Learner Hypothesis Ledger                  IN PROGRESS
   M7A — Learner Hypothesis Ledger contract      FROZEN
-  M7B — Immutable hypothesis/evidence ledger    NOT STARTED / NEXT
-  M7C — Recurrence assessment + ledger state    NOT STARTED
+  M7B — Immutable hypothesis/evidence ledger    QUALIFIED
+  M7C — Recurrence assessment + ledger state    NOT STARTED / NEXT
   M7Q — Full M7 qualification                   NOT STARTED
 
 M8 — Evidence-aware Tutor Session               NOT STARTED / UNAUTHORIZED
@@ -551,28 +551,88 @@ independent positions, traceable common structure, comparable evidence, challeng
 cases, competing explanations, future testing, and hypotheses that may disappear while
 tightening the production authority boundaries above.
 
-M7A is design only. It creates no production recurrence or learner-hypothesis support
-claim.
+### M7B qualified immutable hypothesis/evidence ledger
+
+M7B implements and qualifies only the immutable record/link layer authorized by M7A.
+The production surface provides:
+
+```text
+LearnerHypothesis
+HypothesisRevision
+HypothesisLifecycleEvent
+HypothesisEvidenceLink
+```
+
+plus exact refs and provenance records required to bind those records safely.
+
+M7B can now:
+
+- create stable participant-specific descriptive hypothesis lineages;
+- create revision 1 atomically from a material origin-proposal fingerprint;
+- append exact contiguous statement/scope revisions with parent fingerprints;
+- preserve terminal `retired` / `superseded` lifecycle events without rewriting prior
+  history;
+- record explicit `supports / contradicts / successful_counterexample /
+  context_exception / unclear` relations to exact qualified M6 evidence;
+- distinguish deterministic mapping from provenance-bound coded mapping;
+- revalidate exact M6 context/assessment/assertion identities and embedded
+  fact/coding/contradiction provenance;
+- reject forged later revisions that merely repeat a lineage ID without exact history;
+- reject out-of-contract record vocabularies;
+- derive deterministic content-addressed identities under canonical ordering.
+
+The qualified implementation head is:
+
+```text
+d894a3f837ff033fcee554118ec4c711e86c1032
+```
+
+with Actions run `34307964917`:
+
+```text
+256 passed
+8 intentional external-engine skips in the normal suite
+29 / 29 focused M7B tests passed
+Ruff PASS
+external Stockfish integration PASS
+```
+
+PR #31 merged that exact qualified head as:
+
+```text
+f2ecea6c04927623f3a8b41f92a40d443c9cdeae
+```
+
+The qualified head and merge are tree-identical. Post-merge Actions run `34308142701`
+passed both `test-and-lint` and `stockfish-integration`.
+
+M7B intentionally does **not** implement `HypothesisAssessmentPolicy`,
+`HypothesisAssessment`, `HypothesisLedgerSnapshot`, recurrence counting, independence
+classification, common-structure qualification, or any recurrence status. Multiple
+links from one position remain multiple mapping records, not multiple recurrence units.
+
+See `docs/architecture/learner-hypothesis-evidence-ledger.md` for the complete M7B
+implementation and qualification record.
 
 ## Current authorized next task
 
-> **M7B — immutable hypothesis/evidence ledger only.**
+> **M7C — recurrence assessment + derived ledger state only.**
 
-M7B may implement stable hypothesis identity, append-only revisions, append-only
-`HypothesisLifecycleEvent` authority history, immutable hypothesis/evidence links,
-exact M6 provenance binding, explicit evidence relations, and deterministic identities.
+M7C may implement the frozen `HypothesisAssessmentPolicy`, explicit eligibility and
+compatibility rules, one-position/one-recurrence-unit accounting, independence/common-
+structure rules, support/challenge aggregation, deterministic `HypothesisAssessment`,
+structured evidence summaries, and rebuildable `HypothesisLedgerSnapshot` state.
 
-M7B must **not** yet:
+M7C must **not**:
 
-- automatically classify recurrence;
-- implement `HypothesisAssessmentPolicy` aggregation behavior reserved for M7C;
-- create causal cognitive traits;
-- add a universal weakness/confidence score;
+- infer causal cognitive mechanisms or permanent learner traits;
+- introduce a universal weakness/confidence scalar;
 - mark hypotheses training-eligible;
 - prescribe interventions;
-- claim improvement, learning, transfer, or mastery.
+- claim tutoring efficacy, improvement, learning, transfer, or mastery.
 
-M8 remains unauthorized until M7Q fully qualifies and repository status is reconciled.
+M7Q remains a later gate. M8 remains unauthorized until M7Q fully qualifies and
+repository status is explicitly reconciled.
 
 ## Current claim ceiling
 
@@ -588,9 +648,10 @@ The repository may claim that it has:
 - a fully qualified M6 Reasoning Discrepancy milestone;
 - a frozen M6A contract, qualified M6B deterministic context/fact layer, qualified M6C
   coded local assessment layer, and full M6Q end-to-end qualification;
-- a frozen M7A Learner Hypothesis Ledger contract defining future cross-position
-  evidence relations, recurrence states, append-only lifecycle history, comparability,
-  revision, and anti-overclaiming rules.
+- a frozen M7A Learner Hypothesis Ledger contract;
+- a qualified M7B immutable hypothesis/evidence ledger with stable participant-specific
+  lineage identity, append-only revisions/lifecycle events, exact M6 provenance-bound
+  evidence relations, and deterministic content-addressed identities.
 
 Qualified M6 may report or preserve position-local evidence/assessment statements such
 as:
@@ -615,22 +676,32 @@ as:
 - an objectively successful M4 control can still contain a separately supported
   position-local reasoning discrepancy.
 
-After M7A alone, the repository may **not** yet claim that:
+Qualified M7B may additionally preserve statements of record such as:
+
+- hypothesis revision R is part of participant P's exact append-only hypothesis
+  lineage;
+- exact M6 evidence unit E has been mapped as `supports`, `contradicts`,
+  `successful_counterexample`, `context_exception`, or `unclear` for hypothesis
+  revision R under explicit mapping provenance;
+- a hypothesis lineage has been explicitly retired or superseded while its historical
+  revisions and evidence links remain preserved.
+
+After M7B, the repository may **not** yet claim that:
 
 - an omitted move was never considered, recognized, or generated;
 - a coder/model judgment is objective chess truth;
 - recurrence exists;
-- a learner hypothesis is supported;
+- a learner hypothesis has `isolated`, `candidate_recurrence`, `supported_recurrence`,
+  `contradicted`, or `unclear` M7 assessment status;
+- evidence units are independent or common structure has been qualified;
 - a local or recurring coded label establishes a stable learner trait;
 - it knows the causal reason why a player chose a move;
-- a control confirms or contradicts a learner hypothesis without an explicit qualified
-  M7 mapping;
 - an intervention is warranted or effective;
 - learning, transfer, or mastery has occurred.
 
 ## Stop boundary
 
-M5 and M6 are fully qualified. **M7A Learner Hypothesis Ledger contract is frozen.
-M7B immutable hypothesis/evidence ledger is the only next authorized implementation
-slice.** M7C recurrence assessment and M7Q remain unauthorized until M7B is separately
-qualified. M8 and pedagogy remain unauthorized until M7Q closes the full M7 boundary.
+M5 and M6 are fully qualified. **M7A is frozen and M7B is qualified. M7C recurrence
+assessment + derived ledger state is the only next authorized implementation slice.**
+M7Q remains unauthorized until M7C is separately qualified. M8 and pedagogy remain
+unauthorized until M7Q closes the full M7 boundary.
