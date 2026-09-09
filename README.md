@@ -1,197 +1,230 @@
 # Chess Mentor Engine
 
-Chess Mentor Engine is a persistent chess-learning system that turns
-provenance-bound chess evidence into participant-specific diagnostic and training
-decisions without collapsing objective analysis, learner inference, tutoring, and
-pedagogy into one opaque layer.
+Chess Mentor Engine is a persistent chess-learning system that keeps objective
+chess evidence, participant evidence, learner inference, tutoring, and pedagogy in
+separate provenance-bearing layers.
 
 Repository description: Persistent AI chess tutor that learns how you think,
 diagnoses recurring mistakes, and turns game evidence into personalized training.
 
-## Start here
+## Current product surface
 
-The [post-M10 milestone runbook](docs/runbooks/post-m10-milestone-runbook.md) is the
-entry point for the three completed features: corrected UCI evidence, durable
-artifacts/verified M8 recovery, and M10 outcome/transfer evidence. It includes
-setup, API examples, validation commands, human protocols, and failure handling.
-
-Use [current build status](docs/product/repository-build-status.md) for the exact
-merged feature/CI provenance and claim limits, and the
-[architecture overview](docs/architecture/architecture.md) for layer ownership.
-The three-feature queue is complete in PRs #39, #40, and #41. This documentation
-pass does not authorize M11 or any further runtime feature.
-
-## Product thesis and implemented scope
-
-Chess engines can answer what is objectively happening in a position. A tutor
-should also help answer why a particular player missed it, whether the pattern
-recurs, and what bounded practice may be appropriate next.
+The repository now has both Python APIs and an installed local `cme` command.
+The current bounded product path is:
 
 ```text
-objective chess evidence
--> frozen player decision evidence
+PGN / canonical position
+-> deterministic chess context
+-> provenance-bound UCI engine analysis
+-> objective played-move comparison
+-> frozen participant decision evidence
 -> position-local reasoning discrepancy
--> participant-specific recurring hypothesis
--> evidence-aware tutoring / explicit training-intervention selection
--> separate practice and transfer evidence
+-> participant-specific learner hypothesis
+-> controlled persistent tutoring
+-> explicit training selection
+-> bounded outcome / transfer evidence
+-> append-only longitudinal learner state
 ```
 
-Each arrow is a separate authority boundary, not an automatic end-to-end command.
-M1-M10 are implemented and qualified within their bounded software contracts:
+Each arrow remains an authority boundary. Qualified software behavior is not proof
+of a causal cognitive diagnosis, permanent learner trait, effective intervention,
+mastery, or empirical tutoring value.
+
+Use [current build status](docs/product/repository-build-status.md) as the concise
+status authority and [CONTEXT.md](CONTEXT.md) for contributor orientation. Historical
+M1-M10 setup and research protocols remain in the
+[post-M10 runbook](docs/runbooks/post-m10-milestone-runbook.md) and linked ADRs.
+
+## Implemented milestones
 
 | Surface | What is available |
 | --- | --- |
-| M1-M4 | Deterministic chess evidence, provenance-bound engine analysis, decision comparison and diagnostic selection, including successful controls. |
-| M5 | Immutable participant evidence, capture/freeze, exposure/deviation provenance and objective reveal. |
-| M6-M7 | Local discrepancy facts and assessments; participant-specific hypothesis, recurrence, challenge-review and lifecycle records. |
-| M8 | Controlled tutoring with pre-reveal information boundaries and explanation provenance. |
-| M9 | Versioned training definitions, explicit applicability mappings and conservative `selected / ineligible / unclear` decisions. |
-| M10 | Predeclared policies, frozen attempts, completion/observation ledgers and independent practice/near/far/real-game evidence assessments. |
-| Local storage | Immutable SQLite-backed JSON artifacts, exact prompt dependencies, canonical comparison fingerprints and verified M8 recovery. |
+| M1-M4 | Canonical game/position evidence, deterministic chess features, normalized engine evidence, played-decision comparison, and bounded diagnostic selection. |
+| M5-M7 | Frozen participant evidence, reasoning discrepancies, and append-only participant-specific hypothesis ledgers with challenge/contradiction evidence. |
+| M8-M10 | Evidence-aware tutoring, explicit intervention selection, and separate practice/near/far/real-game outcome evidence. |
+| M11 | Append-only longitudinal learner state bound to exact current M7 revisions and optional same-revision M10 evidence. |
+| M12 | Read-only local `cme` evidence CLI for PGN inspection, position packets, and verified artifact inspection. |
+| M13 | Persistent replay-verified `cme tutor ...` workflow over the qualified M8 state machine. |
+| M14 | Engine-backed `cme analyze` workflow over qualified M3/M4 contracts, with optional immutable participant-scoped package archival. |
 
-The UCI provider is now `0.2`: Black-root bounds are normalized into White
-ordering and explicit invalid MultiPV ranks are rejected. See the
-[compatibility note](docs/architecture/uci-evidence-contract-repair.md).
+The UCI provider remains version `0.2`: Black-root score bounds are normalized into
+White evaluation ordering, explicit invalid MultiPV ranks fail closed, mate remains
+symbolic, and engine provenance is preserved. Historical `0.1` evidence is not
+rewritten.
 
-Qualified software behavior is not proof of mastery, intervention-caused
-improvement, or empirical tutoring value. M11 longitudinal learner state,
-production-grade persistence services, an end-user CLI/UI, and broader product
-workflows remain outside the qualified scope.
+## Install
 
-## Getting started
-
-Use Python 3.11 or newer. From the repository root, in a POSIX shell:
+Use Python 3.11 or newer:
 
 ```bash
 python3.11 -m venv .venv
 . .venv/bin/activate
 python -m pip install -e ".[dev]"
-python -c "import chess_mentor_engine.analysis; import chess_mentor_engine.storage; import chess_mentor_engine.evaluation"
+cme --help
 ```
 
-See the consolidated runbook for Windows interpreter commands and the Ubuntu CI
-platform boundary. Stockfish is an explicitly configured external executable; no
+Stockfish or another UCI engine is an explicitly supplied external executable; no
 engine binary is bundled.
 
-There is **no end-user product CLI** and no installed `cme` command. The features
-are Python package APIs; pytest, Ruff, and compilation commands are development
-and qualification tools.
+## CLI
 
-## Using the APIs
-
-**Engine evidence:** instantiate `UciAnalysisProvider` with the external engine
-path and explicit options, construct `AnalysisRequest`, then call `analyze` with
-a canonical position. Inspect failure/partial/terminal status, score bounds,
-termination and provenance before consumption. The consolidated runbook contains
-a minimal example. Never relabel historical `0.1` evidence as repaired output.
-
-**M7 hypotheses:** use `chess_mentor_engine.learning` to create/revise hypotheses,
-attach exact M6 evidence, run recurrence assessment, record challenge review, and
-rebuild `HypothesisLedgerSnapshot`. Supported recurrence is not a causal cognitive
-mechanism, permanent trait, or automatic training eligibility.
-See `tests/test_m7_qualification.py` and the
-[M7-M9 runbook](docs/runbooks/m7-m9-milestone-runbook.md).
-
-**M8 tutoring:** use `chess_mentor_engine.tutoring` in this order:
-
-```text
-start_tutor_session
--> present_tutor_position
--> present_tutor_capture_stage
--> capture_tutor_response
--> freeze_tutor_response
--> [optional planned probe: present/capture/freeze]
--> reveal_tutor_objective_evidence
--> record_tutor_reasoning_comparison
--> [optional] attach_tutor_hypothesis_context
--> record_tutor_explanation
--> complete_tutor_session
-```
-
-All planned pre-reveal responses must be frozen. M6 comparison binds the exact
-final capture; attached M7 context must be complete, active and current.
-See `tests/test_m8_qualification.py`.
-
-**M9 selection:** use `chess_mentor_engine.training` to define exercises and an
-intervention, build a registry, record an explicit hypothesis/intervention mapping,
-define the selection policy, and call `select_training_intervention`. Multiple
-applicable mappings remain `unclear`; the selector does not rank by text similarity
-or infer effectiveness. See `tests/test_m9_qualification.py`.
-
-**Durability and M8 recovery:** use `LocalArtifactStore`, `save_tutor_session`, and
-`load_tutor_session`. Supply exact definitions for every planned prompt and retain
-the returned reference in an application checkpoint. Recovery verifies integrity
-and replays transitions before returning a resumable session; later saves append
-snapshots. See the [storage runbook](docs/runbooks/durable-artifacts-and-replay.md).
-Participant filtering is not authentication; protect the plaintext database and
-supply additional upstream archival dependencies explicitly.
-
-**M10 outcomes:** define `OutcomePolicy`, then call `define_evaluation_plan` with
-an exact selected M9 decision/intervention. Append frozen attempts, record practice
-completion and rubric-bound observations, and call `assess_outcome_evidence` on
-the complete known ledger. Read each dimension and its exclusions separately.
-`mastery` and `causal_effect` remain `not_established`; there is no automatic M7
-revision or M11 state update. See the
-[M10 runbook](docs/runbooks/m10-outcome-transfer-evidence.md) and
-`tests/test_outcome_evidence.py` / `tests/test_m10_qualification.py`.
-
-## Validation commands
-
-With the installed environment, from the repository root:
+### Inspect games and deterministic position context
 
 ```bash
-# Feature 1: existing provider tests plus normalization/rank regressions
+cme games inspect games.pgn
+cme games inspect games.pgn --full
+cme position packet games.pgn --game-index 0 --ply-index 12
+```
+
+`position packet` remains engine-free. See the
+[M12 runbook](docs/runbooks/m12-local-evidence-cli.md).
+
+### Run bounded engine analysis
+
+```bash
+cme analyze games.pgn \
+  --game-index 0 \
+  --ply-index 12 \
+  --engine /path/to/stockfish \
+  --depth 14 \
+  --multipv 3 \
+  --timeout-ms 10000
+```
+
+M14 runs the exact canonical root through the qualified M3 UCI provider and emits
+the native M4 played-decision comparison. If the played move lies outside a
+complete root MultiPV, the exact canonical child is reanalyzed under the same
+request. Regime drift remains `incompatible_analysis_regime`; bounded, partial,
+mate, terminal, and failure states are not coerced into fake centipawn precision.
+
+Optional archival requires an **existing** local artifact database and an explicit
+participant scope:
+
+```bash
+cme analyze games.pgn \
+  --ply-index 12 \
+  --engine /path/to/stockfish \
+  --depth 14 \
+  --multipv 3 \
+  --db ./mentor.sqlite3 \
+  --participant P01
+```
+
+See the [M14 runbook](docs/runbooks/m14-engine-analysis-cli.md). M14 is an evidence
+package, not a final UI evaluation-format contract.
+
+### Inspect verified local artifacts
+
+```bash
+cme artifacts list --db ./mentor.sqlite3 --participant P01
+cme artifacts show --db ./mentor.sqlite3 --participant P01 --kind KIND ARTIFACT_ID
+cme artifacts verify --db ./mentor.sqlite3 --participant P01
+```
+
+Participant scoping is not authentication. Protect the plaintext database.
+
+### Run persistent tutor checkpoints
+
+M13 exposes controlled append-only commands over M8:
+
+```text
+cme tutor start
+cme tutor status
+cme tutor present-position
+cme tutor present-stage
+cme tutor respond
+cme tutor freeze
+cme tutor reveal
+cme tutor compare
+cme tutor attach-hypothesis
+cme tutor explain
+cme tutor complete
+```
+
+Every mutation loads and verifies an exact prior checkpoint, replay-validates M8,
+applies one native transition, then writes a successor checkpoint. It does not
+generate engine evidence, M6 assessments, M7 hypotheses, explanation prose,
+training decisions, or automatic M11 mutations. See the
+[M13 runbook](docs/runbooks/m13-persistent-tutor-cli.md).
+
+## Python APIs
+
+The CLI does not replace the domain APIs. Important package boundaries remain:
+
+- `chess_mentor_engine.analysis` — normalized M3 engine evidence;
+- `chess_mentor_engine.selection` — M4 comparison and diagnostic selection;
+- `chess_mentor_engine.evidence` — participant evidence;
+- `chess_mentor_engine.reasoning` / learning layers — discrepancy and hypotheses;
+- `chess_mentor_engine.tutoring` — M8 state machine;
+- `chess_mentor_engine.training` — M9 intervention registry/selection;
+- `chess_mentor_engine.evaluation` — M10 outcome and transfer evidence;
+- longitudinal learner-state APIs documented in the
+  [M11 runbook](docs/runbooks/m11-longitudinal-learner-state.md);
+- `chess_mentor_engine.storage` — local immutable artifacts and verified replay.
+
+## Validation
+
+Focused current product-surface qualification:
+
+```bash
+python -m pytest tests/test_m11_qualification.py
+python -m pytest tests/test_m12_cli.py
+python -m pytest tests/test_m13_persistent_tutor_cli.py
+python -m pytest tests/test_m14_engine_analysis_cli.py
+```
+
+Related engine/comparison contracts:
+
+```bash
 python -m pytest tests/test_uci_provider.py tests/test_uci_evidence_contract.py
-# Feature 2: storage, integrity, replay and fresh-process recovery
-python -m pytest tests/test_artifact_store.py tests/test_tutor_storage.py
-# Feature 3: outcome contract plus M9/M1/storage integration
-python -m pytest tests/test_outcome_evidence.py tests/test_m10_qualification.py
-# Existing upstream milestone boundaries
-python -m pytest tests/test_m7_qualification.py tests/test_m8_qualification.py tests/test_m9_qualification.py
-# Full regression, lint and supplemental syntax gate
+python -m pytest tests/test_decision_comparison.py
+```
+
+Full repository gate:
+
+```bash
 python -m pytest -rs
 python -m ruff check .
 python -m compileall -q src tests
-```
-
-After configuring `STOCKFISH_EXECUTABLE` to an actual external engine, run:
-
-```bash
 python -m pytest tests/integration/test_stockfish_uci.py -rs
 ```
 
-An unconfigured engine causes eight intentional skips, not a successful engine
-witness. The [consolidated runbook](docs/runbooks/post-m10-milestone-runbook.md)
-includes the exact Ubuntu installation/configuration sequence. CI runs pytest and
-Ruff on Python 3.11 and an independent Stockfish job on pull requests into `main`
-and pushes to `main`. No standalone static type checker is configured; lint,
-syntax compilation and imports must not be described as type-checker validation.
+The final command requires `STOCKFISH_EXECUTABLE`. Skipped integration tests are
+not an independent engine pass. CI runs the native test/lint job and an independent
+Stockfish job. No standalone Python static type checker is currently configured;
+tests, Ruff, imports, and syntax compilation must not be reported as a type-checker
+pass.
 
-## Human operational protocol
+## Claim ceiling and next product boundary
 
-Preserve source and actor/version/instruction/run provenance for judgments where
-the corresponding schema requires it. M7 evidence relations and challenge review,
-M8 explanation authorship, and M9 pedagogical applicability remain explicit human
-or model judgments. Freeze participant responses before objective reveal.
+The repository can preserve and connect objective chess evidence, frozen player
+evidence, bounded learner hypotheses, tutoring state, intervention/outcome evidence,
+and longitudinal history. M12-M14 now expose a usable local CLI over selected
+qualified capabilities.
 
-Before M10 collection, declare the criterion, rubric, contexts and delay. Record
-actual exposure and assistance; unknown is not clean or unexposed. Preserve
-failures, scorer disagreement and exclusions. Completion is not success, and
-supported transfer is not causality or mastery. Never backdate an evaluation plan
-to make previously studied evidence prospective.
+It still does **not** establish:
 
-For recovery, choose the intended checkpoint, keep consistent backups, restore
-exact dependencies, and investigate mismatches rather than silently repairing
-history. Generic M10 archival is not typed M10 recovery. The consolidated runbook
-and linked feature runbooks contain the detailed operating steps.
+- causal cognitive mechanisms or permanent learner traits;
+- intervention-caused improvement or automatic mastery;
+- universal chess-evaluation thresholds;
+- a UI-safe evaluation presentation contract;
+- automatically generated M6 diagnoses or mentor explanations;
+- automatic M7/M11 mutation from a tutor session;
+- a web UI, authenticated hosted service, or production multi-user persistence;
+- empirical tutoring efficacy.
+
+The next separately bounded product work should preserve these claim ceilings rather
+than collapsing engine analysis, display semantics, and mentor language into one
+opaque layer.
 
 ## Documentation map
 
-- [Post-M10 milestone runbook](docs/runbooks/post-m10-milestone-runbook.md): consolidated feature use, verification and human handoff.
-- [Current build status](docs/product/repository-build-status.md): authoritative milestone/claim status and merged qualification provenance.
-- [Architecture overview](docs/architecture/architecture.md): implemented boundaries versus historical hypotheses.
-- [UCI repair](docs/architecture/uci-evidence-contract-repair.md): score/rank behavior and provider-version compatibility.
-- [Durable artifacts and verified replay](docs/architecture/durable-artifacts-and-replay.md): storage/recovery and legacy limits.
-- [M7 qualification](docs/architecture/m7-qualification.md), [M8 tutoring](docs/architecture/evidence-aware-tutor-session.md), and [M9 training](docs/architecture/training-intervention-registry.md): upstream contracts.
-- [M10 outcome evidence](docs/architecture/outcome-transfer-evidence.md) and [ADR 0009](docs/decisions/0009-outcome-transfer-evidence-contract.md): protocol-bound evaluation and claim limits.
-- [Decision records](docs/decisions/README.md), [CONTEXT.md](CONTEXT.md), [product definition](docs/product/product-definition.md), and [product discovery](docs/product/product-discovery.md): contributor orientation and remaining hypotheses.
+- [Current build status](docs/product/repository-build-status.md) — current milestone and qualification authority.
+- [CONTEXT.md](CONTEXT.md) — contributor orientation and authority boundaries.
+- [M11 longitudinal state](docs/runbooks/m11-longitudinal-learner-state.md) — longitudinal operation and qualification.
+- [M12 local evidence CLI](docs/runbooks/m12-local-evidence-cli.md) — read-only CLI surface.
+- [M13 persistent tutor CLI](docs/runbooks/m13-persistent-tutor-cli.md) — replay-verified tutor workflow.
+- [M14 engine analysis CLI](docs/runbooks/m14-engine-analysis-cli.md) — objective engine-backed analysis package.
+- [Architecture overview](docs/architecture/architecture.md) — earlier layer map and historical implementation boundary.
+- [Decision records](docs/decisions/README.md) — normative bounded contracts.
+- [Product build plan](docs/product/chess-mentor-engine-repository-build-plan.md) — planning history and broader product direction.
