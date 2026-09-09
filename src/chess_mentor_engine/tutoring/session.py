@@ -254,7 +254,7 @@ def present_tutor_capture_stage(
     prompt: PromptDefinition,
     shown_at: str,
 ) -> TutorSession:
-    """Present a pre-reveal observation/probe prompt through the qualified M5 machine."""
+    """Present a pre-reveal observation/probe prompt via the qualified M5 machine."""
     if session.state not in {"presented", "capturing"}:
         raise TutorSessionError("capture prompt requires presented/capturing state")
     expected_class = {
@@ -318,7 +318,7 @@ def freeze_tutor_response(
     stage_id: str,
     frozen_at: str,
 ) -> TutorSession:
-    """Freeze one response; enter frozen state only when all planned stages are frozen."""
+    """Freeze a response; become frozen once all planned stages are frozen."""
     if session.state != "capturing":
         raise TutorSessionError("response freeze requires capturing state")
     capture, freeze = freeze_stage_response(
@@ -353,7 +353,9 @@ def reveal_tutor_objective_evidence(
 ) -> TutorSession:
     """Reveal qualified objective evidence only after the pre-reveal freeze boundary."""
     if session.state != "frozen":
-        raise TutorSessionError("objective reveal requires all pre-reveal evidence frozen")
+        raise TutorSessionError(
+            "objective reveal requires all pre-reveal evidence frozen"
+        )
     if not rendered_content:
         raise TutorSessionError("objective reveal content must not be empty")
     capture, reveal = reveal_objective_evidence(
@@ -387,11 +389,17 @@ def _validate_reasoning_context(
     m5_context = session.capture_session.context
     if context.participant_id != m5_context.participant_id:
         raise TutorSessionError("M6 reasoning context participant mismatch")
-    if context.position_id != m5_context.position_id or context.game_id != m5_context.game_id:
+    if (
+        context.position_id != m5_context.position_id
+        or context.game_id != m5_context.game_id
+    ):
         raise TutorSessionError("M6 reasoning context position/game mismatch")
     if context.capture_session_ref.ref_id != session.capture_session.capture_session_id:
         raise TutorSessionError("M6 reasoning context capture session mismatch")
-    if context.capture_session_ref.fingerprint != session.capture_session.snapshot_fingerprint:
+    if (
+        context.capture_session_ref.fingerprint
+        != session.capture_session.snapshot_fingerprint
+    ):
         raise TutorSessionError("M6 reasoning context capture fingerprint mismatch")
 
 
@@ -570,7 +578,7 @@ def record_tutor_explanation(
     provenance: TutorExplanationProvenance,
     created_at: str,
 ) -> tuple[TutorSession, TutorExplanation]:
-    """Record post-comparison explanation text without granting pedagogical authority."""
+    """Record post-comparison explanation without granting pedagogical authority."""
     if session.state != "compared":
         raise TutorSessionError("explanation requires compared state")
     if not rendered_content:
