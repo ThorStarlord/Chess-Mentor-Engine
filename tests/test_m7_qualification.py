@@ -380,7 +380,10 @@ def test_m7q_revision_preserves_prior_assessment_without_relabeling_it() -> None
     entry = snapshot.entries[0]
     assert entry.current_revision_ref.revision_id == revision_two.revision_id
     assert entry.latest_assessment_ref is None
-    assert assessment_one.hypothesis_revision_ref.revision_id == revision_one.revision_id
+    assert (
+        assessment_one.hypothesis_revision_ref.revision_id
+        == revision_one.revision_id
+    )
 
 
 def test_m7q_retirement_preserves_assessment_and_authority_is_separate() -> None:
