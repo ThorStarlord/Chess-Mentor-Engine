@@ -236,7 +236,7 @@ def test_mate_remains_symbolic_in_cli_package(tmp_path, capsys) -> None:
         "plies_to_mate": 1,
         "bound": "exact",
     }
-    assert comparison["mate_relation"] == "forced_mate_preserved"
+    assert comparison["mate_relation"] == "forced_mate_completed"
     assert comparison["exact_centipawn_delta_for_mover"] is None
 
 
