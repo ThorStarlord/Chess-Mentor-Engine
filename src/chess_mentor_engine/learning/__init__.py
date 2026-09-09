@@ -6,9 +6,9 @@ from .assessment import (
     record_reasoning_coding,
 )
 from .assessment_model import (
+    AssertionBasisKind,
     AssessmentStageKind,
     AssessmentStatus,
-    AssertionBasisKind,
     CoderKind,
     DiscrepancyCode,
     ReasoningArtifactRef,
