@@ -1,4 +1,4 @@
-"""Position-local learning evidence derived from qualified chess/player evidence."""
+"""Learning evidence derived from qualified chess/player evidence."""
 
 from .assessment import (
     assess_reasoning_discrepancy,
@@ -21,6 +21,31 @@ from .assessment_model import (
 )
 from .context import build_reasoning_discrepancy_context
 from .facts import ReasoningDiscrepancyError, derive_discrepancy_facts
+from .hypothesis_ledger import (
+    LearnerHypothesisError,
+    create_learner_hypothesis,
+    record_hypothesis_evidence_link,
+    record_hypothesis_lifecycle_event,
+    record_hypothesis_revision,
+)
+from .hypothesis_model import (
+    HypothesisActorKind,
+    HypothesisActorProvenance,
+    HypothesisClaimKind,
+    HypothesisContextRef,
+    HypothesisEvidenceBasisKind,
+    HypothesisEvidenceLink,
+    HypothesisEvidenceRelation,
+    HypothesisLifecycleEvent,
+    HypothesisLifecycleKind,
+    HypothesisM6EvidenceKind,
+    HypothesisM6EvidenceRef,
+    HypothesisMappingProvenance,
+    HypothesisRevision,
+    HypothesisRevisionRef,
+    LearnerHypothesis,
+    LearnerHypothesisRef,
+)
 from .model import (
     DiscrepancyFact,
     DiscrepancyFactKind,
@@ -39,6 +64,23 @@ __all__ = [
     "DiscrepancyFact",
     "DiscrepancyFactKind",
     "DiscrepancyRelation",
+    "HypothesisActorKind",
+    "HypothesisActorProvenance",
+    "HypothesisClaimKind",
+    "HypothesisContextRef",
+    "HypothesisEvidenceBasisKind",
+    "HypothesisEvidenceLink",
+    "HypothesisEvidenceRelation",
+    "HypothesisLifecycleEvent",
+    "HypothesisLifecycleKind",
+    "HypothesisM6EvidenceKind",
+    "HypothesisM6EvidenceRef",
+    "HypothesisMappingProvenance",
+    "HypothesisRevision",
+    "HypothesisRevisionRef",
+    "LearnerHypothesis",
+    "LearnerHypothesisError",
+    "LearnerHypothesisRef",
     "MeasurementCondition",
     "ReasoningArtifactRef",
     "ReasoningAssessmentPolicy",
@@ -52,7 +94,11 @@ __all__ = [
     "ReasoningEvidenceRef",
     "assess_reasoning_discrepancy",
     "build_reasoning_discrepancy_context",
+    "create_learner_hypothesis",
     "define_reasoning_assessment_policy",
     "derive_discrepancy_facts",
+    "record_hypothesis_evidence_link",
+    "record_hypothesis_lifecycle_event",
+    "record_hypothesis_revision",
     "record_reasoning_coding",
 ]
