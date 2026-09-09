@@ -1,15 +1,16 @@
 from __future__ import annotations
 
-from chess_mentor_engine.learning import (
-    assess_hypothesis_recurrence,
-    record_hypothesis_challenge_review,
-)
 from test_hypothesis_recurrence_assessment import (
     _make_hypothesis,
     _make_link,
     _policy,
     _review,
     _support_units,
+)
+
+from chess_mentor_engine.learning import (
+    assess_hypothesis_recurrence,
+    record_hypothesis_challenge_review,
 )
 
 
