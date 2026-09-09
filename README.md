@@ -22,6 +22,7 @@ PGN / canonical position
 -> position-local reasoning discrepancy
 -> participant-specific learner hypothesis
 -> controlled persistent tutoring
+-> grounded session-local mentor feedback
 -> explicit training selection
 -> bounded outcome / transfer evidence
 -> append-only longitudinal learner state
@@ -48,6 +49,7 @@ M1-M10 setup and research protocols remain in the
 | M13 | Persistent replay-verified `cme tutor ...` workflow over the qualified M8 state machine. |
 | M14 | Engine-backed `cme analyze` workflow over qualified M3/M4 contracts, with optional immutable participant-scoped package archival. |
 | M15 | Deterministic evaluation presentation projection with explicit perspective, mate/bound/partial semantics, PVs, engine identity, and exact evidence references. |
+| M16 | Deterministic grounded mentor-feedback composition over exact M15/M6 and optional complete active-current M7 evidence, with native M8 explanation recording. |
 
 The UCI provider remains version `0.2`: Black-root score bounds are normalized into
 White evaluation ordering, explicit invalid MultiPV ranks fail closed, mate remains
@@ -149,6 +151,9 @@ generate engine evidence, M6 assessments, M7 hypotheses, explanation prose,
 training decisions, or automatic M11 mutations. See the
 [M13 runbook](docs/runbooks/m13-persistent-tutor-cli.md).
 
+M16 is currently a Python API, not a new CLI command. The existing `cme tutor
+explain` command remains the explicit-input M13 surface.
+
 ## Python APIs
 
 The CLI does not replace the domain APIs. Important package boundaries remain:
@@ -156,6 +161,7 @@ The CLI does not replace the domain APIs. Important package boundaries remain:
 - `chess_mentor_engine.analysis` — normalized M3 engine evidence;
 - `chess_mentor_engine.selection` — M4 comparison and diagnostic selection;
 - `chess_mentor_engine.presentation` — M15 deterministic evaluation presentation;
+- `chess_mentor_engine.feedback` — M16 grounded session-local mentor feedback;
 - `chess_mentor_engine.evidence` — participant evidence;
 - `chess_mentor_engine.learning` — M6 reasoning discrepancy and M7 hypothesis records;
 - `chess_mentor_engine.tutoring` — M8 state machine;
@@ -191,6 +197,47 @@ strings, convert PVs to SAN, or invent `inaccuracy`, `mistake`, or `blunder`
 thresholds. See the
 [M15 runbook](docs/runbooks/m15-evaluation-presentation.md).
 
+### Compose grounded mentor feedback
+
+M16 composes deterministic feedback only after the M8 tutor session has an exact
+M6 comparison. Optional M7 context must be the complete active-current context
+already attached to the session:
+
+```python
+from chess_mentor_engine.feedback import (
+    compose_grounded_mentor_feedback,
+    record_grounded_mentor_feedback,
+)
+
+feedback = compose_grounded_mentor_feedback(
+    session=compared_tutor_session,
+    root_analysis=root_analysis,
+    decision_comparison=decision_comparison,
+    played_analysis=played_child_analysis,  # optional
+    created_at="2026-09-09T10:13:00-03:00",
+)
+
+updated, explanation, feedback = record_grounded_mentor_feedback(
+    session=compared_tutor_session,
+    root_analysis=root_analysis,
+    decision_comparison=decision_comparison,
+    played_analysis=played_child_analysis,
+    created_at="2026-09-09T10:13:00-03:00",
+)
+```
+
+The `m16.grounded-mentor-feedback.v1` record contains evidence-bound objective,
+reasoning, optional learner-context, and reflection sections. Every M6 assertion is
+preserved. Every attached active M7 revision is retained and framed as descriptive
+hypothesis context rather than causal diagnosis. Non-exact M15 evidence never
+becomes a fabricated exact centipawn loss.
+
+`record_grounded_mentor_feedback` uses the existing qualified M8 explanation
+transition and records explicit template provenance. M16 v1 does not invoke an LLM,
+create new M6/M7 judgments, select M9 training, mutate M11, or claim coaching
+efficacy. See the
+[M16 runbook](docs/runbooks/m16-grounded-mentor-feedback.md).
+
 See the [M11 runbook](docs/runbooks/m11-longitudinal-learner-state.md) for longitudinal
 operation and qualification.
 
@@ -204,6 +251,7 @@ python -m pytest tests/test_m12_cli.py
 python -m pytest tests/test_m13_persistent_tutor_cli.py
 python -m pytest tests/test_m14_engine_analysis_cli.py
 python -m pytest tests/test_m15_evaluation_presentation.py
+python -m pytest tests/test_m16_grounded_mentor_feedback.py
 ```
 
 Related engine/comparison contracts:
@@ -232,23 +280,25 @@ pass.
 
 The repository can preserve and connect objective chess evidence, frozen player
 evidence, bounded learner hypotheses, tutoring state, intervention/outcome evidence,
-longitudinal history, and a deterministic display projection. M12-M14 expose a
-usable local CLI over selected qualified capabilities; M15 exposes its presentation
-contract as a Python API.
+longitudinal history, deterministic display semantics, and deterministic grounded
+session-local feedback. M12-M14 expose a usable local CLI over selected qualified
+capabilities; M15 and M16 expose downstream presentation/feedback contracts as
+Python APIs.
 
 It still does **not** establish:
 
 - causal cognitive mechanisms or permanent learner traits;
 - intervention-caused improvement or automatic mastery;
 - universal chess-evaluation or move-quality thresholds;
-- automatically generated M6 diagnoses or grounded mentor explanations;
+- model/LLM-generated free-form coaching quality;
+- automatic M6 diagnosis generation from engine output;
 - automatic M7/M11 mutation from a tutor session;
 - a web UI, authenticated hosted service, or production multi-user persistence;
 - empirical tutoring efficacy.
 
-The next separately bounded product work is grounded mentor feedback over verified
-evidence. It must preserve the boundary between engine analysis, M15 display
-semantics, participant evidence, and authored/model explanation.
+Any future model-backed coaching or user-interface layer must preserve the exact M16
+grounding contract rather than collapsing engine analysis, participant evidence,
+learner hypotheses, and authored language into one opaque authority.
 
 ## Documentation map
 
@@ -259,6 +309,7 @@ semantics, participant evidence, and authored/model explanation.
 - [M13 persistent tutor CLI](docs/runbooks/m13-persistent-tutor-cli.md) — replay-verified tutor workflow.
 - [M14 engine analysis CLI](docs/runbooks/m14-engine-analysis-cli.md) — objective engine-backed analysis package.
 - [M15 evaluation presentation](docs/runbooks/m15-evaluation-presentation.md) — deterministic UI-safe evidence projection.
+- [M16 grounded mentor feedback](docs/runbooks/m16-grounded-mentor-feedback.md) — deterministic evidence-bound feedback composition.
 - [Architecture overview](docs/architecture/architecture.md) — earlier layer map and historical implementation boundary.
 - [Decision records](docs/decisions/README.md) — normative bounded contracts.
 - [Product build plan](docs/product/chess-mentor-engine-repository-build-plan.md) — planning history and broader product direction.
