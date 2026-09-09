@@ -1,0 +1,53 @@
+"""Evidence-aware tutor-session orchestration."""
+
+from .model import (
+    TutorComparison,
+    TutorExplanation,
+    TutorExplanationActorKind,
+    TutorExplanationProvenance,
+    TutorHypothesisContext,
+    TutorPositionPresentation,
+    TutorSession,
+    TutorSessionEvent,
+    TutorSessionEventKind,
+    TutorSessionState,
+)
+from .session import (
+    WORKFLOW_VERSION,
+    TutorSessionError,
+    attach_tutor_hypothesis_context,
+    capture_tutor_response,
+    complete_tutor_session,
+    freeze_tutor_response,
+    present_tutor_capture_stage,
+    present_tutor_position,
+    record_tutor_explanation,
+    record_tutor_reasoning_comparison,
+    reveal_tutor_objective_evidence,
+    start_tutor_session,
+)
+
+__all__ = [
+    "WORKFLOW_VERSION",
+    "TutorComparison",
+    "TutorExplanation",
+    "TutorExplanationActorKind",
+    "TutorExplanationProvenance",
+    "TutorHypothesisContext",
+    "TutorPositionPresentation",
+    "TutorSession",
+    "TutorSessionError",
+    "TutorSessionEvent",
+    "TutorSessionEventKind",
+    "TutorSessionState",
+    "attach_tutor_hypothesis_context",
+    "capture_tutor_response",
+    "complete_tutor_session",
+    "freeze_tutor_response",
+    "present_tutor_capture_stage",
+    "present_tutor_position",
+    "record_tutor_explanation",
+    "record_tutor_reasoning_comparison",
+    "reveal_tutor_objective_evidence",
+    "start_tutor_session",
+]
