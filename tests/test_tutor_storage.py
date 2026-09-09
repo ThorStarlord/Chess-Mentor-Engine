@@ -9,6 +9,7 @@ from dataclasses import replace
 from pathlib import Path
 
 import pytest
+import test_m8_qualification as m8_fixture
 from test_m8_qualification import (
     S0,
     S2,
@@ -30,11 +31,13 @@ from test_m8_qualification import (
 from test_reasoning_discrepancy_facts import (
     _a1_prompt,
     _a2_prompt,
+    _default_a2,
     _protocol,
     _upstream,
 )
 
 from chess_mentor_engine.chess import canonical_json
+from chess_mentor_engine.evidence import ParticipantMove
 from chess_mentor_engine.storage import (
     IntegrityError,
     LocalArtifactStore,
@@ -102,7 +105,14 @@ def test_every_m8_state_round_trips_through_verified_replay(tmp_path: Path, fact
     assert len(store.list_refs(participant_id="P01")) == 3
 
 
-def test_comparison_order_is_canonical_before_hashing() -> None:
+def test_comparison_order_is_canonical_before_hashing(monkeypatch) -> None:
+    # Create a second discrepancy through real capture/freeze/M6 APIs.
+    # Only the test participant-response factory is varied, not production code.
+    response = replace(
+        _default_a2(),
+        expected_reply=ParticipantMove("c5", "c7c5", "normalized"),
+    )
+    monkeypatch.setattr(m8_fixture, "_default_a2", lambda: response)
     upstream, revealed = _through_reveal()
     context, assessment, assertions = _m6_bundle(upstream, revealed.capture_session)
     assert len(assertions) >= 2
