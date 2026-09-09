@@ -501,11 +501,12 @@ local discrepancy
 != pedagogical prescription
 ```
 
-M7A freezes six semantic records for later bounded implementation:
+M7A freezes seven semantic records for later bounded implementation:
 
 ```text
 LearnerHypothesis
 HypothesisRevision
+HypothesisLifecycleEvent
 HypothesisEvidenceLink
 HypothesisAssessmentPolicy
 HypothesisAssessment
@@ -516,7 +517,8 @@ The initial hypothesis claim kind is `descriptive_pattern`. Evidence relations a
 `supports`, `contradicts`, `successful_counterexample`, `context_exception`, and
 `unclear`. Recurrence assessment status is separately
 `insufficient / isolated / candidate_recurrence / supported_recurrence / contradicted /
-unclear`, while authority lifecycle is `active / retired / superseded`.
+unclear`, while authority lifecycle is `active / retired / superseded` and is recorded
+through append-only lifecycle events.
 
 Hard M7A anti-collapse rules include:
 
@@ -556,9 +558,9 @@ claim.
 
 > **M7B — immutable hypothesis/evidence ledger only.**
 
-M7B may implement stable hypothesis identity, append-only revisions, immutable
-hypothesis/evidence links, exact M6 provenance binding, explicit evidence relations,
-append-only active/retired/superseded lifecycle history, and deterministic identities.
+M7B may implement stable hypothesis identity, append-only revisions, append-only
+`HypothesisLifecycleEvent` authority history, immutable hypothesis/evidence links,
+exact M6 provenance binding, explicit evidence relations, and deterministic identities.
 
 M7B must **not** yet:
 
@@ -587,8 +589,8 @@ The repository may claim that it has:
 - a frozen M6A contract, qualified M6B deterministic context/fact layer, qualified M6C
   coded local assessment layer, and full M6Q end-to-end qualification;
 - a frozen M7A Learner Hypothesis Ledger contract defining future cross-position
-  evidence relations, recurrence states, lifecycle history, comparability, and
-  anti-overclaiming rules.
+  evidence relations, recurrence states, append-only lifecycle history, comparability,
+  revision, and anti-overclaiming rules.
 
 Qualified M6 may report or preserve position-local evidence/assessment statements such
 as:
