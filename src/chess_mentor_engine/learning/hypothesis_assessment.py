@@ -59,6 +59,11 @@ def assess_hypothesis_recurrence(
 ) -> HypothesisAssessment:
     """Assess recurrence with explicit or deterministic challenge review records."""
 
+    if revision.revision_number > 1 and revision_history is None:
+        raise HypothesisAssessmentError(
+            "later hypothesis revisions require exact revision history"
+        )
+
     actor = _system_review_actor()
     if contradiction_review is None:
         contradiction_review = record_hypothesis_challenge_review(
