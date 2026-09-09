@@ -703,7 +703,7 @@ def test_required_competing_explanation_review_blocks_supported_status() -> None
     assert "competing_explanation_review_incomplete" in result.status_reasons
 
 
-def test_no_supported_discrepancy_is_only_counterevidence_when_explicitly_mapped() -> None:
+def test_no_supported_discrepancy_requires_explicit_counterevidence_mapping() -> None:
     hypothesis, revision = _make_hypothesis()
     counterexample = _make_link(
         hypothesis=hypothesis,
