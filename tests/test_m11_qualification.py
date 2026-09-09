@@ -5,8 +5,8 @@ from __future__ import annotations
 from dataclasses import replace
 
 import pytest
-from test_m10_qualification import capture, make_plan, selected
 from test_m9_qualification import _revision, _snapshot
+from test_m10_qualification import capture, make_plan, selected
 from test_outcome_evidence import author, source, time_at
 
 from chess_mentor_engine.chess import ingest_pgn

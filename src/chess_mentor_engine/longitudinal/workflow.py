@@ -5,11 +5,14 @@ from __future__ import annotations
 from chess_mentor_engine.evaluation import (
     EvaluationPlan,
     OutcomeAssessment,
+)
+from chess_mentor_engine.evaluation import (
     reference as outcome_reference,
 )
 from chess_mentor_engine.learning import HypothesisLedgerSnapshot, HypothesisRevision
 
 from .model import (
+    OUTCOME_KINDS,
     HypothesisStateEvent,
     HypothesisTrajectory,
     LearnerStateLedger,
@@ -17,7 +20,6 @@ from .model import (
     LongitudinalProvenance,
     LongitudinalReference,
     LongitudinalStateError,
-    OUTCOME_KINDS,
     OutcomeDimensionState,
     fingerprint,
     timestamp,
