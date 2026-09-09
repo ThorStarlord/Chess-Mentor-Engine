@@ -408,7 +408,7 @@ def test_reveal_gate_and_malformed_bundle_fail_without_checkpoint(
         "--revealed-at",
         S4,
     )
-    assert code == 2 and payload is None and "freeze" in error
+    assert code == 2 and payload is None and "frozen" in error
     assert _ids(store) == before
 
     revealed_ref = save_tutor_session(store, _through_reveal()[1], prompts=_prompts())
