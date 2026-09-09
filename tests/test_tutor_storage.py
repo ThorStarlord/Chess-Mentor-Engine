@@ -106,11 +106,11 @@ def test_every_m8_state_round_trips_through_verified_replay(tmp_path: Path, fact
 
 
 def test_comparison_order_is_canonical_before_hashing(monkeypatch) -> None:
-    # Create a second discrepancy through real capture/freeze/M6 APIs.
+    # An illegal reported reply creates a second objective discrepancy.
     # Only the test participant-response factory is varied, not production code.
     response = replace(
         _default_a2(),
-        expected_reply=ParticipantMove("c5", "c7c5", "normalized"),
+        expected_reply=ParticipantMove("e7e4", "e7e4", "normalized"),
     )
     monkeypatch.setattr(m8_fixture, "_default_a2", lambda: response)
     upstream, revealed = _through_reveal()
