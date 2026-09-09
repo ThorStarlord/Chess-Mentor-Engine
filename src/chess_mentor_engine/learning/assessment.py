@@ -54,6 +54,33 @@ _CODING_KINDS: frozenset[str] = frozenset(
 _ALLOWED_STAGE_KINDS: frozenset[str] = frozenset(
     {"MINIMAL_RESPONSE", "STANDARDIZED_PROBE"}
 )
+_MEASUREMENT_CONDITIONS: frozenset[str] = frozenset(
+    {
+        "clean",
+        "instrument_aware_clean",
+        "deviating",
+        "contaminated",
+        "unknown",
+    }
+)
+_FACT_KINDS: frozenset[str] = frozenset(
+    {
+        "REPORTED_SELECTED_MOVE_RELATION",
+        "EXPLICIT_CANDIDATE_MEMBERSHIP_RELATION",
+        "EXPECTED_REPLY_RELATION",
+        "EXPECTED_CONTINUATION_RELATION",
+    }
+)
+_DISCREPANCY_RELATIONS: frozenset[str] = frozenset(
+    {
+        "match",
+        "conflict",
+        "not_explicitly_reported",
+        "ambiguous",
+        "not_observed",
+        "not_comparable",
+    }
+)
 _OBJECTIVE_EVIDENCE_KINDS: frozenset[str] = frozenset(
     {
         "canonical_position",
@@ -183,12 +210,79 @@ def _validate_context(context: ReasoningDiscrepancyContext) -> None:
         raise ReasoningDiscrepancyError(
             "ReasoningDiscrepancyContext identity mismatch"
         )
+    if context.measurement_condition not in _MEASUREMENT_CONDITIONS:
+        raise ReasoningDiscrepancyError("unknown M6 measurement condition")
+
+
+def _validate_policy_semantics(policy: ReasoningAssessmentPolicy) -> None:
+    if not set(policy.eligible_stage_kinds).issubset(_ALLOWED_STAGE_KINDS):
+        raise ReasoningDiscrepancyError(
+            "assessment policy contains an unsupported stage kind"
+        )
+    if not set(policy.allowed_measurement_conditions).issubset(
+        _MEASUREMENT_CONDITIONS
+    ):
+        raise ReasoningDiscrepancyError(
+            "assessment policy contains an unknown measurement condition"
+        )
+    if not set(policy.required_objective_evidence).issubset(
+        _OBJECTIVE_EVIDENCE_KINDS
+    ):
+        raise ReasoningDiscrepancyError(
+            "assessment policy contains non-objective required evidence"
+        )
+    if not set(policy.permitted_fact_kinds).issubset(_FACT_KINDS):
+        raise ReasoningDiscrepancyError(
+            "assessment policy contains an unknown discrepancy fact kind"
+        )
+    if not set(policy.permitted_discrepancy_codes).issubset(_DISCREPANCY_CODES):
+        raise ReasoningDiscrepancyError(
+            "assessment policy contains an unknown discrepancy code"
+        )
+    if not set(policy.coding_requirements).issubset(
+        policy.permitted_discrepancy_codes
+    ):
+        raise ReasoningDiscrepancyError(
+            "coding requirements must be a subset of permitted discrepancy codes"
+        )
+    missing_intrinsic = set(policy.permitted_discrepancy_codes).intersection(
+        _INTRINSIC_CODING_CODES
+    ).difference(policy.coding_requirements)
+    if missing_intrinsic:
+        raise ReasoningDiscrepancyError(
+            "intrinsically coded discrepancy codes must require coding: "
+            f"{sorted(missing_intrinsic)!r}"
+        )
+    parameter_map = dict(policy.thresholds_or_parameters)
+    parameter_keys = set(parameter_map)
+    unknown_parameters = parameter_keys.difference(_SUPPORTED_PARAMETER_KEYS)
+    if unknown_parameters:
+        raise ReasoningDiscrepancyError(
+            f"unsupported M6C assessment parameter(s): "
+            f"{sorted(unknown_parameters)!r}"
+        )
+    strong_basis = parameter_map.get("strong_candidate_basis")
+    if strong_basis is not None and strong_basis != "engine_rank1":
+        raise ReasoningDiscrepancyError(
+            "strong_candidate_basis currently supports only 'engine_rank1'"
+        )
+    strong_code = "STRONG_OBJECTIVE_CANDIDATE_NOT_EXPLICITLY_REPORTED"
+    if (
+        strong_code in policy.permitted_discrepancy_codes
+        and strong_code not in policy.coding_requirements
+        and strong_basis != "engine_rank1"
+    ):
+        raise ReasoningDiscrepancyError(
+            "deterministic strong-candidate assessment requires "
+            "strong_candidate_basis=engine_rank1"
+        )
 
 
 def _validate_policy(policy: ReasoningAssessmentPolicy) -> None:
     expected = _fingerprint(policy.to_dict(include_identity=False))
     if expected != policy.policy_fingerprint:
         raise ReasoningDiscrepancyError("assessment policy fingerprint mismatch")
+    _validate_policy_semantics(policy)
 
 
 def _validate_fact(
@@ -208,25 +302,10 @@ def _validate_fact(
         raise ReasoningDiscrepancyError(
             "DiscrepancyFact stage is outside ReasoningDiscrepancyContext"
         )
-
-
-def _validate_coding(
-    context: ReasoningDiscrepancyContext,
-    coding: ReasoningCoding,
-) -> None:
-    if coding.reasoning_context_id != context.reasoning_context_id:
-        raise ReasoningDiscrepancyError(
-            "ReasoningCoding does not belong to ReasoningDiscrepancyContext"
-        )
-    expected = _fingerprint(coding.to_dict(include_identity=False))
-    if expected != coding.fingerprint:
-        raise ReasoningDiscrepancyError("ReasoningCoding fingerprint mismatch")
-    if coding.coding_id != f"reasoning_coding_{expected[:20]}":
-        raise ReasoningDiscrepancyError("ReasoningCoding identity mismatch")
-    if not set(coding.stage_ids).issubset(context.assessment_stage_ids):
-        raise ReasoningDiscrepancyError(
-            "ReasoningCoding stage is outside ReasoningDiscrepancyContext"
-        )
+    if fact.kind not in _FACT_KINDS:
+        raise ReasoningDiscrepancyError("unknown M6B discrepancy fact kind")
+    if fact.relation not in _DISCREPANCY_RELATIONS:
+        raise ReasoningDiscrepancyError("unknown M6B discrepancy relation")
 
 
 def _context_player_refs(
@@ -337,6 +416,73 @@ def _stage_ids_from_sources(
     return ordered
 
 
+def _validate_coding(
+    context: ReasoningDiscrepancyContext,
+    coding: ReasoningCoding,
+    available_facts: tuple[DiscrepancyFact, ...],
+) -> None:
+    if coding.reasoning_context_id != context.reasoning_context_id:
+        raise ReasoningDiscrepancyError(
+            "ReasoningCoding does not belong to ReasoningDiscrepancyContext"
+        )
+    expected = _fingerprint(coding.to_dict(include_identity=False))
+    if expected != coding.fingerprint:
+        raise ReasoningDiscrepancyError("ReasoningCoding fingerprint mismatch")
+    if coding.coding_id != f"reasoning_coding_{expected[:20]}":
+        raise ReasoningDiscrepancyError("ReasoningCoding identity mismatch")
+    if coding.coding_kind not in _CODING_KINDS:
+        raise ReasoningDiscrepancyError("unknown ReasoningCoding kind")
+    if coding.code not in _DISCREPANCY_CODES:
+        raise ReasoningDiscrepancyError("unknown discrepancy code")
+    if not set(coding.stage_ids).issubset(context.assessment_stage_ids):
+        raise ReasoningDiscrepancyError(
+            "ReasoningCoding stage is outside ReasoningDiscrepancyContext"
+        )
+
+    player_refs = _validate_supplied_refs(
+        coding.source_player_evidence_refs,
+        _context_player_refs(context),
+        label="ReasoningCoding source player evidence refs",
+    )
+    _validate_supplied_refs(
+        coding.source_objective_evidence_refs,
+        _context_objective_refs(context),
+        label="ReasoningCoding source objective evidence refs",
+    )
+
+    facts_by_id = {item.fact_id: item for item in available_facts}
+    if len(facts_by_id) != len(available_facts):
+        raise ReasoningDiscrepancyError("available facts must be unique")
+    source_facts: list[DiscrepancyFact] = []
+    seen_fact_ids: set[str] = set()
+    for ref in coding.source_fact_refs:
+        if ref.kind != "discrepancy_fact":
+            raise ReasoningDiscrepancyError(
+                "ReasoningCoding source fact ref has the wrong artifact kind"
+            )
+        fact = facts_by_id.get(ref.ref_id)
+        if fact is None or fact.fingerprint != ref.fingerprint:
+            raise ReasoningDiscrepancyError(
+                "ReasoningCoding source fact is not an exact assessment fact"
+            )
+        if ref.ref_id in seen_fact_ids:
+            raise ReasoningDiscrepancyError(
+                "ReasoningCoding source fact refs must be unique"
+            )
+        seen_fact_ids.add(ref.ref_id)
+        source_facts.append(fact)
+
+    derived_stage_ids = _stage_ids_from_sources(
+        context,
+        player_refs,
+        tuple(source_facts),
+    )
+    if derived_stage_ids != coding.stage_ids:
+        raise ReasoningDiscrepancyError(
+            "ReasoningCoding stage provenance does not match its source evidence"
+        )
+
+
 def define_reasoning_assessment_policy(
     *,
     policy_id: str,
@@ -369,6 +515,10 @@ def define_reasoning_assessment_policy(
         label="allowed measurement conditions",
         allow_empty=False,
     )
+    if not set(conditions).issubset(_MEASUREMENT_CONDITIONS):
+        raise ReasoningDiscrepancyError(
+            "allowed_measurement_conditions contains an unknown condition"
+        )
     objective_kinds = _normalize_strings(
         required_objective_evidence,
         label="required objective evidence",
@@ -381,6 +531,10 @@ def define_reasoning_assessment_policy(
         permitted_fact_kinds,
         label="permitted fact kinds",
     )
+    if not set(fact_kinds).issubset(_FACT_KINDS):
+        raise ReasoningDiscrepancyError(
+            "permitted_fact_kinds contains an unknown M6B fact kind"
+        )
     codes = _normalize_strings(
         permitted_discrepancy_codes,
         label="permitted discrepancy codes",
@@ -447,7 +601,7 @@ def define_reasoning_assessment_policy(
     }
     fingerprint = _fingerprint(payload)
     try:
-        return ReasoningAssessmentPolicy(
+        policy = ReasoningAssessmentPolicy(
             policy_id=policy_id,
             version=version,
             policy_fingerprint=fingerprint,
@@ -461,6 +615,8 @@ def define_reasoning_assessment_policy(
         )
     except ValueError as exc:
         raise ReasoningDiscrepancyError(str(exc)) from exc
+    _validate_policy_semantics(policy)
+    return policy
 
 
 def record_reasoning_coding(
@@ -510,12 +666,12 @@ def record_reasoning_coding(
         _validate_fact(context, fact)
         if fact.fact_id in facts_by_id:
             raise ReasoningDiscrepancyError("available facts must be unique")
-        slot = (fact.stage_id, fact.kind)
-        if slot in fact_slot_keys:
+        fact_slot = (fact.stage_id, fact.kind)
+        if fact_slot in fact_slot_keys:
             raise ReasoningDiscrepancyError(
                 "available facts must be unique by stage and fact kind"
             )
-        fact_slot_keys.add(slot)
+        fact_slot_keys.add(fact_slot)
         facts_by_id[fact.fact_id] = fact
 
     player_refs = _validate_supplied_refs(
@@ -944,16 +1100,16 @@ def assess_reasoning_discrepancy(
         if fact.fact_id in fact_ids:
             raise ReasoningDiscrepancyError("assessment facts must be unique")
         fact_ids.add(fact.fact_id)
-        slot = (fact.stage_id, fact.kind)
-        if slot in fact_slots:
+        fact_slot = (fact.stage_id, fact.kind)
+        if fact_slot in fact_slots:
             raise ReasoningDiscrepancyError(
                 "assessment facts must be unique by stage and fact kind"
             )
-        fact_slots.add(slot)
+        fact_slots.add(fact_slot)
 
     coding_ids: set[str] = set()
     for coding in codings:
-        _validate_coding(context, coding)
+        _validate_coding(context, coding, facts)
         if coding.coding_id in coding_ids:
             raise ReasoningDiscrepancyError("assessment codings must be unique")
         coding_ids.add(coding.coding_id)
@@ -1035,13 +1191,12 @@ def assess_reasoning_discrepancy(
         assertions = ()
     elif assertions:
         status = "discrepancy_supported"
+        support_reasons = {
+            f"SUPPORTED_ASSERTION:{item.code}:{','.join(item.stage_ids)}"
+            for item in assertions
+        }
         status_reasons = tuple(
-            sorted(
-                {
-                    f"SUPPORTED_ASSERTION:{item.code}:{','.join(item.stage_ids)}"
-                    for item in assertions
-                }
-            )
+            sorted(support_reasons.union(uncertainty_reasons))
         )
     elif uncertainty_reasons:
         status = "unclear"
