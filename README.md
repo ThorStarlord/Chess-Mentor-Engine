@@ -1,84 +1,162 @@
 # Chess Mentor Engine
 
-Chess Mentor Engine is intended to become a persistent, personalized chess tutor that learns from a player's games and training history. It should identify recurring decision patterns, explain what those patterns may reveal about the player's thinking, and turn that evidence into focused learning opportunities.
+Chess Mentor Engine is a persistent chess-learning system that turns provenance-bound chess evidence into participant-specific diagnostic and training decisions without collapsing objective analysis, learner inference, tutoring, and pedagogy into one opaque layer.
 
 Repository description: Persistent AI chess tutor that learns how you think, diagnoses recurring mistakes, and turns game evidence into personalized training.
 
 ## Product thesis
 
-Chess engines can answer what is objectively happening in a position. A tutor should also help answer why a particular player missed it and what that player should work on next.
+Chess engines can answer what is objectively happening in a position. A tutor should also help answer why a particular player missed it, whether the pattern recurs, and what bounded practice may be appropriate next.
 
 ```text
-Chess engine:
-What is objectively happening in the position?
-
-Chess Mentor Engine:
-What does this position reveal about how this player thinks,
-and what should they learn next?
-```
-
-The working product hypothesis is that recurring mistakes can become an individualized curriculum when engine-grounded chess evidence is combined with a persistent learner model. This is a product hypothesis, not finalized architecture.
-
-One tentative future loop looks like this:
-
-```text
-games / positions / goals
-        ↓
 objective chess evidence
         ↓
-player-learning model
+player decision evidence
         ↓
-diagnostic hypotheses
+position-local reasoning discrepancy
         ↓
-learning priorities
+participant-specific recurring hypothesis
         ↓
-lesson / exercise
+evidence-aware tutoring session
         ↓
-student attempt
-        ↓
-evaluation
-        ↓
-updated player model
+explicit training-intervention selection
 ```
+
+The repository treats each arrow as a separate authority boundary with explicit provenance and qualification gates.
 
 ## Current repository status
 
-This repository is in the foundation and product-discovery stage. It contains the initial product, domain, architecture, research, and decision notes, plus a minimal importable Python package. It does not contain a chess engine, persistence layer, web application, or tutoring implementation.
+The repository is no longer a minimal package. Milestones M1 through M9 are implemented and qualified through the following bounded surfaces:
+
+- **M1-M4:** deterministic chess evidence, engine evidence, decision comparison, and diagnostic position selection;
+- **M5:** immutable Player Decision Evidence capture, freeze, exposure/deviation provenance, and objective reveal;
+- **M6:** position-local Reasoning Discrepancy facts, coding, assertions, and assessment;
+- **M7:** participant-specific Learner Hypothesis Ledger, recurrence assessment, challenge review, and append-only lifecycle state;
+- **M8:** replayable Evidence-Aware Tutor Session orchestration with hard pre-reveal information boundaries and explanation provenance;
+- **M9:** versioned Training Intervention Registry, explicit hypothesis-to-intervention applicability mappings, and deterministic `selected / ineligible / unclear` decisions.
+
+M10 Transfer / Mastery Evidence, longitudinal learner state, persistence, CLI/UI productization, and broader end-user workflows remain outside the qualified claim surface.
+
+See [the current build-status record](docs/product/repository-build-status.md) and [the M7-M9 milestone runbook](docs/runbooks/m7-m9-milestone-runbook.md).
 
 ## Development principles
 
 - Start with evidence and preserve its provenance.
-- Keep objective chess analysis separate from pedagogical interpretation.
-- Treat diagnoses and domain concepts as hypotheses until supported.
-- Prefer small, testable changes over speculative abstractions.
-- Keep learner state inspectable.
-
-## Documentation map
-
-- [Product definition](docs/product/product-definition.md) describes the problem, hypotheses, possible first value, and open questions.
-- [Product discovery](docs/product/product-discovery.md) records the current design customer, first-value test, product boundary, and unresolved hypotheses.
-- [Product principles](docs/product/product-principles.md) records the initial rules for product thinking.
-- [Architecture hypothesis](docs/architecture/architecture.md) sketches possible system boundaries without freezing them.
-- [Domain discovery seed](docs/domain/domain-model.md) lists concepts and distinctions that need investigation.
-- [Research notes](docs/research/README.md) defines how future experiments should be recorded.
-- [First validation experiment](docs/research/first-product-validation/README.md) contains the frozen manual study protocol and evaluation instruments.
-- [Pilot 001 result](docs/research/first-product-validation/pilots/FPV-PILOT-001/result.md) records the mixed P01 finding and board-context limitation.
-- [Pilot 002](docs/research/first-product-validation/pilots/FPV-PILOT-002/README.md) defines the frozen position-context and decision-reconstruction follow-up.
-- [Decision records](docs/decisions/README.md) explains when to capture a material product or architecture decision.
-- [CONTEXT.md](CONTEXT.md) is the short orientation document for contributors and coding agents.
+- Keep objective chess analysis separate from participant evidence and pedagogical interpretation.
+- Treat learner diagnoses as bounded hypotheses, not hidden truths.
+- Freeze participant evidence before revealing objective analysis.
+- Require explicit applicability provenance before selecting a training intervention.
+- Prefer `ineligible` or `unclear` to an unsupported prescription.
+- Keep outcome evidence, intervention effectiveness, learning, transfer, and mastery separate from intervention selection.
 
 ## Getting started
 
-Create a Python 3.11 or newer virtual environment, install the development tools, and install the package in editable mode:
+Use Python 3.11 or newer. Create a virtual environment and install the project with development dependencies:
 
 ```bash
 python -m venv .venv
 python -m pip install -e ".[dev]"
 ```
 
-## Tests and linting
+There is **no end-user product CLI yet**. The qualified M7-M9 capabilities are Python package APIs. The command-line interface currently exists for development and validation only.
+
+## Using the M7-M9 APIs
+
+### M7 — learner-hypothesis qualification
+
+Use `chess_mentor_engine.learning` to create/revise participant-specific hypotheses, attach exact M6 evidence, run versioned recurrence assessment, record contradiction/counterexample/competing-explanation review, and rebuild the current `HypothesisLedgerSnapshot`.
+
+Important boundary:
+
+```text
+supported_recurrence
+!= causal cognitive mechanism
+!= permanent learner trait
+!= automatic training eligibility
+```
+
+For an executable corpus, see `tests/test_m7_qualification.py`.
+
+### M8 — evidence-aware tutor session
+
+Use `chess_mentor_engine.tutoring` in this order:
+
+```text
+start_tutor_session
+→ present_tutor_position
+→ present_tutor_capture_stage
+→ capture_tutor_response
+→ freeze_tutor_response
+→ [optional standardized probe: present/capture/freeze]
+→ reveal_tutor_objective_evidence
+→ record_tutor_reasoning_comparison
+→ [optional] attach_tutor_hypothesis_context
+→ record_tutor_explanation
+→ complete_tutor_session
+```
+
+The M8 state machine rejects objective reveal before all planned pre-reveal evidence is frozen and rejects stale/mismatched M6/M7 provenance. See `tests/test_m8_qualification.py` for a complete replayable example.
+
+### M9 — training intervention registry
+
+Use `chess_mentor_engine.training` to:
+
+```text
+define_exercise
+→ define_training_intervention
+→ build_intervention_registry
+→ record_hypothesis_intervention_mapping
+→ define_intervention_selection_policy
+→ select_training_intervention
+```
+
+A current active M7 hypothesis with `supported_recurrence` is necessary but not sufficient. M9 also requires an explicit provenance-bearing applicability mapping to an exact registered intervention. Multiple applicable mappings resolve to `unclear`, not an opaque ranking.
+
+See `tests/test_m9_qualification.py` for executable examples.
+
+## Validation commands
+
+Run the focused milestone suites:
+
+```bash
+pytest tests/test_m7_qualification.py
+pytest tests/test_m8_qualification.py
+pytest tests/test_m9_qualification.py
+```
+
+Run the full regression and lint gates:
 
 ```bash
 pytest
 ruff check .
 ```
+
+Run the external Stockfish witness after installing Stockfish and exposing its executable as `STOCKFISH_EXECUTABLE`:
+
+```bash
+pytest tests/integration/test_stockfish_uci.py
+```
+
+The GitHub Actions workflow runs the full test/lint job and an independent Ubuntu Stockfish integration job on pull requests to `main` and pushes to `main`.
+
+## Human operational protocol
+
+The system intentionally retains human/model judgment at specific boundaries:
+
+1. **M7 hypothesis mapping and review:** support, contradiction, counterexample, context exception, and competing explanations must remain explicit and provenance-bearing.
+2. **M8 information sequencing:** the operator must not reveal engine/objective evidence before the planned participant-response stages are frozen. Explanation comes only after comparison.
+3. **M9 pedagogical applicability:** a human or model must explicitly author whether an intervention is `applicable`, `not_applicable`, or `unclear`; the deterministic selector does not infer this from text similarity.
+4. **Effectiveness claims:** selecting or completing an intervention does not establish that it worked. Fresh outcome/transfer evidence belongs to a later milestone.
+
+The detailed operational checklist is in [the M7-M9 milestone runbook](docs/runbooks/m7-m9-milestone-runbook.md).
+
+## Documentation map
+
+- [Current build status](docs/product/repository-build-status.md) — authoritative milestone/claim status.
+- [M7 full qualification](docs/architecture/m7-qualification.md) — learner-hypothesis qualification record.
+- [M8 Evidence-Aware Tutor Session](docs/architecture/evidence-aware-tutor-session.md) — tutoring-session architecture and qualification.
+- [M9 Training Intervention Registry](docs/architecture/training-intervention-registry.md) — intervention registry, applicability, selection, and qualification.
+- [M7-M9 milestone runbook](docs/runbooks/m7-m9-milestone-runbook.md) — setup, validation commands, usage order, and human protocols.
+- [Decision records](docs/decisions/README.md) — architecture decision-record conventions.
+- [CONTEXT.md](CONTEXT.md) — orientation for contributors and coding agents.
+- [Product definition](docs/product/product-definition.md) and [product discovery](docs/product/product-discovery.md) — product hypotheses and validation direction.
