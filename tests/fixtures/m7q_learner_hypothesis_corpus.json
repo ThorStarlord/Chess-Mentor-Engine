@@ -1,0 +1,36 @@
+{
+  "schema_version": "1",
+  "qualification_name": "M7Q full Learner Hypothesis Ledger qualification",
+  "required_cases": [
+    "one_support_is_isolated",
+    "same_position_does_not_double_count",
+    "independence_rule_blocks_recurrence_inflation",
+    "multiple_independent_supports_are_candidate_recurrence",
+    "policy_qualified_support_is_supported_recurrence",
+    "contradiction_is_retained",
+    "successful_counterexample_is_retained",
+    "m4_control_is_not_automatic_counterevidence",
+    "no_supported_discrepancy_is_not_automatic_counterevidence",
+    "context_exception_is_scope_evidence",
+    "unclear_evidence_does_not_manufacture_support",
+    "stage_incompatibility_is_explicit",
+    "measurement_condition_is_preserved_and_policy_gated",
+    "m6_policy_family_compatibility_is_explicit",
+    "competing_explanation_review_is_required",
+    "revision_preserves_prior_assessment_history",
+    "retirement_preserves_history",
+    "supersession_preserves_both_lineages",
+    "deterministic_replay_and_fingerprint_identity",
+    "no_training_or_pedagogy_claims",
+    "research_artifact_preservation"
+  ],
+  "research_artifact_git_blob_shas": {
+    "docs/research/first-product-validation/pilots/FPV-PILOT-003/pilot-protocol.md": "79b67620ef5bef276d454fbde97e0247be1135f4",
+    "docs/research/first-product-validation/pilots/FPV-PILOT-003/reasoning-instrument.md": "fb0d15ec989fe2a9653d4d59851d712d7f61067e",
+    "docs/research/first-product-validation/pilots/FPV-PILOT-003/evidence-schema.md": "187ffb74e09008390b9c812935141edea32ac5f5",
+    "docs/research/first-product-validation/pilots/FPV-PILOT-003/information-boundary.md": "09e198dc5dafdd313d6ada8f7de336a1d0ef0449",
+    "docs/research/first-product-validation/pilots/FPV-PILOT-003/contamination-policy.md": "f3709d25d6178a051da387b5f0394eab9ad17827",
+    "docs/research/first-product-validation/pilots/FPV-PILOT-004/pilot-protocol.md": "883db320f7dabd2c6241fb24d8e3353f02699c18",
+    "docs/research/first-product-validation/pilots/FPV-PILOT-004/reasoning-instrument.md": "f4afe93699a9e938cc41bfccf8c9025896c0654a"
+  }
+}
