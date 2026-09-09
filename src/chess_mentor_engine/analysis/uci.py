@@ -30,11 +30,12 @@ from .model import (
     EngineProvenance,
     MateEvaluation,
     PositionAnalysis,
+    ScoreBound,
 )
 from .validation import expected_candidate_count, validate_candidate_lines
 
 UCI_PROVIDER_NAME = "uci-subprocess"
-UCI_PROVIDER_VERSION = "0.1"
+UCI_PROVIDER_VERSION = "0.2"
 
 
 class _ReadTimeout(Exception):
@@ -190,7 +191,7 @@ def _parse_int_after(tokens: list[str], key: str) -> int | None:
         raise ValueError(f"invalid integer after UCI field {key}") from exc
 
 
-def _mate_from_uci(root_side: str, moves: int, bound: str) -> MateEvaluation:
+def _mate_from_uci(root_side: str, moves: int, bound: ScoreBound) -> MateEvaluation:
     if moves == 0:
         raise ValueError("non-terminal UCI mate score must not be zero")
     if moves > 0:
@@ -228,7 +229,14 @@ def _parse_info(line: str, root_side: str) -> _ParsedInfo | None:
     upper = "upperbound" in tokens[score_index + 3 :]
     if lower and upper:
         raise ValueError("UCI score cannot be both lowerbound and upperbound")
-    bound = "lower" if lower else "upper" if upper else "exact"
+    bound: ScoreBound = "lower" if lower else "upper" if upper else "exact"
+    # Bounds describe evaluation ordering, not the numeric mate distance.
+    # Changing from Black's perspective to White's reverses that ordering.
+    if root_side == "black":
+        if bound == "lower":
+            bound = "upper"
+        elif bound == "upper":
+            bound = "lower"
 
     if score_kind == "cp":
         value = raw_score if root_side == "white" else -raw_score
@@ -243,7 +251,9 @@ def _parse_info(line: str, root_side: str) -> _ParsedInfo | None:
     if not pv:
         raise ValueError("UCI candidate info contains an empty PV")
 
-    rank = _parse_int_after(tokens, "multipv") or 1
+    rank = _parse_int_after(tokens, "multipv")
+    if rank is None:
+        rank = 1
     if rank <= 0:
         raise ValueError("UCI multipv rank must be positive")
 
