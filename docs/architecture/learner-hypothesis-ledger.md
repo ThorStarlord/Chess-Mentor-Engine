@@ -124,6 +124,7 @@ ReasoningDiscrepancyAssessment[]
 LearnerHypothesis
         ↓
 HypothesisRevision[]
++ HypothesisLifecycleEvent[]
         ↓
 HypothesisEvidenceLink[]
         ↓
@@ -220,13 +221,15 @@ Conceptually:
 ```yaml
 hypothesis_id:
 participant_id:
-origin_revision_ref:
+origin_proposal_fingerprint:
 created_at:
 origin_provenance:
 fingerprint:
 ```
 
 The stable identity does not mutate when the hypothesis wording or scope is revised.
+The initial proposal fingerprint and origin provenance create the lineage without
+requiring a circular reference to a revision that itself cites `hypothesis_id`.
 Material wording/scope changes are represented through append-only revisions.
 
 ### 2. `HypothesisRevision`
@@ -258,10 +261,41 @@ A revision may narrow, broaden, clarify, or otherwise revise the proposition, bu
 must preserve lineage and the prior revision. It must never rewrite historical evidence
 links or assessments.
 
+Revision 1 has no parent revision. Later revisions cite the exact prior revision they
+supersede within the same lineage.
+
 If a new proposition is materially different rather than a genuine revision of the same
 lineage, it should receive a new `hypothesis_id`.
 
-### 3. `HypothesisEvidenceLink`
+### 3. `HypothesisLifecycleEvent`
+
+Append-only authority event for hypothesis lineage state.
+
+Conceptually:
+
+```yaml
+lifecycle_event_id:
+hypothesis_id:
+kind: retired | superseded
+superseding_hypothesis_ref:
+reason:
+author_provenance:
+created_at:
+fingerprint:
+```
+
+A newly created hypothesis is `active` by default. A `retired` event changes current
+authority state to retired. A `superseded` event changes current authority state to
+superseded and cites the replacing hypothesis lineage.
+
+M7A does not freeze an automatic reactivation rule. If future evidence requires such a
+transition, it needs an explicit versioned extension rather than mutating old events.
+
+Lifecycle events are authority history, not evidence-strength judgments. A hypothesis
+may be contradicted or unclear while still active until an explicit lifecycle event is
+recorded.
+
+### 4. `HypothesisEvidenceLink`
 
 Explicit relation between one hypothesis revision and one qualified M6 evidence unit.
 
@@ -309,7 +343,7 @@ If semantic interpretation is required to map an M6 record into a hypothesis rel
 that interpretation must retain human/model/rubric/run provenance rather than being
 hidden inside the ledger.
 
-### 4. `HypothesisAssessmentPolicy`
+### 5. `HypothesisAssessmentPolicy`
 
 Versioned material policy for cross-position recurrence assessment.
 
@@ -344,7 +378,7 @@ one distinct qualifying position.
 
 The policy may impose stricter requirements for `supported_recurrence`.
 
-### 5. `HypothesisAssessment`
+### 6. `HypothesisAssessment`
 
 Immutable assessment of one exact hypothesis revision under one exact policy and exact
 frozen evidence-link set.
@@ -385,7 +419,7 @@ unclear
 
 These are **assessment states**, not permanent learner labels.
 
-### 6. `HypothesisLedgerSnapshot`
+### 7. `HypothesisLedgerSnapshot`
 
 Immutable derived view of the current hypothesis ledger state.
 
@@ -394,16 +428,19 @@ Conceptually:
 ```yaml
 snapshot_id:
 participant_id:
-hypothesis_refs:
-current_revision_refs:
-latest_assessment_refs:
-authority_lifecycle_state:
+entries:
+  - hypothesis_ref:
+    current_revision_ref:
+    latest_assessment_ref:
+    authority_lifecycle_state: active | retired | superseded
+    latest_lifecycle_event_ref:
 created_at:
 fingerprint:
 ```
 
 The snapshot does not replace the underlying append-only records. It is rebuildable
-from the ledger history.
+from hypothesis identities, revisions, evidence links, assessments, and lifecycle
+events.
 
 ## Evidence relation semantics
 
@@ -648,11 +685,11 @@ superseded
 A hypothesis may be `active + contradicted`, for example, while the team decides whether
 to retire it or gather more evidence.
 
-Retirement is an explicit append-only authority action. It must not delete historical
-support, contradiction, or prior assessments.
+Retirement is an explicit append-only `HypothesisLifecycleEvent`. It must not delete
+historical support, contradiction, or prior assessments.
 
-`superseded` means a later hypothesis lineage replaces the old one for current use while
-preserving the original history.
+`superseded` means an explicit lifecycle event names a later hypothesis lineage that
+replaces the old one for current use while preserving both histories.
 
 ## Evidence summary instead of a universal weakness score
 
@@ -744,7 +781,7 @@ candidate recurrence
 
 supported recurrence
 → successful counterexamples
-→ weakened evidence / revised scope
+→ revised scope or later retirement
 
 new evidence reveals distinct pattern
 → new hypothesis lineage
@@ -754,6 +791,8 @@ A revision must cite its parent, reason, and author/model provenance.
 
 Historical assessments continue to reference the exact earlier revision they assessed.
 A later revision cannot retroactively change what an earlier assessment meant.
+
+Lifecycle changes are separate append-only events rather than statement revisions.
 
 ## Identity and reproducibility
 
@@ -772,14 +811,15 @@ assessment-policy fingerprint
 support/contradiction/counterexample/exception/unclear refs
 recurrence and independence unit identities
 assessment status
+lifecycle event history for derived authority state
 ```
 
 If human/model coding creates an evidence link or context mapping, its nondeterminism is
 isolated in an immutable coding/mapping record.
 
-Given identical frozen upstream records, evidence links, hypothesis revision, and
-assessment policy, final assessment and ledger-snapshot serialization/fingerprints
-should be deterministic.
+Given identical frozen upstream records, evidence links, hypothesis revision, lifecycle
+events, and assessment policy, final assessment and ledger-snapshot
+serialization/fingerprints should be deterministic.
 
 ## Historical evidence is append-only
 
@@ -790,6 +830,7 @@ M7 must not:
 - delete support when a hypothesis is later contradicted;
 - mutate an old hypothesis statement in place;
 - overwrite one coder's mapping with another coder's mapping;
+- rewrite or delete lifecycle events;
 - collapse a superseded hypothesis into its replacement.
 
 Current state is derived from preserved history.
@@ -868,10 +909,10 @@ Implement only:
 
 - stable `LearnerHypothesis` identity;
 - append-only `HypothesisRevision`;
+- immutable `HypothesisLifecycleEvent` authority history;
 - immutable `HypothesisEvidenceLink`;
 - exact upstream M6 provenance binding;
 - explicit support/contradiction/counterexample/exception/unclear relations;
-- append-only lifecycle actions for active/retired/superseded history;
 - deterministic identities/fingerprints.
 
 Initial M7B qualification may use precomputed or human-supplied mapping/coding records.
@@ -889,7 +930,7 @@ Implement:
 - deterministic aggregation of frozen evidence links;
 - `HypothesisAssessment` statuses;
 - structured evidence summaries;
-- deterministic `HypothesisLedgerSnapshot` derivation.
+- deterministic `HypothesisLedgerSnapshot` derivation including lifecycle state.
 
 M7C must not add pedagogy or intervention eligibility.
 
@@ -916,8 +957,8 @@ mixed measurement conditions preserved and policy-gated
 incompatible M6 assessment-policy families preserved as incompatible unless declared
 competing explanation review recorded without claiming causal resolution
 hypothesis revision preserves old evidence/assessments
-retirement preserves history
-supersession preserves both lineages
+retirement event preserves history
+supersession event preserves both hypothesis lineages
 deterministic replay / fingerprint identity
 no training-eligibility or pedagogy claims
 historical Pilot 003/004 artifacts remain unchanged
@@ -943,6 +984,7 @@ competing explanations are reviewed without pretending they were refuted
 recurrence assessment status is separate from authority lifecycle
 no universal weakness/confidence scalar
 hypothesis revisions are append-only
+lifecycle events are append-only and reconstruct current authority state
 retirement/supersession preserve history
 no causal cognitive claim
 no pedagogical prescription or intervention efficacy claim
@@ -979,7 +1021,7 @@ supported learner hypothesis.
 After M7A alone, the repository may claim only that it has frozen an explicit contract
 for how future M7 implementation must preserve participant-specific cross-position
 support, contradiction, counterexamples, context, uncertainty, alternatives, revision,
-and lifecycle history.
+lifecycle history, and reproducibility.
 
 M7 production claims begin only after the relevant implementation slice is separately
 qualified.
