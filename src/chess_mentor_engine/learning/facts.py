@@ -7,7 +7,11 @@ from datetime import datetime
 from typing import Any
 
 from chess_mentor_engine.analysis import AnalysisFailure, PositionAnalysis
-from chess_mentor_engine.chess import CanonicalPosition, PositionFeaturePacket, canonical_json
+from chess_mentor_engine.chess import (
+    CanonicalPosition,
+    PositionFeaturePacket,
+    canonical_json,
+)
 from chess_mentor_engine.chess._core import Board
 from chess_mentor_engine.evidence import (
     EvidenceCaptureSession,
@@ -140,18 +144,30 @@ def _selected_stage_records(
 
     for stage_id in ordered_ids:
         stage = protocol_stages[stage_id]
-        if stage.phase != "pre_reveal" or stage.stage_kind not in _ALLOWED_PRIMARY_STAGE_KINDS:
+        if (
+            stage.phase != "pre_reveal"
+            or stage.stage_kind not in _ALLOWED_PRIMARY_STAGE_KINDS
+        ):
             raise ReasoningDiscrepancyError(
                 "M6B primary assessment stages must be frozen pre-reveal evidence"
             )
         stage_presentations = [
             item for item in session.presentations if item.stage_id == stage_id
         ]
-        stage_responses = [item for item in session.responses if item.stage_id == stage_id]
-        stage_freezes = [item for item in session.freezes if item.stage_id == stage_id]
-        if len(stage_presentations) != 1 or len(stage_responses) != 1 or len(stage_freezes) != 1:
+        stage_responses = [
+            item for item in session.responses if item.stage_id == stage_id
+        ]
+        stage_freezes = [
+            item for item in session.freezes if item.stage_id == stage_id
+        ]
+        if (
+            len(stage_presentations) != 1
+            or len(stage_responses) != 1
+            or len(stage_freezes) != 1
+        ):
             raise ReasoningDiscrepancyError(
-                f"stage {stage_id!r} must have exactly one presentation, response, and freeze"
+                f"stage {stage_id!r} must have exactly one presentation, "
+                "response, and freeze"
             )
         presentation = stage_presentations[0]
         response = stage_responses[0]
@@ -161,7 +177,9 @@ def _selected_stage_records(
         if freeze.response_id != response.response_id:
             raise ReasoningDiscrepancyError("freeze/response linkage mismatch")
         if freeze.response_fingerprint != response.response_fingerprint:
-            raise ReasoningDiscrepancyError("freeze does not bind exact response fingerprint")
+            raise ReasoningDiscrepancyError(
+                "freeze does not bind exact response fingerprint"
+            )
         presentations.append(presentation)
         responses.append(response)
         freezes.append(freeze)
@@ -183,7 +201,9 @@ def _validate_objective_inputs(
         raise ReasoningDiscrepancyError("decision comparison game_id mismatch")
     if position_features is not None:
         if position_features.position_id != position.position_id:
-            raise ReasoningDiscrepancyError("position feature packet position_id mismatch")
+            raise ReasoningDiscrepancyError(
+                "position feature packet position_id mismatch"
+            )
         if position_features.game_id != position.game_id:
             raise ReasoningDiscrepancyError("position feature packet game_id mismatch")
         if position_features.fen != position.fen:
@@ -205,10 +225,14 @@ def _validate_objective_inputs(
         if record.position_id == decision_comparison.root_analysis_ref.position_id:
             expected = decision_comparison.root_analysis_ref
             if record.request_fingerprint != expected.request_fingerprint:
-                raise ReasoningDiscrepancyError("root analysis request fingerprint mismatch")
+                raise ReasoningDiscrepancyError(
+                    "root analysis request fingerprint mismatch"
+                )
             if isinstance(record, PositionAnalysis):
                 if record.result_fingerprint != expected.result_fingerprint:
-                    raise ReasoningDiscrepancyError("root analysis result fingerprint mismatch")
+                    raise ReasoningDiscrepancyError(
+                        "root analysis result fingerprint mismatch"
+                    )
             elif expected.failure_code != record.code:
                 raise ReasoningDiscrepancyError("root analysis failure code mismatch")
 
@@ -255,7 +279,9 @@ def build_reasoning_discrepancy_context(
         assessment_stage_ids,
     )
     if any(created_time < _parse_timestamp(item.frozen_at) for item in freezes):
-        raise ReasoningDiscrepancyError("M6 context cannot precede selected evidence freeze")
+        raise ReasoningDiscrepancyError(
+            "M6 context cannot precede selected evidence freeze"
+        )
 
     player_context_ref = _ref(
         authority="m5_participant",
@@ -355,7 +381,10 @@ def build_reasoning_discrepancy_context(
             payload=position_features.to_dict(),
         )
     analysis_refs = tuple(
-        sorted((_analysis_ref(item) for item in position_analyses), key=lambda item: item.ref_id)
+        sorted(
+            (_analysis_ref(item) for item in position_analyses),
+            key=lambda item: item.ref_id,
+        )
     )
     comparison_ref = _ref(
         authority="m4_objective",
@@ -393,7 +422,9 @@ def build_reasoning_discrepancy_context(
         "exposure_refs": [item.to_dict() for item in exposure_refs],
         "protocol_deviation_refs": [item.to_dict() for item in deviation_refs],
         "canonical_position_ref": canonical_position_ref.to_dict(),
-        "position_feature_packet_ref": None if feature_ref is None else feature_ref.to_dict(),
+        "position_feature_packet_ref": (
+            None if feature_ref is None else feature_ref.to_dict()
+        ),
         "position_analysis_refs": [item.to_dict() for item in analysis_refs],
         "decision_comparison_ref": comparison_ref.to_dict(),
         "selection_signal_refs": [item.to_dict() for item in signal_refs],
@@ -434,10 +465,13 @@ def _root_analysis(
     matches = [
         item
         for item in records
-        if isinstance(item, PositionAnalysis) and item.position_id == position.position_id
+        if isinstance(item, PositionAnalysis)
+        and item.position_id == position.position_id
     ]
     if len(matches) > 1:
-        raise ReasoningDiscrepancyError("multiple root PositionAnalysis records supplied")
+        raise ReasoningDiscrepancyError(
+            "multiple root PositionAnalysis records supplied"
+        )
     return None if not matches else matches[0]
 
 
@@ -477,7 +511,9 @@ def _participant_refs(
     )
     selected = tuple(item for item in refs if item.ref_id in wanted)
     if len(selected) != 3:
-        raise ReasoningDiscrepancyError("M6 context is missing selected participant refs")
+        raise ReasoningDiscrepancyError(
+            "M6 context is missing selected participant refs"
+        )
     return selected
 
 
@@ -488,7 +524,11 @@ def _root_analysis_ref(
     if analysis is None:
         return None
     return next(
-        (item for item in context.position_analysis_refs if item.ref_id == analysis.result_fingerprint),
+        (
+            item
+            for item in context.position_analysis_refs
+            if item.ref_id == analysis.result_fingerprint
+        ),
         None,
     )
 
@@ -784,7 +824,10 @@ def _expected_reply_fact(
             objective_refs=(context.canonical_position_ref,),
             relation="conflict",
             participant_value=_move_value(reply),
-            objective_value={"requirement": "legal_reply", "legal_reply_count": len(legal_replies)},
+            objective_value={
+                "requirement": "legal_reply",
+                "legal_reply_count": len(legal_replies),
+            },
             provenance=(("basis", "deterministic_reply_legality"),),
         )
 
@@ -879,7 +922,10 @@ def _expected_continuation_fact(
             relation="not_comparable",
             participant_value=[item.to_dict() for item in continuation],
             objective_value=None,
-            provenance=(("basis", "selected_move_and_reply_required_for_continuation"),),
+            provenance=((
+                "basis",
+                "selected_move_and_reply_required_for_continuation",
+            ),),
         )
 
     board = Board.from_fen(position.fen)
@@ -908,7 +954,10 @@ def _expected_continuation_fact(
             relation="not_comparable",
             participant_value=[item.to_dict() for item in continuation],
             objective_value=None,
-            provenance=(("basis", "expected_reply_illegal_so_continuation_has_no_valid_root"),),
+            provenance=((
+                "basis",
+                "expected_reply_illegal_so_continuation_has_no_valid_root",
+            ),),
         )
     board.push(reply_move)
     for index, item in enumerate(continuation):
@@ -923,7 +972,10 @@ def _expected_continuation_fact(
                 objective_refs=(context.canonical_position_ref,),
                 relation="conflict",
                 participant_value=[entry.to_dict() for entry in continuation],
-                objective_value={"requirement": "legal_continuation", "invalid_index": index},
+                objective_value={
+                    "requirement": "legal_continuation",
+                    "invalid_index": index,
+                },
                 provenance=(("basis", "deterministic_continuation_legality"),),
             )
         board.push(move)
@@ -991,7 +1043,10 @@ def derive_discrepancy_facts(
     """Derive only deterministic, stage-specific M6B relation facts."""
     if context.capture_session_ref.ref_id != capture_session.capture_session_id:
         raise ReasoningDiscrepancyError("capture session does not match M6 context")
-    if context.position_id != position.position_id or context.game_id != position.game_id:
+    if (
+        context.position_id != position.position_id
+        or context.game_id != position.game_id
+    ):
         raise ReasoningDiscrepancyError("canonical position does not match M6 context")
     if context.decision_comparison_ref.ref_id != decision_comparison.comparison_id:
         raise ReasoningDiscrepancyError("decision comparison does not match M6 context")
@@ -1007,7 +1062,9 @@ def derive_discrepancy_facts(
         context.assessment_stage_ids,
     )
     if stage_ids != context.assessment_stage_ids:
-        raise ReasoningDiscrepancyError("assessment stage order does not match M6 context")
+        raise ReasoningDiscrepancyError(
+            "assessment stage order does not match M6 context"
+        )
     root_analysis = _root_analysis(position, position_analyses)
 
     facts: list[DiscrepancyFact] = []
