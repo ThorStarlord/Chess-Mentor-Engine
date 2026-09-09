@@ -93,6 +93,8 @@ def _analysis_quality(analysis: PositionAnalysis) -> str:
         return "partial"
     if analysis.status == "terminal":
         return "terminal"
+    if not analysis.lines:
+        return "unavailable"
     if any(line.evaluation.bound != "exact" for line in analysis.lines):
         return "bounded"
     return "exact"
@@ -185,6 +187,16 @@ def _comparison_quality(comparison: DecisionComparison) -> str:
     return "exact"
 
 
+def _expected_child_evaluation(
+    outcome: PositionAnalysis | AnalysisFailure,
+) -> CentipawnEvaluation | MateEvaluation | None:
+    if isinstance(outcome, AnalysisFailure):
+        return None
+    if outcome.status != "complete" or not outcome.lines:
+        return None
+    return outcome.lines[0].evaluation
+
+
 def _validate_comparison(
     root_analysis: PositionAnalysis,
     comparison: DecisionComparison,
@@ -236,6 +248,14 @@ def _validate_comparison(
                 played_analysis,
                 "played child",
             )
+            if (
+                source == "child_reanalysis"
+                and comparison.played_evaluation
+                != _expected_child_evaluation(played_analysis)
+            ):
+                raise EvaluationPresentationError(
+                    "played child evaluation mismatch"
+                )
     elif source == "unavailable":
         if comparison.played_analysis_ref is not None or played_analysis is not None:
             raise EvaluationPresentationError(
