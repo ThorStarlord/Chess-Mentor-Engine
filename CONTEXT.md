@@ -25,7 +25,7 @@ and pilot artifacts are not superseded by software qualification.
 
 ## Current implementation
 
-The bounded evidence stack now extends through M15:
+The bounded evidence stack now extends through M16:
 
 - **M1-M4:** canonical PGN/game/position provenance, deterministic chess context and
   features, normalized UCI evidence, objective played-decision comparison, and
@@ -53,6 +53,11 @@ The bounded evidence stack now extends through M15:
   M3/M4 records. It makes White versus original decision-mover score perspective,
   ordering bounds, symbolic mate, evidence quality, PVs, engine identity, and exact
   evidence references explicit without creating new chess judgments.
+- **M16:** deterministic `chess_mentor_engine.feedback` composition after an exact
+  M8/M6 comparison. It verifies the same M3/M4 evidence through M15, preserves every
+  M6 assertion, optionally preserves complete active-current M7 context, emits
+  bounded reflection questions, and may record the result through the existing M8
+  explanation transition with template provenance.
 
 Recent promotion sequence:
 
@@ -61,16 +66,17 @@ M11 Longitudinal Learner State        MERGED - PR #43
 M12 Local Evidence CLI                MERGED - PR #44
 M13 Persistent Tutor Session CLI      MERGED - PR #45
 M14 Engine-Backed Analysis CLI        MERGED - PR #46
-M15 Evaluation Presentation Contract  CURRENT IMPLEMENTATION - PR #47
+M15 Evaluation Presentation Contract  MERGED - PR #47
+M16 Grounded Mentor Feedback Composer CURRENT IMPLEMENTATION - PR #48
 ```
 
-M14 was qualified at exact head `c2e1ded12ae3dd40402c67ddb713db7f6c38fdbc`
-in CI run `34411793232` and merged as
-`6112b3a970c3b2a4b10b58a6cb3b438d332e605e`. The hardened M15 runtime head
-`45dd5706530347a7f74d7e9bb745a3d0dcd2e501` passed both repository CI jobs in
-run `34412594441`: 566 native tests passed with 8 intentional external-engine
-skips, Ruff passed, and the independent Stockfish witness passed. PR #47 remains
-the authority for the final documentation-bearing head and merge provenance.
+M15 was qualified at exact head `275bafceb949fc564b80a5f0b09b062514d7602c`
+in CI run `34412807819` and merged as
+`c93faf74cb1d7b54d05853cd4775a57c725cfc7b`. The repaired M16 runtime head
+`f3118f9d0d56de3499aa6f2b7bb72bc5d7ed4ac2` passed both repository CI jobs in
+run `34413596649`: native tests and Ruff passed, and the independent Stockfish
+witness passed. PR #48 and Git history remain authoritative for the final
+documentation-bearing head and merge provenance.
 
 ## Separation of responsibilities
 
@@ -85,8 +91,15 @@ score.
 read model, including a decision-mover score view and evidence-quality labels. It
 must preserve the canonical White evaluation, reverse ordering bounds when the
 perspective reverses, keep mate symbolic, preserve fingerprints/provenance, and
-fail closed on evidence drift. It does not define move-quality thresholds or tutor
-language.
+fail closed on evidence drift. It does not define move-quality thresholds or learner
+diagnoses.
+
+**Feedback-composition authority:** M16 may turn already-qualified M15/M6 and
+optional complete active-current M7 evidence into deterministic session-local
+feedback. It must verify the exact M4/M3 references already bound into the tutor
+session, preserve every M6 assertion, retain every attached active M7 revision, and
+keep non-exact objective evidence non-exact. Its reflection questions are not M9
+training selections. M16 v1 is template-driven and does not invoke an LLM.
 
 **Participant-evidence authority:** raw/frozen player responses and their exposure
 state remain distinct from objective engine evidence. Later structured coding does
@@ -106,10 +119,11 @@ identities, participant scope, integrity checking, replay, and append-only stora
 Checksums are integrity mechanisms, not signatures; participant filtering is not
 authentication.
 
-**Human/model judgment:** explanation authorship, semantic discrepancy coding,
-hypothesis evidence relations/challenge review, pedagogical applicability, exposure
-classification, and outcome scoring retain explicit provenance. M13-M15 do not
-fabricate these judgments.
+**Human/model judgment:** semantic discrepancy coding, hypothesis evidence
+relations/challenge review, pedagogical applicability, exposure classification, and
+outcome scoring retain explicit provenance. M16 does not create those judgments.
+Future model-authored language must remain provenance-bearing and must not silently
+replace M6/M7 authority.
 
 ## Contracts contributors must preserve
 
@@ -119,14 +133,14 @@ local discrepancy != recurrence != causal learner trait
 supported recurrence != automatic training eligibility
 selected intervention != effective intervention
 practice completion != successful performance != transfer != mastery
-engine analysis != evaluation presentation != mentor explanation
+engine analysis != evaluation presentation != grounded feedback != model coaching
 ```
 
 M14 owns the engine-backed evidence package. M15 owns only a versioned,
-deterministic projection of exact M3/M4 records. It is not authorization to turn
-centipawns, mates, bounds, partial results, incompatible regimes, or engine failures
-into unversioned frontend labels or learner diagnoses. Grounded mentor language
-remains a separate downstream authority.
+deterministic projection of exact M3/M4 records. M16 owns deterministic composition
+from those exact records plus existing M6/M7 evidence; it is not authorization to
+invent new chess truth, causal learner diagnoses, training prescriptions, or
+unversioned model claims.
 
 ## CLI and API boundaries
 
@@ -146,19 +160,23 @@ an explicit external UCI executable or PATH name. Optional M14 archival requires
 existing artifact database plus an explicit participant; it never creates a new
 learner or tutor state record.
 
-M15 is currently a Python API rather than a new CLI mutation:
+M15 and M16 are currently Python APIs rather than new CLI mutations:
 
 ```python
 from chess_mentor_engine.presentation import build_evaluation_presentation
+from chess_mentor_engine.feedback import (
+    compose_grounded_mentor_feedback,
+    record_grounded_mentor_feedback,
+)
 ```
 
-The presentation API consumes exact M3/M4 records. It does not run an engine,
-modify M14 archives, round centipawns into pawn floats, convert PVs to SAN, or
-assign `inaccuracy`, `mistake`, or `blunder` labels.
+The M15 presentation API consumes exact M3/M4 records. The M16 composer additionally
+requires an exact compared M8 TutorSession whose M6 context already binds the
+supplied M3/M4 evidence. Neither API runs a new engine or changes upstream evidence.
+M16 v1 does not invoke a model, assign training, or mutate M7/M11.
 
-M13 likewise does not generate engine analysis, M6 assessments, M7 hypotheses,
-explanation prose, training decisions, or automatic M11 mutations. Those records
-must come from their owning contracts.
+M13's `cme tutor explain` command remains an explicit-input explanation surface; it
+is not silently replaced by M16.
 
 ## Development and qualification
 
@@ -184,25 +202,27 @@ python -m pytest tests/test_m12_cli.py
 python -m pytest tests/test_m13_persistent_tutor_cli.py
 python -m pytest tests/test_m14_engine_analysis_cli.py
 python -m pytest tests/test_m15_evaluation_presentation.py
+python -m pytest tests/test_m16_grounded_mentor_feedback.py
 ```
 
 ## Current claim ceiling and stop boundary
 
 The repository can now preserve a longitudinal evidence history, expose selected
-qualified capabilities through a local CLI, and project exact engine/comparison
-evidence into a deterministic UI-safe read model. It still does **not** establish:
+qualified capabilities through a local CLI, project exact engine/comparison evidence
+into a deterministic UI-safe read model, and compose deterministic grounded
+session-local feedback after an exact tutor comparison. It still does **not**
+establish:
 
 - causal cognitive diagnosis or permanent learner traits;
 - intervention-caused improvement, automatic mastery, or universal thresholds;
 - automatic M6 discrepancy generation from engine evidence;
-- automatically generated mentor prose grounded in a validated feedback contract;
-- autonomous M7/M11 mutation from tutoring or M14 analysis;
+- model/LLM-generated free-form coaching quality;
+- autonomous M7/M11 mutation from tutoring or analysis;
 - a web UI, authenticated hosted service, or production multi-user persistence;
 - empirical tutoring efficacy.
 
-The next work package is grounded mentor feedback over verified evidence. It must
-remain separate from both M14 engine analysis and M15 presentation semantics; it is
-not part of M15.
+Any future model-backed coaching or user-interface work must consume the versioned
+M16 grounding boundary rather than weakening M3/M4/M6/M7 provenance.
 
 ## Research and product hypotheses
 

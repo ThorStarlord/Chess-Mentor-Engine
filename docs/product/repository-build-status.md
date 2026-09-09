@@ -1,8 +1,8 @@
 # Chess Mentor Engine — Current Build Status
 
 **Status authority:** current implementation and qualification boundary.  
-**Current implementation boundary:** M15 — Evaluation Presentation Contract, PR #47.  
-**Pre-M15 merged baseline:** `6112b3a970c3b2a4b10b58a6cb3b438d332e605e` (M14 merge).  
+**Current implementation boundary:** M16 — Grounded Mentor Feedback Composer, PR #48.  
+**Pre-M16 merged baseline:** `c93faf74cb1d7b54d05853cd4775a57c725cfc7b` (M15 merge).  
 
 This file is the concise moving authority for repository state. Historical
 qualification details remain in feature PRs, ADRs, architecture records, runbooks,
@@ -25,7 +25,8 @@ M11 - Longitudinal Learner State                 QUALIFIED - MERGED PR #43
 M12 - Local Evidence CLI                         QUALIFIED - MERGED PR #44
 M13 - Persistent Tutor Session CLI               QUALIFIED - MERGED PR #45
 M14 - Engine-Backed Analysis CLI                 QUALIFIED - MERGED PR #46
-M15 - Evaluation Presentation Contract           CURRENT IMPLEMENTATION - PR #47
+M15 - Evaluation Presentation Contract           QUALIFIED - MERGED PR #47
+M16 - Grounded Mentor Feedback Composer          CURRENT IMPLEMENTATION - PR #48
 ```
 
 Supporting repairs/capabilities remain part of this baseline:
@@ -45,9 +46,10 @@ Post-M10 documentation consolidation             MERGED - PR #42
 | M12 / PR #44 | `36f86d92e4c698b6898f337b54a7bdf6da25fd00` | `ff66e7e8768d3f95422c2bb0172f54f01cc72da7` | run `34375086055` |
 | M13 / PR #45 | `c42a9acc435395909cb8760d9cb1e81ef653796b` | `1d9ffdd587eada992afd8ca613351895f240e3f5` | run `34378413147` |
 | M14 / PR #46 | `c2e1ded12ae3dd40402c67ddb713db7f6c38fdbc` | `6112b3a970c3b2a4b10b58a6cb3b438d332e605e` | run `34411793232`: 554 passed, 8 intentional skips, Ruff PASS, Stockfish 8/8 PASS |
-| M15 / PR #47 | runtime-qualified head `45dd5706530347a7f74d7e9bb745a3d0dcd2e501` | see PR #47 for final merge SHA | runtime run `34412594441`: 566 passed, 8 intentional skips, Ruff PASS, Stockfish PASS |
+| M15 / PR #47 | `275bafceb949fc564b80a5f0b09b062514d7602c` | `c93faf74cb1d7b54d05853cd4775a57c725cfc7b` | run `34412807819`: 566 passed, 8 intentional skips, Ruff PASS, Stockfish 8/8 PASS |
+| M16 / PR #48 | runtime-qualified head `f3118f9d0d56de3499aa6f2b7bb72bc5d7ed4ac2` | pending exact final-head gate | runtime run `34413596649`: native tests/Ruff PASS + independent Stockfish PASS |
 
-PR #47 and Git history are authoritative for the final documentation-bearing M15
+PR #48 and Git history are authoritative for the final documentation-bearing M16
 candidate, its exact-head CI run, and merge SHA. Any candidate-head change requires
 a fresh full CI and independent Stockfish pass before merge.
 
@@ -63,15 +65,16 @@ PGN / canonical position
 -> position-local reasoning discrepancy
 -> participant-specific hypothesis + contradiction/challenge evidence
 -> controlled evidence-aware tutor session
+-> deterministic grounded session-local mentor feedback
 -> explicit training applicability / selected | ineligible | unclear
 -> predeclared outcome protocol
 -> practice / near / far / real-game outcome evidence
 -> append-only longitudinal learner state
 ```
 
-M12-M14 expose selected capabilities through the local `cme` command. M15 is a
-Python presentation API over already-qualified M3/M4 records; it does not collapse
-those authority boundaries or create new chess truth.
+M12-M14 expose selected capabilities through the local `cme` command. M15 and M16
+are Python APIs over already-qualified evidence and tutor state; they do not collapse
+upstream authority boundaries or create new chess/learner truth.
 
 ## M11 — Longitudinal learner state
 
@@ -166,6 +169,42 @@ LLM, generate mentor feedback, or mutate M6/M7/M11.
 
 See the [M15 runbook](../runbooks/m15-evaluation-presentation.md).
 
+## M16 — Grounded mentor feedback composer
+
+M16 introduces:
+
+```text
+chess_mentor_engine.feedback.compose_grounded_mentor_feedback
+chess_mentor_engine.feedback.record_grounded_mentor_feedback
+```
+
+The composer requires an exact M8 TutorSession in `compared` state plus supplied M3
+analysis and M4 DecisionComparison evidence. It verifies that those M3/M4 records
+are the exact records already bound into the M6 reasoning context and exposed by the
+objective reveal, then rebuilds the qualified M15 presentation before composing
+language.
+
+The `m16.grounded-mentor-feedback.v1` record provides evidence-bound sections for:
+
+- qualified objective evidence;
+- the position-local M6 assessment and every M6 assertion;
+- optional complete active-current M7 hypothesis context, explicitly descriptive
+  rather than causal;
+- deterministic session-local reflection questions.
+
+Non-exact M15 evidence never becomes an exact centipawn-loss claim. Mate remains
+symbolic. M16 preserves non-clean measurement conditions, unresolved M7 alternative
+notes, competing-hypothesis references, and exact section evidence references.
+
+`record_grounded_mentor_feedback` records the rendered output through the existing
+qualified M8 explanation transition with template provenance bound to the exact M16
+policy and feedback identity.
+
+M16 v1 deliberately does not invoke an LLM, create M6/M7 judgments, assign M9
+training, mutate M11, invent move-quality thresholds, or claim tutoring efficacy.
+
+See the [M16 runbook](../runbooks/m16-grounded-mentor-feedback.md).
+
 ## Qualification commands
 
 Focused current product surface:
@@ -176,6 +215,7 @@ python -m pytest tests/test_m12_cli.py
 python -m pytest tests/test_m13_persistent_tutor_cli.py
 python -m pytest tests/test_m14_engine_analysis_cli.py
 python -m pytest tests/test_m15_evaluation_presentation.py
+python -m pytest tests/test_m16_grounded_mentor_feedback.py
 ```
 
 Engine/comparison contracts:
@@ -200,9 +240,9 @@ Stockfish witness. No standalone static type checker is configured.
 
 ## Current claim ceiling
 
-The repository now has a real local CLI, qualified longitudinal-state software,
-and a deterministic UI-safe evaluation projection contract, but it does **not**
-claim:
+The repository now has a real local CLI, qualified longitudinal-state software, a
+deterministic UI-safe evaluation projection contract, and deterministic grounded
+session-local mentor feedback, but it does **not** claim:
 
 - causal cognitive diagnosis or permanent learner traits;
 - optimal/effective intervention selection;
@@ -210,10 +250,11 @@ claim:
 - universal engine-evaluation or move-quality thresholds;
 - globally complete exposure history;
 - automatic M6 diagnosis generation from engine output;
-- automatically generated grounded mentor explanation;
+- model/LLM-generated free-form coaching quality;
 - autonomous M7/M11 mutation from tutor or analysis commands;
 - a web UI, authenticated hosted service, or production multi-user persistence;
 - empirical tutoring efficacy.
 
-M15 ends at trustworthy deterministic presentation semantics. Grounded mentor
-feedback remains the next separate downstream package and is not authorized by M15.
+M16 ends at deterministic evidence-bound feedback composition and native M8
+explanation recording. Future model-backed coaching or UI work must preserve this
+versioned grounding boundary rather than weakening upstream evidence authority.
