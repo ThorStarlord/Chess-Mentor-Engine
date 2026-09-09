@@ -154,13 +154,15 @@ The CLI does not replace the domain APIs. Important package boundaries remain:
 - `chess_mentor_engine.analysis` — normalized M3 engine evidence;
 - `chess_mentor_engine.selection` — M4 comparison and diagnostic selection;
 - `chess_mentor_engine.evidence` — participant evidence;
-- `chess_mentor_engine.reasoning` / learning layers — discrepancy and hypotheses;
+- `chess_mentor_engine.learning` — M6 reasoning discrepancy and M7 hypothesis records;
 - `chess_mentor_engine.tutoring` — M8 state machine;
 - `chess_mentor_engine.training` — M9 intervention registry/selection;
 - `chess_mentor_engine.evaluation` — M10 outcome and transfer evidence;
-- longitudinal learner-state APIs documented in the
-  [M11 runbook](docs/runbooks/m11-longitudinal-learner-state.md);
+- `chess_mentor_engine.longitudinal` — M11 longitudinal learner state;
 - `chess_mentor_engine.storage` — local immutable artifacts and verified replay.
+
+See the [M11 runbook](docs/runbooks/m11-longitudinal-learner-state.md) for longitudinal
+operation and qualification.
 
 ## Validation
 
