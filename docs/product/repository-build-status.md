@@ -1,8 +1,8 @@
 # Chess Mentor Engine — Current Build Status
 
 **Status authority:** current implementation and qualification boundary.  
-**Current package:** M14 — Engine-Backed Analysis CLI, PR #46.  
-**Pre-M14 merged baseline:** `1d9ffdd587eada992afd8ca613351895f240e3f5` (M13 merge).  
+**Current implementation boundary:** M15 — Evaluation Presentation Contract, PR #47.  
+**Pre-M15 merged baseline:** `6112b3a970c3b2a4b10b58a6cb3b438d332e605e` (M14 merge).  
 
 This file is the concise moving authority for repository state. Historical
 qualification details remain in feature PRs, ADRs, architecture records, runbooks,
@@ -24,7 +24,8 @@ M10 - Bounded Outcome / Transfer Evidence        QUALIFIED - MERGED PR #41
 M11 - Longitudinal Learner State                 QUALIFIED - MERGED PR #43
 M12 - Local Evidence CLI                         QUALIFIED - MERGED PR #44
 M13 - Persistent Tutor Session CLI               QUALIFIED - MERGED PR #45
-M14 - Engine-Backed Analysis CLI                 CURRENT PACKAGE - PR #46
+M14 - Engine-Backed Analysis CLI                 QUALIFIED - MERGED PR #46
+M15 - Evaluation Presentation Contract           CURRENT IMPLEMENTATION - PR #47
 ```
 
 Supporting repairs/capabilities remain part of this baseline:
@@ -43,11 +44,12 @@ Post-M10 documentation consolidation             MERGED - PR #42
 | M11 / PR #43 | `975fbbf70a62ba2a0ca11a8fae7afbc06d8179eb` | `aa62bb4e7e1f83433086c2c77fc4af3fc6ed2b62` | run `34373923454` |
 | M12 / PR #44 | `36f86d92e4c698b6898f337b54a7bdf6da25fd00` | `ff66e7e8768d3f95422c2bb0172f54f01cc72da7` | run `34375086055` |
 | M13 / PR #45 | `c42a9acc435395909cb8760d9cb1e81ef653796b` | `1d9ffdd587eada992afd8ca613351895f240e3f5` | run `34378413147` |
-| M14 / PR #46 | runtime candidate `d36b20e4747a39cc2257e47b04b5be98ad8131e7` | pending exact final-head gate | runtime run `34411545018`: native test/lint PASS + independent Stockfish PASS |
+| M14 / PR #46 | `c2e1ded12ae3dd40402c67ddb713db7f6c38fdbc` | `6112b3a970c3b2a4b10b58a6cb3b438d332e605e` | run `34411793232`: 554 passed, 8 intentional skips, Ruff PASS, Stockfish 8/8 PASS |
+| M15 / PR #47 | runtime-qualified head `45dd5706530347a7f74d7e9bb745a3d0dcd2e501` | see PR #47 for final merge SHA | runtime run `34412594441`: 566 passed, 8 intentional skips, Ruff PASS, Stockfish PASS |
 
-The documentation-bearing final M14 candidate must pass the same repository CI jobs
-before PR #46 may merge. The PR and Git history are authoritative for that final
-exact-head run and merge SHA.
+PR #47 and Git history are authoritative for the final documentation-bearing M15
+candidate, its exact-head CI run, and merge SHA. Any candidate-head change requires
+a fresh full CI and independent Stockfish pass before merge.
 
 ## Current evidence path
 
@@ -56,6 +58,7 @@ PGN / canonical position
 -> deterministic chess context
 -> provenance-bound engine evidence
 -> objective played-decision comparison / bounded diagnostic selection
+-> deterministic evaluation presentation projection
 -> frozen participant decision evidence
 -> position-local reasoning discrepancy
 -> participant-specific hypothesis + contradiction/challenge evidence
@@ -66,8 +69,9 @@ PGN / canonical position
 -> append-only longitudinal learner state
 ```
 
-M12-M14 expose selected portions of this stack through the local `cme` command.
-They do not collapse the authority boundaries above.
+M12-M14 expose selected capabilities through the local `cme` command. M15 is a
+Python presentation API over already-qualified M3/M4 records; it does not collapse
+those authority boundaries or create new chess truth.
 
 ## M11 — Longitudinal learner state
 
@@ -102,16 +106,9 @@ created by reads. See the [M12 runbook](../runbooks/m12-local-evidence-cli.md).
 ## M13 — Persistent tutor session CLI
 
 M13 added controlled append-only `cme tutor ...` mutations over the qualified M8
-state machine. Every mutation:
-
-```text
-exact prior M8 checkpoint
--> verified local read
--> typed replay
--> one native M8 transition
--> replay validation
--> immutable successor checkpoint
-```
+state machine. Every mutation verifies/replays an exact prior checkpoint, applies
+one native M8 transition, replay-validates the result, and appends an immutable
+successor checkpoint.
 
 M13 does not generate prompts, engine analysis, M6 assessments, M7 hypotheses,
 mentor prose, M11 learner-state mutations, or training decisions. See the
@@ -131,27 +128,43 @@ MultiPV does not contain the canonical played move, M14 reanalyzes the exact
 canonical child under the same request/provider configuration. M4 remains the
 authority for whether root/child regimes are compatible.
 
-The output preserves native M3/M4 evidence, including:
-
-- White-perspective centipawn and symbolic mate records;
-- mover-relative exact centipawn delta when legitimately comparable;
-- score bounds;
-- partial evidence;
-- terminal relations;
-- engine-evidence inversion;
-- incompatible analysis regimes;
-- explicit engine failures/provenance.
-
-M14 may optionally archive the complete package as
-`m14.analysis-package.v1` in an **existing** participant-scoped artifact database.
-It does not implicitly create a database or mutate M7, M8, M9, M10, or M11.
-
-The M14 rejection suite covers White/Black perspective, symbolic mate, bounds,
-partial evidence, out-of-MultiPV child analysis, incompatible engine identity,
-invalid MultiPV output, missing engines, target/provenance mismatch, participant
-archive boundaries, idempotent exact archival, and no-played-move positions.
+The output preserves native M3/M4 evidence, including White-perspective centipawns,
+symbolic mate, score bounds, partial evidence, terminal relations, engine-evidence
+inversion, incompatible analysis regimes, explicit engine failures, and provenance.
+M14 may optionally archive the complete package as `m14.analysis-package.v1` in an
+**existing** participant-scoped artifact database. It does not implicitly create a
+database or mutate M7, M8, M9, M10, or M11.
 
 See the [M14 runbook](../runbooks/m14-engine-analysis-cli.md).
+
+## M15 — Evaluation presentation contract
+
+M15 introduces `chess_mentor_engine.presentation.build_evaluation_presentation` as
+a deterministic projection over exact M3 `PositionAnalysis` / `AnalysisFailure`
+records and one M4 `DecisionComparison`.
+
+The `m15.evaluation-presentation.v1` output preserves:
+
+- canonical White centipawn values and bounds;
+- an explicit original decision-mover view, including correct bound reversal for
+  Black;
+- symbolic mate as winner + plies-to-mate rather than a centipawn sentinel;
+- explicit `exact`, `bounded`, `partial`, `terminal`, `incompatible`, and
+  `unavailable` evidence quality;
+- ranked UCI PVs and engine identity/provenance;
+- request/result fingerprints and exact M4 evidence references.
+
+Projection validates evidence references and comparison fields against the exact
+supplied M3 records. It rejects root/child reference drift, best/played evaluation
+drift, impossible root-MultiPV sourcing, and any exact centipawn delta attached to
+a non-exact comparison. A complete analysis with no candidate lines is
+`unavailable`, not `exact`.
+
+M15 does not modify M14 archives, run an engine, render a UI, round scores into pawn
+floats, convert PVs to SAN, invent `inaccuracy/mistake/blunder` labels, invoke an
+LLM, generate mentor feedback, or mutate M6/M7/M11.
+
+See the [M15 runbook](../runbooks/m15-evaluation-presentation.md).
 
 ## Qualification commands
 
@@ -162,6 +175,7 @@ python -m pytest tests/test_m11_qualification.py
 python -m pytest tests/test_m12_cli.py
 python -m pytest tests/test_m13_persistent_tutor_cli.py
 python -m pytest tests/test_m14_engine_analysis_cli.py
+python -m pytest tests/test_m15_evaluation_presentation.py
 ```
 
 Engine/comparison contracts:
@@ -186,21 +200,20 @@ Stockfish witness. No standalone static type checker is configured.
 
 ## Current claim ceiling
 
-The repository now has a real local CLI and qualified longitudinal-state software,
-but it does **not** claim:
+The repository now has a real local CLI, qualified longitudinal-state software,
+and a deterministic UI-safe evaluation projection contract, but it does **not**
+claim:
 
 - causal cognitive diagnosis or permanent learner traits;
 - optimal/effective intervention selection;
 - intervention-caused improvement or automatic mastery;
-- universal engine-evaluation thresholds;
+- universal engine-evaluation or move-quality thresholds;
 - globally complete exposure history;
-- a final UI-safe evaluation/read-model contract;
 - automatic M6 diagnosis generation from engine output;
 - automatically generated grounded mentor explanation;
 - autonomous M7/M11 mutation from tutor or analysis commands;
 - a web UI, authenticated hosted service, or production multi-user persistence;
 - empirical tutoring efficacy.
 
-M14 ends at trustworthy objective analysis packaging. Evaluation presentation and
-grounded mentor feedback remain separate downstream packages and are not authorized
-by M14 itself.
+M15 ends at trustworthy deterministic presentation semantics. Grounded mentor
+feedback remains the next separate downstream package and is not authorized by M15.
