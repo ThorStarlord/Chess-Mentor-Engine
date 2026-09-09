@@ -3,79 +3,98 @@
 ## Product and authority
 
 Chess Mentor Engine is a persistent chess-learning system intended to convert
-objective chess evidence into individualized teaching decisions. Its central
-questions remain distinct:
+objective chess evidence into individualized teaching decisions without collapsing
+chess truth, participant self-report, analyst/model interpretation, tutoring, and
+pedagogy into one authority layer.
+
+The central questions remain distinct:
 
 ```text
-What is the best move?
-Why is it the best move?
-Why did this player fail to find it?
+What is objectively happening on the board?
+What did the player actually notice, consider, and expect?
+What participant-specific explanation is currently supported strongly enough to affect teaching?
 ```
 
-The third question is the differentiation hypothesis, not a claim that the system
-has established a player's causal cognitive mechanism.
+The third question is a product hypothesis, not a claim that the system has
+established a causal cognitive mechanism.
 
-Read [current build status](docs/product/repository-build-status.md) for current
-implementation and qualification. Read the
-[post-M10 milestone runbook](docs/runbooks/post-m10-milestone-runbook.md) for setup,
-feature usage, tests, recovery, and human operating requirements. The
-[architecture overview](docs/architecture/architecture.md) separates implemented
-boundaries from early hypotheses.
-
-This context consolidates the previous M1-M8 orientation after PRs #39-#41.
-Detailed milestone histories remain in their architecture/decision records and
-Git history; frozen research protocols and pilot artifacts are unchanged.
-The implementation baseline for this documentation pass is
-`f8adde83400fb77ecf2a1e3cb9a5ead820136ab6`.
+Use [current build status](docs/product/repository-build-status.md) as the current
+implementation/qualification authority. Historical milestone details remain in
+architecture records, ADRs, runbooks, and Git history. Frozen research protocols
+and pilot artifacts are not superseded by software qualification.
 
 ## Current implementation
 
-M1-M10 are qualified only within their bounded software contracts:
+The bounded evidence stack now extends through M14:
 
-- **M1-M4:** canonical PGN/game/position/provenance, deterministic context and chess
-  features, normalized engine evidence, objective decision comparison and
-  versioned diagnostic position selection with successful controls.
-- **M5-M7:** participant evidence capture/freeze/exposure, position-local discrepancy
-  facts and authored assessments, participant-specific descriptive hypotheses,
-  explicit challenge evidence, recurrence policies, and append-only lifecycle.
-- **M8-M9:** controlled evidence-aware tutoring and explicit, provenance-bearing
-  hypothesis-to-intervention applicability followed by conservative selection.
-- **M10:** predeclared criterion/rubric/context policies, frozen attempts,
-  documented practice completion, authored observations, and separate practice,
-  near-transfer, far-transfer, and real-game evidence assessments.
+- **M1-M4:** canonical PGN/game/position provenance, deterministic chess context and
+  features, normalized UCI evidence, objective played-decision comparison, and
+  bounded diagnostic candidate selection.
+- **M5-M7:** frozen participant decision evidence, position-local discrepancy facts
+  and assessments, participant-specific descriptive learner hypotheses,
+  contradiction/challenge evidence, recurrence policies, and append-only lifecycle.
+- **M8-M10:** controlled evidence-aware tutoring, explicit hypothesis/intervention
+  applicability and conservative training selection, then separate
+  practice/near/far/real-game outcome evidence.
+- **M11:** append-only longitudinal learner state bound to an exact current M7
+  snapshot/revision, with optional exact M10 outcome evidence for that same
+  revision. It does not create scalar weakness scores, causal claims, or mastery.
+- **M12:** installed read-only `cme` surface for deterministic PGN inspection,
+  engine-free position packets, and verified participant-scoped artifact reads.
+- **M13:** persistent `cme tutor ...` workflow. Every write verifies and replays the
+  exact prior M8 checkpoint, applies one existing state transition, and appends a
+  successor checkpoint.
+- **M14:** bounded `cme analyze` workflow over qualified M3/M4 contracts. It analyzes
+  an exact canonical position with an explicit UCI engine, reanalyzes the exact
+  canonical child when required for out-of-MultiPV played moves, preserves native
+  comparison semantics, and can optionally archive the complete evidence package
+  in an existing participant-scoped local artifact store.
 
-The completed three-feature queue is:
+Recent promotion sequence:
 
 ```text
-Feature 1 - UCI Evidence Contract Repair          MERGED - PR #39
-Feature 2 - Durable Artifacts and Verified Replay MERGED - PR #40
-Feature 3 - M10 Outcome and Transfer Evidence     MERGED - PR #41
+M11 Longitudinal Learner State        MERGED - PR #43
+M12 Local Evidence CLI                MERGED - PR #44
+M13 Persistent Tutor Session CLI      MERGED - PR #45
+M14 Engine-Backed Analysis CLI        CURRENT PACKAGE - PR #46
 ```
 
-UCI provider `0.2` normalizes score bounds into White ordering and rejects invalid
-explicit MultiPV ranks. Historical provider `0.1` artifacts are not rewritten.
-Local SQLite-backed storage provides immutable JSON artifacts, declared dependency
-validation, and typed M8 recovery by verified replay. Tutor comparisons order
-assertions before hashing and serialization. These are integrity improvements,
-not new evidence of playing strength or teaching effectiveness.
+The M14 runtime implementation candidate `d36b20e4747a39cc2257e47b04b5be98ad8131e7`
+passed both repository CI jobs in run `34411545018`: native full test/lint and the
+independent external Stockfish witness. The final documentation-bearing candidate
+must pass the same exact-head gates before PR #46 may merge.
 
 ## Separation of responsibilities
 
 **Objective chess authority:** deterministic chess tooling owns canonical board
-state, legal actions and qualified low-level features. Engine providers supply
-provenance-bound evaluation/PV evidence with explicit partial/bounded/failure
-states; engine judgment is not participant reasoning.
+state, legal actions, exact source provenance, and qualified low-level features.
+Engine providers supply versioned evaluation/PV evidence with explicit
+partial/bounded/failure states. M4 comparisons preserve mate, terminal, inversion,
+and compatibility semantics instead of manufacturing a universal human-readable
+score.
 
-**Application authority:** deterministic code owns evidence identity, sequencing,
-bookkeeping, exact references, declared-policy evaluation, and local persistence.
-M8 freezes all planned pre-reveal responses before objective reveal. Recovery uses
-the same transitions and does not bypass those gates.
+**Participant-evidence authority:** raw/frozen player responses and their exposure
+state remain distinct from objective engine evidence. Later structured coding does
+not silently replace raw self-report.
 
-**Human/model judgment:** explanation authorship, semantic coding,
-hypothesis-evidence relations/challenge review, pedagogical applicability, context
-classification, exposure declarations, and outcome scoring retain explicit
-provenance. The deterministic system must not fabricate those judgments or promote
-missing information into certainty.
+**Learning-inference authority:** M6/M7 describe bounded position discrepancies and
+participant-specific recurring hypotheses. Recurrence is not a causal cognitive
+mechanism, permanent trait, or automatic training eligibility.
+
+**Pedagogy/outcome authority:** M9 selects only through explicit versioned
+applicability rules. M10 measures bounded outcome/transfer evidence under a
+predeclared protocol. Practice completion, successful exercise performance,
+transfer, causality, and mastery remain different claims.
+
+**Application/persistence authority:** deterministic code owns sequencing, exact
+identities, participant scope, integrity checking, replay, and append-only storage.
+Checksums are integrity mechanisms, not signatures; participant filtering is not
+authentication.
+
+**Human/model judgment:** explanation authorship, semantic discrepancy coding,
+hypothesis evidence relations/challenge review, pedagogical applicability, exposure
+classification, and outcome scoring retain explicit provenance. M13 and M14 do not
+fabricate these judgments.
 
 ## Contracts contributors must preserve
 
@@ -85,64 +104,93 @@ local discrepancy != recurrence != causal learner trait
 supported recurrence != automatic training eligibility
 selected intervention != effective intervention
 practice completion != successful performance != transfer != mastery
+engine analysis != UI presentation semantics != mentor explanation
 ```
 
-M9 may select only under its versioned eligibility and explicit applicability
-rules; multiple applicable mappings remain `unclear`. M10 accepts an exact
-`selected` decision and does not upgrade `ineligible` or `unclear` results.
+M14 specifically preserves this last separation. Its package exposes the native
+M3/M4 evidence needed downstream, but it is not authorization to turn centipawns,
+mates, bounds, partial results, incompatible regimes, or engine failures into
+unversioned frontend labels.
 
-M10 plans must precede attempts. Preserve raw evidence, failures, uncertainty,
-scorer disagreement, exclusions, and complete known history. `unexposed` requires
-scoped evidence/attestation; unknown exposure or assistance remains unknown.
-Repeated positions/coders cannot inflate independent evidence counts. Even with
-supported transfer dimensions, `mastery` and `causal_effect` remain
-`not_established`. M10 does not automatically revise M7.
+## CLI boundaries
 
-Keep native evidence fingerprints separate from storage-envelope digests. Require
-exact prompts for M8 recovery and explicit upstream dependencies for archival
-closure. Reject mismatches rather than silently rewriting history. The database
-is plaintext; scope filtering is not authentication and checksums are not
-signatures. Generic M10 JSON archival does not imply typed M10 recovery.
+The project is a Python 3.11+ package and now has an installed `cme` command.
+Current bounded commands include:
 
-## Development and stop boundary
+```text
+cme games inspect
+cme position packet
+cme analyze
+cme artifacts list/show/verify
+cme tutor ...
+```
 
-This is a Python 3.11+ package, not a TypeScript project. There is no product CLI.
-Use the root installation and validation commands in the consolidated runbook;
-the full CI platform is Ubuntu/Python 3.11. Ruff/tests/syntax compilation do not
-constitute a standalone static type-checker pass. External Stockfish must be
-configured explicitly, and skipped integration tests are not a Stockfish pass.
+`cme position packet` remains deterministic and engine-free. `cme analyze` requires
+an explicit external UCI executable or PATH name. Optional M14 archival requires an
+existing artifact database plus an explicit participant; it never creates a new
+learner or tutor state record.
 
-M11 longitudinal learner state, CLI/UI/richer LLM productization, typed M10
-recovery/migration, and broader empirical product validation remain separate work.
-Neither documentation consolidation nor a supported outcome assessment authorizes
-another implementation milestone. The three-feature queue is complete.
+M13 likewise does not generate engine analysis, M6 assessments, M7 hypotheses,
+explanation prose, training decisions, or automatic M11 mutations. Those records
+must come from their owning contracts.
+
+## Development and qualification
+
+The full repository gate is:
+
+```bash
+python -m pytest -rs
+python -m ruff check .
+python -m compileall -q src tests
+python -m pytest tests/integration/test_stockfish_uci.py -rs
+```
+
+The Stockfish test requires `STOCKFISH_EXECUTABLE`; skipped external-engine tests
+are not a successful witness. Pull-request CI is the merge gate. Ruff/tests/imports
+and syntax compilation do not constitute a standalone static type-checker pass;
+none is currently configured.
+
+Focused current surface suites include:
+
+```bash
+python -m pytest tests/test_m11_qualification.py
+python -m pytest tests/test_m12_cli.py
+python -m pytest tests/test_m13_persistent_tutor_cli.py
+python -m pytest tests/test_m14_engine_analysis_cli.py
+```
+
+## Current claim ceiling and stop boundary
+
+The repository can now preserve a longitudinal evidence history and expose selected
+qualified capabilities through a local CLI. It still does **not** establish:
+
+- causal cognitive diagnosis or permanent learner traits;
+- intervention-caused improvement, automatic mastery, or universal thresholds;
+- a final UI-safe evaluation/read-model contract;
+- automatic M6 discrepancy generation from engine evidence;
+- automatically generated mentor prose grounded in a validated feedback contract;
+- autonomous M7/M11 mutation from tutoring or M14 analysis;
+- a web UI, authenticated hosted service, or production multi-user persistence;
+- empirical tutoring efficacy.
+
+The next work packages must remain separate: first define evaluation presentation
+semantics, then build grounded mentor feedback over verified evidence. Neither is
+part of M14.
 
 ## Research and product hypotheses
 
-The broader product hypothesis may eventually combine engine and game-history
-analysis, persistent learner modeling, misconception hypotheses, personalized
-curriculum, targeted exercises, adaptive explanation, and mastery/progress
-evidence. Implemented contracts do not settle the full production architecture or
-validate the entire hypothesis.
+The broader product hypothesis remains a persistent tutor that learns from a
+player's decision evidence over time and chooses bounded practice based on
+inspectable support, contradiction, and outcomes. Implemented software contracts do
+not settle the full production architecture or validate tutoring benefit.
 
-The current discovery direction remains evidence-backed recurring decision
-diagnosis with regular online players approximately rated 1400-1800, not a
-permanent rating boundary. See
-[product discovery](docs/product/product-discovery.md) and
-[product definition](docs/product/product-definition.md).
-
-The first validation protocol is designed and frozen but not executed. Product
-validation remains authoritative for claims about learner diagnosis and tutoring
-value. See [the protocol](docs/research/first-product-validation/README.md).
-Pilot 001 was mixed and participant-specific: P01 reported that missing board
-context made the analysis unhelpful. Pilot 002 was mixed and participant-specific:
-board context improved explanation and direct player evidence added information,
-but responses were sparse. Pilot 003 freezes clean instrument calibration and
-remains blocked on unexposed P02. Pilot 004 is a separate instrument-aware N-of-1
-design for P01 and does not replace Pilot 003. None changes the frozen main
-protocol. Software qualification in PRs #39-#41 is not a new participant study.
+The first formal product-validation protocol remains separate from the synthetic
+software qualification corpus. See
+[product discovery](docs/product/product-discovery.md),
+[product definition](docs/product/product-definition.md), and the frozen research
+artifacts under `docs/research/`.
 
 The [repository build plan](docs/product/chess-mentor-engine-repository-build-plan.md)
-retains conceptual sequencing and historical rationale. Its time-sensitive
-recommendations, and early stage-status statements in historical records, do not
-override current build status or later accepted ADRs.
+preserves conceptual sequencing and historical rationale. Its older time-sensitive
+stage statements do not override this current status authority or later accepted
+contracts.
