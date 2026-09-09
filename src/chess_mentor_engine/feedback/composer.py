@@ -193,7 +193,9 @@ def _validate_objective_binding(
 
     reveal = session.capture_session.objective_reveal
     if reveal is None:
-        raise GroundedFeedbackError("compared tutor session is missing objective reveal")
+        raise GroundedFeedbackError(
+            "compared tutor session is missing objective reveal"
+        )
     revealed_comparison = reveal.decision_comparison_ref
     if revealed_comparison is None:
         raise GroundedFeedbackError(
