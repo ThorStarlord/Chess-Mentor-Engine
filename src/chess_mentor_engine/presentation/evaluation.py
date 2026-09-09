@@ -228,7 +228,9 @@ def _validate_comparison(
                 raise EvaluationPresentationError("played analysis record is missing")
         else:
             if comparison.played_analysis_ref is None:
-                raise EvaluationPresentationError("played analysis reference is missing")
+                raise EvaluationPresentationError(
+                    "played analysis reference is missing"
+                )
             _require_ref_matches(
                 comparison.played_analysis_ref,
                 played_analysis,
