@@ -17,6 +17,7 @@ PGN / canonical position
 -> deterministic chess context
 -> provenance-bound UCI engine analysis
 -> objective played-move comparison
+-> deterministic evaluation presentation
 -> frozen participant decision evidence
 -> position-local reasoning discrepancy
 -> participant-specific learner hypothesis
@@ -46,6 +47,7 @@ M1-M10 setup and research protocols remain in the
 | M12 | Read-only local `cme` evidence CLI for PGN inspection, position packets, and verified artifact inspection. |
 | M13 | Persistent replay-verified `cme tutor ...` workflow over the qualified M8 state machine. |
 | M14 | Engine-backed `cme analyze` workflow over qualified M3/M4 contracts, with optional immutable participant-scoped package archival. |
+| M15 | Deterministic evaluation presentation projection with explicit perspective, mate/bound/partial semantics, PVs, engine identity, and exact evidence references. |
 
 The UCI provider remains version `0.2`: Black-root score bounds are normalized into
 White evaluation ordering, explicit invalid MultiPV ranks fail closed, mate remains
@@ -110,8 +112,8 @@ cme analyze games.pgn \
   --participant P01
 ```
 
-See the [M14 runbook](docs/runbooks/m14-engine-analysis-cli.md). M14 is an evidence
-package, not a final UI evaluation-format contract.
+See the [M14 runbook](docs/runbooks/m14-engine-analysis-cli.md). M14 remains the
+objective evidence package; M15 is the separate deterministic presentation layer.
 
 ### Inspect verified local artifacts
 
@@ -153,6 +155,7 @@ The CLI does not replace the domain APIs. Important package boundaries remain:
 
 - `chess_mentor_engine.analysis` — normalized M3 engine evidence;
 - `chess_mentor_engine.selection` — M4 comparison and diagnostic selection;
+- `chess_mentor_engine.presentation` — M15 deterministic evaluation presentation;
 - `chess_mentor_engine.evidence` — participant evidence;
 - `chess_mentor_engine.learning` — M6 reasoning discrepancy and M7 hypothesis records;
 - `chess_mentor_engine.tutoring` — M8 state machine;
@@ -160,6 +163,33 @@ The CLI does not replace the domain APIs. Important package boundaries remain:
 - `chess_mentor_engine.evaluation` — M10 outcome and transfer evidence;
 - `chess_mentor_engine.longitudinal` — M11 longitudinal learner state;
 - `chess_mentor_engine.storage` — local immutable artifacts and verified replay.
+
+### Project engine evidence for display
+
+M15 consumes already-qualified M3/M4 records; it does not run an engine:
+
+```python
+from chess_mentor_engine.presentation import build_evaluation_presentation
+
+view = build_evaluation_presentation(
+    root_analysis=root_analysis,
+    comparison=decision_comparison,
+    played_analysis=played_child_analysis,  # optional
+)
+```
+
+The `m15.evaluation-presentation.v1` projection retains the canonical White engine
+view and an explicit original decision-mover view. Black mover projection negates
+centipawns and reverses lower/upper ordering bounds. Mate remains symbolic as
+winner + plies-to-mate. Partial, bounded, incompatible, failed, terminal, or empty
+evidence stays visibly non-exact rather than receiving a fabricated numeric score.
+Ranked UCI PVs, engine provenance, fingerprints, and M4 evidence references are
+preserved.
+
+M15 intentionally does not round centipawns into pawn floats, localize score
+strings, convert PVs to SAN, or invent `inaccuracy`, `mistake`, or `blunder`
+thresholds. See the
+[M15 runbook](docs/runbooks/m15-evaluation-presentation.md).
 
 See the [M11 runbook](docs/runbooks/m11-longitudinal-learner-state.md) for longitudinal
 operation and qualification.
@@ -173,6 +203,7 @@ python -m pytest tests/test_m11_qualification.py
 python -m pytest tests/test_m12_cli.py
 python -m pytest tests/test_m13_persistent_tutor_cli.py
 python -m pytest tests/test_m14_engine_analysis_cli.py
+python -m pytest tests/test_m15_evaluation_presentation.py
 ```
 
 Related engine/comparison contracts:
@@ -201,23 +232,23 @@ pass.
 
 The repository can preserve and connect objective chess evidence, frozen player
 evidence, bounded learner hypotheses, tutoring state, intervention/outcome evidence,
-and longitudinal history. M12-M14 now expose a usable local CLI over selected
-qualified capabilities.
+longitudinal history, and a deterministic display projection. M12-M14 expose a
+usable local CLI over selected qualified capabilities; M15 exposes its presentation
+contract as a Python API.
 
 It still does **not** establish:
 
 - causal cognitive mechanisms or permanent learner traits;
 - intervention-caused improvement or automatic mastery;
-- universal chess-evaluation thresholds;
-- a UI-safe evaluation presentation contract;
-- automatically generated M6 diagnoses or mentor explanations;
+- universal chess-evaluation or move-quality thresholds;
+- automatically generated M6 diagnoses or grounded mentor explanations;
 - automatic M7/M11 mutation from a tutor session;
 - a web UI, authenticated hosted service, or production multi-user persistence;
 - empirical tutoring efficacy.
 
-The next separately bounded product work should preserve these claim ceilings rather
-than collapsing engine analysis, display semantics, and mentor language into one
-opaque layer.
+The next separately bounded product work is grounded mentor feedback over verified
+evidence. It must preserve the boundary between engine analysis, M15 display
+semantics, participant evidence, and authored/model explanation.
 
 ## Documentation map
 
@@ -227,6 +258,7 @@ opaque layer.
 - [M12 local evidence CLI](docs/runbooks/m12-local-evidence-cli.md) — read-only CLI surface.
 - [M13 persistent tutor CLI](docs/runbooks/m13-persistent-tutor-cli.md) — replay-verified tutor workflow.
 - [M14 engine analysis CLI](docs/runbooks/m14-engine-analysis-cli.md) — objective engine-backed analysis package.
+- [M15 evaluation presentation](docs/runbooks/m15-evaluation-presentation.md) — deterministic UI-safe evidence projection.
 - [Architecture overview](docs/architecture/architecture.md) — earlier layer map and historical implementation boundary.
 - [Decision records](docs/decisions/README.md) — normative bounded contracts.
 - [Product build plan](docs/product/chess-mentor-engine-repository-build-plan.md) — planning history and broader product direction.
