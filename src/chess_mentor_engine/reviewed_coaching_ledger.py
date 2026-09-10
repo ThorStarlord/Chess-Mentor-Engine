@@ -661,7 +661,10 @@ def _validate_review_sources(
     evaluation = None if evaluation_artifact is None else evaluation_artifact.payload
 
     if coaching is None:
-        if review["model_coaching"] is not None or run["model_coaching_ref"] is not None:
+        if (
+            review["model_coaching"] is not None
+            or run["model_coaching_ref"] is not None
+        ):
             raise ReviewedCoachingLedgerError("M19 optionality drifted")
     else:
         _native_identity(
