@@ -42,17 +42,13 @@ The top-level section order is exactly the M25 order:
 
 ```text
 objective_evidence
- diagnostic_selection
+diagnostic_selection
 participant_authority
 tutor_state
 deterministic_grounding
 model_coaching
 model_evaluation
 ```
-
-The first line above is intentionally the M25 `objective_evidence` section; the
-leading space before `diagnostic_selection` is only Markdown formatting and has no
-schema meaning.
 
 The generated HTML exposes the seven sections with explicit authority-source labels:
 
