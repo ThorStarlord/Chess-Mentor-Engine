@@ -8,8 +8,8 @@ import json
 import pytest
 from test_m24_provider_conformance import (
     _Evaluator,
-    _Provider,
     _evaluator_endpoint,
+    _Provider,
     _provider_endpoint,
 )
 from test_m26_persistent_reviewed_coaching import S13, S15, _store_lineage
