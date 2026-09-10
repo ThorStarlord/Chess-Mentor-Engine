@@ -20,6 +20,18 @@ from chess_mentor_engine.storage import ArtifactRef, LocalArtifactStore, StoredA
 M29_SCHEMA_VERSION = "m29.persisted-coach-review-reference-bridge.v1"
 M29_CLAIM_SCOPE = "repository_local_persisted_review_reference_bridge"
 
+_SOURCE_FINGERPRINT_ORDER = (
+    "objective_evidence",
+    "diagnostic_candidate",
+    "diagnostic_batch",
+    "authorization",
+    "launch",
+    "tutor_state",
+    "deterministic_grounding",
+    "model_coaching",
+    "model_evaluation",
+)
+
 
 class PersistedReviewReferenceError(ValueError):
     """M29 cannot resolve one mechanically verified persisted review chain."""
@@ -104,6 +116,20 @@ def _run_from_review(
     return matches[0]
 
 
+def _m28_read_model(read_model: dict) -> dict:
+    """Restore M25's explicit fingerprint order after canonical JSON persistence."""
+    fingerprints = read_model.get("source_fingerprints")
+    if type(fingerprints) is not dict:
+        raise PersistedReviewReferenceError("M25 source fingerprints are malformed")
+    if set(fingerprints) != set(_SOURCE_FINGERPRINT_ORDER):
+        raise PersistedReviewReferenceError("M25 source fingerprint keys drifted")
+    ordered = dict(read_model)
+    ordered["source_fingerprints"] = {
+        key: fingerprints[key] for key in _SOURCE_FINGERPRINT_ORDER
+    }
+    return ordered
+
+
 def build_persisted_coach_review_reference(
     *,
     store: LocalArtifactStore,
@@ -161,7 +187,10 @@ def build_persisted_coach_review_reference(
     if type(entry) is not dict:
         raise PersistedReviewReferenceError("M27 run entry is malformed")
     fidelity = entry.get("fidelity")
-    if type(fidelity) is not dict or fidelity.get("status") != "mechanically_verified":
+    if (
+        type(fidelity) is not dict
+        or fidelity.get("status") != "mechanically_verified"
+    ):
         raise PersistedReviewReferenceError("M27 mechanical verification is absent")
     if entry.get("run_ref") != run_ref.to_dict():
         raise PersistedReviewReferenceError("M27 verified a different M26 run")
@@ -169,7 +198,9 @@ def build_persisted_coach_review_reference(
         raise PersistedReviewReferenceError("M27 verified a different M25 review")
 
     review_artifact = store.get(review_ref, participant_id=participant_id)
-    surface = render_coach_review_reference_surface(review_artifact.payload)
+    surface = render_coach_review_reference_surface(
+        _m28_read_model(review_artifact.payload)
+    )
     if surface.read_model != review_artifact.payload:
         raise PersistedReviewReferenceError("M28 did not preserve the exact M25 payload")
 
