@@ -204,7 +204,11 @@ def test_diagnose_builds_deterministic_candidate_control_queue(
         "partial_root_count": 0,
         "incompatible_comparison_count": 0,
     }
-    assert [item["selection"]["decision"]["role"] for item in payload["source_pool"]] == [
+    roles = [
+        item["selection"]["decision"]["role"]
+        for item in payload["source_pool"]
+    ]
+    assert roles == [
         "candidate",
         "control",
         "control",
