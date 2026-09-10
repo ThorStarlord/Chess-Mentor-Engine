@@ -15,6 +15,7 @@ dependencies = []
 [project.scripts]
 cme = "chess_mentor_engine.cli:main"
 cme-candidate-tutor = "chess_mentor_engine.candidate_tutor_cli:main"
+cme-coach-review = "chess_mentor_engine.coach_review_cli:main"
 
 [project.optional-dependencies]
 dev = [
