@@ -413,7 +413,9 @@ def render_participant_review_package_surface(
         or bridged.surface.surface_id != expected["surface_id"]
         or bridged.surface.fingerprint != expected["fingerprint"]
     ):
-        raise ParticipantReviewPackageError("M30 package surface reconstruction drifted")
+        raise ParticipantReviewPackageError(
+            "M30 package surface reconstruction drifted"
+        )
     return bridged.surface
 
 
@@ -429,8 +431,14 @@ def list_participant_review_navigation(
         participant_id=participant_id,
         kind=COACH_REVIEW_SCHEMA_VERSION,
     )
-    ledger_refs = store.list_refs(participant_id=participant_id, kind=M27_SCHEMA_VERSION)
-    package_refs = store.list_refs(participant_id=participant_id, kind=M30_SCHEMA_VERSION)
+    ledger_refs = store.list_refs(
+        participant_id=participant_id,
+        kind=M27_SCHEMA_VERSION,
+    )
+    package_refs = store.list_refs(
+        participant_id=participant_id,
+        kind=M30_SCHEMA_VERSION,
+    )
 
     ledger_dependencies = {
         ref.digest: store.get(ref, participant_id=participant_id).dependencies
