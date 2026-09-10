@@ -21,8 +21,8 @@ from .evaluation import (
     build_model_coaching_evaluation_request,
 )
 from .model import (
-    ModelCoachProvider,
     ModelCoachingGeneration,
+    ModelCoachProvider,
     build_model_coaching_request,
     record_model_coaching_response,
 )
