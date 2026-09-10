@@ -183,15 +183,20 @@ def test_deterministic_run_builds_privacy_bounded_zero_execution_ledger(
     assert entry["executions"] == []
     assert ledger["authority_boundary"]["executes_external_calls"] is False
     assert ledger["authority_boundary"]["retries_execution"] is False
+    assert ledger["privacy_contract"]["copies_request_payloads"] is False
+    assert ledger["privacy_contract"]["copies_model_rendered_content"] is False
+    assert ledger["privacy_contract"]["copies_evaluator_rationales"] is False
+    assert (
+        ledger["privacy_contract"]["copies_participant_response_content"]
+        is False
+    )
 
     serialized = canonical_json(ledger)
-    for forbidden in (
-        "rendered_content",
-        "raw_response",
-        "structured_response",
-        "rationale",
+    for sensitive in (
+        "I would play e4.",
+        "I considered e4 and expect ...e5 followed by Nf3.",
     ):
-        assert forbidden not in serialized
+        assert sensitive not in serialized
 
     stored = store.get(result.ledger_ref, participant_id="P01")
     assert stored.payload == ledger
