@@ -1,16 +1,19 @@
 # Chess Mentor Engine — Milestone Handoff
 
-**Handoff scope:** completed M17–M19 milestone / Packages 1–3  
+**Handoff scope:** completed M20–M22 milestone / Packages 1–3  
 **Repository:** `ThorStarlord/Chess-Mentor-Engine`  
-**Post-feature baseline:** `25672c1b375181b6eb48e4ee9c8283e16dc12665`  
+**Post-feature baseline:** `7f59c6add7ffe042d8c2b65d6273867673b6d74b`  
 **Prepared:** 2026-09-10  
 
-This document is the durable handoff for the milestone that connected engine
-analysis to presentation, added bounded diagnostic move selection, and introduced a
-provenance-bound model-language layer. Use
-[`docs/product/repository-build-status.md`](docs/product/repository-build-status.md)
-for the moving implementation boundary and this file for the completed milestone
-summary, qualification evidence, operational commands, and next-session priorities.
+This document is the durable handoff for the milestone that added bounded evaluation
+of model-authored coaching, connected an exact diagnostic candidate into the
+participant-evidence tutor flow, and qualified end-to-end evaluation fidelity across
+the engine/presentation/feedback/model/evaluator layers.
+
+Use [`docs/product/repository-build-status.md`](docs/product/repository-build-status.md)
+as the moving implementation boundary and this file for the completed milestone
+summary, qualification evidence, restart instructions, and recommended next-session
+priorities.
 
 ## Milestone outcome
 
@@ -18,166 +21,180 @@ All three queued packages are implemented, qualified on exact candidate heads, a
 merged into `main`.
 
 ```text
-Package 1 / M17  Analysis -> Presentation Bridge       MERGED - PR #49
-Package 2 / M18  Diagnostic Move-Analysis Queue        MERGED - PR #50
-Package 3 / M19  Provenance-Bound Mentor Coaching      MERGED - PR #51
+Package 1 / M20  Model Coaching Evaluation Contract & Harness       MERGED - PR #53
+Package 2 / M21  Diagnostic Candidate -> Tutor Session Orchestration MERGED - PR #54
+Package 3 / M22  End-to-End Evaluation Fidelity Matrix               MERGED - PR #55
 ```
 
-The milestone advances the product path from isolated qualified components toward a
-usable evidence chain:
+The milestone closes the three priorities left by the previous M17–M19 handoff:
 
 ```text
-canonical PGN position
--> M3 engine evidence
--> M4 played-decision comparison / diagnostic selection
--> M15 UI-safe evaluation presentation
--> M16 deterministic grounded mentor feedback
--> M19 request-bound model-authored language
+M19 model-authored prose
+-> M20 explicit bounded evaluator contract
+
+M18 selected diagnostic candidate
+-> M21 explicit participant selection + capture consent
+-> M5 PlayerDecisionContext
+-> M8 TutorSession(state=selected)
+
+M3/M4 objective evidence
+-> M15 presentation
+-> M16 deterministic grounding
+-> M19 model-language request/result
+-> M20 evaluator request/result
+-> M22 cross-layer fidelity qualification
 ```
 
-The authority boundaries remain intentional. Engine analysis, deterministic
-presentation, learner evidence/inference, grounded feedback, model-authored prose,
-and pedagogy are not collapsed into one opaque model decision.
+The authority boundaries remain intentional. M20 does not make an evaluator a source
+of objective chess truth. M21 is orchestration, not learner inference. M22 is a
+regression/architectural-integrity qualification, not a production-quality or
+pedagogical-efficacy claim.
 
-## Package 1 — M17 Analysis -> Presentation Bridge
+## Package 1 — M20 Model Coaching Evaluation Contract & Harness
 
-**PR:** #49  
-**Final candidate head:** `c91ffa33a0797e0894f1f2dc519600be39f6afcc`  
-**Merge commit:** `4672a2b5dc34cae736be8e260f439afe6acfb1e6`  
-**CI run:** `34435288183`
+**PR:** #53  
+**Final candidate head:** `583ccda3a357605bc9ff2318ce85bc940031730b`  
+**Merge commit:** `2d57b953ee8336a5bdd05f00f48905d000158691`  
+**CI run:** `34481292153`
 
 Delivered:
 
-- opt-in `cme analyze --with-presentation`;
-- direct use of the exact in-memory M14/M3/M4 records by the qualified M15
-  projector, with no JSON reconstruction layer;
-- unchanged default M14 CLI output when the flag is absent;
-- unchanged `m14.analysis-package.v1` archival contract;
-- presentation construction before archival so projection rejection cannot leave a
-  storage side effect;
-- fail-closed coverage for score/fingerprint binding, Black decision-mover
-  perspective and bound reversal, symbolic mate, played-child incompatibility, and
-  tampered comparison evidence.
+- content-addressed `m20.model-coaching-evaluation-request.v1` over exact current
+  M16/M19 source records;
+- content-addressed `m20.model-coaching-evaluation.v1` result records;
+- seven frozen evaluation dimensions covering grounding consistency, objective chess
+  consistency, evidence sufficiency, uncertainty preservation, mate/bound
+  preservation, learner-inference scope, and authority boundaries;
+- explicit `pass | fail | unclear` judgments and deterministic aggregate status;
+- evaluator provenance without promoting evaluator output to chess truth;
+- exact M19/source revalidation before evaluator use;
+- fail-closed coverage for policy/source/request drift, evaluator mutation/failure,
+  incomplete/duplicate dimensions, malformed verdicts, and chronology errors;
+- a hermetic adversarial corpus for fabricated centipawn precision, bounded-to-exact
+  promotion, symbolic-mate conversion, learner overclaiming, invented hypotheses,
+  unsupported training authority, and ambiguous claims;
+- explicit retained ceiling:
+  `truth_status = not_established_by_m20_evaluation`.
 
 Qualification evidence:
 
 ```text
-582 passed, 8 intentional external-engine skips
-Focused M17 suite: 5 passed
+616 passed, 8 intentional external-engine skips
+Focused M20 suite: 18 passed
 Ruff: PASS
 Editable package build/install: PASS
 Independent Stockfish witness: 8/8 PASS, no skips
 ```
 
-Operational example:
+Operational APIs:
 
-```bash
-cme analyze games.pgn \
-  --game-index 0 \
-  --ply-index 12 \
-  --engine /path/to/stockfish \
-  --depth 14 \
-  --multipv 3 \
-  --with-presentation
+```text
+chess_mentor_engine.coaching.build_model_coaching_evaluation_request
+chess_mentor_engine.coaching.bind_model_coaching_evaluation
+chess_mentor_engine.coaching.run_model_coaching_evaluation
+ModelCoachingEvaluationGeneration
+ModelCoachingEvaluationJudgment
 ```
 
-## Package 2 — M18 Diagnostic Move-Analysis Queue
+See [`docs/runbooks/m20-model-coaching-evaluation.md`](docs/runbooks/m20-model-coaching-evaluation.md).
 
-**PR:** #50  
-**Final candidate head:** `65297abd366bf092a60ed4fa202e2e51bb1950cd`  
-**Merge commit:** `00bab82dc963bff005c9753b498f1e50a8c513d4`  
-**CI run:** `34436086912`
+## Package 2 — M21 Diagnostic Candidate -> Tutor Session Orchestration
+
+**PR:** #54  
+**Final candidate head:** `537c9d9751103bc5c0569fa26b12a229cc47a6fe`  
+**Merge commit:** `20ddff116aa501f2644bfcdbef69d4c173d93763`  
+**CI run:** `34483038324`
 
 Delivered:
 
-- `cme diagnose` over one selected PGN game and an explicit inclusive played-ply
-  window;
-- reuse of qualified M3 analysis, M4 comparison, M4C signal derivation, M4D
-  selection policy, and deterministic candidate-batch contracts;
-- required explicit JSON `SelectionPolicy`, with no universal move-quality
-  thresholds embedded in the CLI;
-- complete auditable source-pool output plus native `DiagnosticCandidateBatch`;
-- preservation of controls, quotas, per-game caps, exclusions, deterministic
-  ordering, policy/source fingerprints, and explicit shortfalls;
-- conservative handling of partial, failed, bounded, incompatible, and otherwise
-  incomparable evidence;
-- rejection coverage for invalid policy/range inputs and provenance/fingerprint
-  drift.
+- content-addressed participant authorization with separate candidate selection and
+  capture-consent decisions;
+- exact binding to the selected M18 candidate and deterministic candidate batch;
+- retained selection-signal identity checks and candidate/batch fingerprint checks;
+- revalidation of source/game/root-ply/child-ply provenance against the exact
+  canonical game;
+- internal derivation of the M1 position-context packet instead of trusting a
+  caller-authored display/context record;
+- bounded launch into only the native M5 `PlayerDecisionContext` and initial M8
+  `TutorSession(state=selected)`;
+- deterministic launch provenance and an explicit no-M6/M7/M9/M10/M11 authority
+  ceiling;
+- fail-closed coverage for consent/selection mismatch, same-ID source drift,
+  candidate/batch/authorization tampering, canonical-game mismatch, noncanonical
+  position copies, chronology violations, and invalid capture protocols.
 
 Qualification evidence:
 
 ```text
-589 passed, 8 intentional external-engine skips
-Focused M18 suite: 7 passed
+633 passed, 8 intentional external-engine skips
+Focused M21 suite: 17 passed
 Ruff: PASS
 Editable package build/install: PASS
 Independent Stockfish witness: 8/8 PASS, no skips
 ```
 
-One earlier M18 candidate failed Ruff on two E501 formatting findings. Those were
-corrected without behavioral changes; the final head above passed the complete gate.
+Operational APIs:
 
-Operational example:
-
-```bash
-cme diagnose games.pgn \
-  --game-index 0 \
-  --start-ply 0 \
-  --end-ply 30 \
-  --policy ./selection-policy.json \
-  --engine /path/to/stockfish \
-  --depth 14 \
-  --multipv 3 \
-  --timeout-ms 10000
+```text
+chess_mentor_engine.tutoring.record_candidate_tutor_authorization
+chess_mentor_engine.tutoring.start_candidate_tutor_session
 ```
 
-The selection-policy file must match the qualified M4 `SelectionPolicy` contract.
-See [`docs/runbooks/m18-diagnostic-analysis-queue.md`](docs/runbooks/m18-diagnostic-analysis-queue.md).
+M21 intentionally stops at the initial selected M8 state. The caller must continue
+through the existing qualified M8 sequence beginning with `present_tutor_position`.
+It does not choose the candidate, create M6/M7 inference, choose training, or generate
+mentor language.
 
-## Package 3 — M19 Provenance-Bound Mentor Coaching
+See [`docs/runbooks/m21-diagnostic-candidate-tutor-orchestration.md`](docs/runbooks/m21-diagnostic-candidate-tutor-orchestration.md).
 
-**PR:** #51  
-**Final candidate head:** `f465a7f5355d8e9304a557cbbc26971d1aa18c27`  
-**Merge commit:** `25672c1b375181b6eb48e4ee9c8283e16dc12665`  
-**CI run:** `34436883416`
+## Package 3 — M22 End-to-End Evaluation Fidelity Matrix
+
+**PR:** #55  
+**Final candidate head:** `10e7dac9ef0b6ebafce9b5d307ec99e1fd254ca5`  
+**Merge commit:** `7f59c6add7ffe042d8c2b65d6273867673b6d74b`  
+**CI run:** `34484791539`
 
 Delivered:
 
-- provider-neutral `chess_mentor_engine.coaching` API;
-- exact recomputation of the qualified M16 grounded-feedback record before model
-  request construction;
-- content-addressed M19 request containing exact M16 grounding plus a fingerprinted
-  instruction/claim ceiling;
-- explicit request ID/fingerprint echo and provider/model/version/run/timestamp
-  provenance requirements;
-- a model generation contract that accepts prose but not replacement M3/M4/M6/M7/M9
-  structured records;
-- M8 explanation recording with `actor_kind=model` and the exact M19 instruction
-  fingerprint;
-- provider request-mutation detection;
-- explicit `request_bound_not_semantically_verified` status so provenance binding is
-  not confused with semantic correctness;
-- rejection coverage for request/instruction tampering, objective evidence drift,
-  wrong request echo, blank/predating generation, provider failure/mutation, and
-  invalid provider result types.
+- machine-readable eight-regime fidelity matrix covering:
+  - exact White root MultiPV;
+  - bounded Black decision-mover perspective and bound reversal;
+  - symbolic terminal mate;
+  - partial root evidence;
+  - complete-but-empty/unavailable root evidence;
+  - compatible played-child reanalysis;
+  - incompatible child analysis regime;
+  - failed child analysis;
+- native M3/M4 -> M15 regression rather than a duplicate chess evaluator;
+- exact M15 -> M16 -> M19 -> M20 source-continuity regression;
+- explicit verification that model overclaims do not mutate true M15/M16 source
+  evaluation;
+- rehashed M19 grounding-drift and rehashed M20 presentation-drift rejection tests,
+  proving source validation still fails after outer content-addressed IDs are
+  recomputed;
+- direct M15 source-reference and M16 analysis-binding rejection coverage;
+- explicit preservation of score perspective, exactness, bounds, symbolic mate,
+  failure/incompatibility state, and source provenance.
 
 Qualification evidence:
 
 ```text
-598 passed, 8 intentional external-engine skips
-Focused M19 suite: 9 passed
+648 passed, 8 intentional external-engine skips
+Focused M22 suite: 15 passed
 Ruff: PASS
 Editable package build/install: PASS
 Independent Stockfish witness: 8/8 PASS, no skips
 ```
 
-M19 intentionally does not freeze a production model provider, SDK, credentials
-flow, retry/rate-limit policy, or semantic model-quality claim. See
-[`docs/runbooks/m19-provenance-bound-model-coaching.md`](docs/runbooks/m19-provenance-bound-model-coaching.md).
+An earlier M22 candidate passed all 648 behavioral tests but Ruff correctly rejected
+one import-order issue and two line-length issues. The style-only repair produced the
+exact final head above, which then passed the complete gate before merge.
+
+See [`docs/runbooks/m22-end-to-end-evaluation-fidelity-matrix.md`](docs/runbooks/m22-end-to-end-evaluation-fidelity-matrix.md).
 
 ## Validation / regression runbook
 
-Install the package for development:
+Install for development:
 
 ```bash
 python3.11 -m venv .venv
@@ -185,12 +202,23 @@ python3.11 -m venv .venv
 python -m pip install -e ".[dev]"
 ```
 
-Run the focused milestone suites:
+Run the focused M20–M22 suites:
 
 ```bash
-python -m pytest tests/test_m17_analysis_presentation_bridge.py
-python -m pytest tests/test_m18_diagnostic_analysis_queue.py
-python -m pytest tests/test_m19_provenance_bound_model_coaching.py
+python -m pytest tests/test_m20_model_coaching_evaluation.py
+python -m pytest tests/test_m21_diagnostic_candidate_tutor_orchestration.py
+python -m pytest tests/test_m22_end_to_end_evaluation_fidelity.py
+```
+
+Run the combined mentor/evaluation regression:
+
+```bash
+python -m pytest \
+  tests/test_m15_evaluation_presentation.py \
+  tests/test_m16_grounded_mentor_feedback.py \
+  tests/test_m19_provenance_bound_model_coaching.py \
+  tests/test_m20_model_coaching_evaluation.py \
+  tests/test_m22_end_to_end_evaluation_fidelity.py
 ```
 
 Run the full repository gate:
@@ -206,74 +234,97 @@ The Stockfish integration suite requires `STOCKFISH_EXECUTABLE`. A skipped exter
 engine suite is not a successful independent-engine witness. Pull-request CI remains
 the merge authority.
 
+No new CLI command was introduced by M20–M22. M20 and M21 expose Python APIs; M22 is
+a qualification matrix/test surface. Existing CLI commands remain documented in
+`README.md` and the M13/M14/M17/M18 runbooks.
+
 ## Verified evidence and remaining gates
 
 ### Software qualification
 
-No software qualification gate from this milestone remains pending. All three
-packages were merged only after the exact final candidate head passed native tests,
-Ruff, package installation, and the independent Stockfish job.
+No software qualification gate from M20–M22 remains pending. All three packages were
+merged only after their exact final candidate heads passed native pytest, Ruff,
+editable package install, and the independent Stockfish witness.
 
-### Human QA / product approval
+### Human QA / external authority still pending
 
-There is **no blocking human approval required to regard M17–M19 as software-
-qualified**. The following remain intentionally unproven or product-level gates for
-future work:
+The following remain intentionally outside software qualification:
 
-- semantic correctness and pedagogical quality of arbitrary model-generated prose;
-- production model/provider selection and its cost/latency/privacy/credential policy;
-- end-user UX quality for diagnostic review, presentation, and coaching flows;
-- empirical tutoring efficacy and intervention-caused improvement;
+- semantic correctness and pedagogical quality of arbitrary model-authored coaching;
+- completeness/correctness of any production model or human evaluator used through
+  M20;
+- production model/provider and evaluator-provider choice;
+- production credential handling, privacy policy, transport, retries, rate limits,
+  cost/latency budgets, and service availability;
+- end-user review of M21 candidate-selection/capture-consent disclosure and the M5/M8
+  pre-reveal contamination boundary;
+- browser/UI usability, accessibility, localization, and visual correctness;
+- empirical tutoring efficacy, transfer, and intervention-caused improvement;
 - causal learner diagnosis, permanent weakness claims, mastery, or universal
   move-quality thresholds;
-- production web/hosted multi-user architecture, authentication, and secrets
-  management.
+- hosted multi-user architecture, authentication, authorization, secrets management,
+  and production persistence.
 
-Those are not defects in the completed milestone; they are explicit claim ceilings.
+Those are explicit external/human gates, not hidden claims made by M20–M22.
 
 ## Recommended next priorities
 
-The next milestone should preserve the current evidence contracts and attack the
-remaining integration/validation gaps in this order:
+M20–M22 completed the three priorities from the previous handoff. The next milestone
+should therefore build on these qualified contracts rather than reopen them.
+Recommended order:
 
-1. **Model-output evaluation harness.** Build a deterministic/evaluator-facing
-   qualification layer for M19 output that checks chess consistency against the
-   exact M16 grounding, evidence sufficiency, overclaiming, uncertainty handling,
-   and forbidden authority promotion. Keep provenance binding separate from semantic
-   evaluation.
-2. **Diagnostic-candidate -> tutor-session orchestration.** Define a bounded bridge
-   from an exact selected M18 candidate into the existing M5/M8 capture/session path,
-   with explicit user selection/consent and no automatic M6/M7 diagnosis. This closes
-   the largest remaining workflow gap between move discovery and the mentor loop.
-3. **Production provider adapter only after evaluation criteria exist.** Add one
-   explicit model provider/transport behind the M19 protocol with versioned model
-   identity, timeouts/retries, credential handling, cost/latency telemetry, and
-   failure semantics. Provider adoption should not weaken the M16/M19 claim ceiling.
+1. **Diagnostic-to-tutor operator workflow.** Add a bounded local operator surface
+   that consumes an M18 diagnostic result, records explicit M21 participant selection
+   and capture consent, creates the M5/M8 launch, and hands off into replay-verified
+   M13/M8 persistence. Preserve the pre-reveal boundary and do not auto-create M6/M7
+   or training authority. This is the largest remaining workflow-integration gap.
+2. **Model/evaluator provider conformance layer.** Now that M19 has a provenance
+   boundary and M20 has evaluation criteria, define provider adapters/conformance
+   tests for model generation and model-output evaluation: explicit timeout/retry
+   semantics, provider/model/version identity, detached-request mutation checks,
+   cost/latency telemetry fields, redaction/secrets injection boundaries, and
+   deterministic failure records. Qualify with fake providers first; live credentials
+   and vendor approval remain external.
+3. **Thin review/coach presentation surface.** Expose the already-qualified M15
+   evaluation, M18 candidate queue, M21 selection/consent, M16/M19 coaching, and M20
+   evaluation status in a deliberately thin inspectable UI/read model. Keep objective
+   evidence, participant evidence, model prose, and evaluator verdicts visually and
+   structurally distinct. Defer polished production UX claims until human QA exists.
 
-A later milestone can then evaluate a thin UI over these qualified workflows. Avoid
-starting with a polished web UI before candidate-to-session orchestration and model-
-output evaluation are inspectable.
+A future audit may split these into different packages if live `main` or product
+priorities have changed.
 
 ## Restart instructions for a future engineer or chat session
 
 1. Read this `STATUS.md`.
 2. Read `CONTEXT.md` and `docs/product/repository-build-status.md`.
-3. Confirm live `main` and recent commits before trusting the hashes in this handoff.
-4. Run the focused M17–M19 suites and the full repository gate before modifying the
-   evidence path.
-5. Treat M16 as the deterministic mentor-grounding ceiling and M19 as a
-   provenance-bound language layer, not as new objective/learner/pedagogy authority.
-6. If starting a new milestone, audit the current repository first and propose
-   bounded packages before implementation.
+3. Confirm live `main` and recent commits before trusting any hash in this handoff.
+4. Run the focused M20–M22 suites and the full repository gate before changing the
+   current mentor/evaluation path.
+5. Preserve these authority boundaries:
+
+```text
+M16 deterministic grounding != M19 model prose
+M19 request provenance != semantic correctness
+M20 evaluator acceptance != objective chess truth
+M21 orchestration != learner inference
+M22 fidelity qualification != production/pedagogical validation
+```
+
+6. Treat explicit participant choice and capture consent as required inputs to M21;
+   do not expose diagnostic engine rationale as if it were clean pre-reveal M5 input.
+7. If starting a new milestone, audit current `main` and propose a fresh bounded work
+   package queue before implementation.
 
 ## Key references
 
 - `README.md`
 - `CONTEXT.md`
 - `docs/product/repository-build-status.md`
-- `docs/runbooks/m17-analysis-presentation-bridge.md`
-- `docs/runbooks/m18-diagnostic-analysis-queue.md`
 - `docs/runbooks/m19-provenance-bound-model-coaching.md`
-- PR #49 — M17
-- PR #50 — M18
-- PR #51 — M19
+- `docs/runbooks/m20-model-coaching-evaluation.md`
+- `docs/runbooks/m21-diagnostic-candidate-tutor-orchestration.md`
+- `docs/runbooks/m22-end-to-end-evaluation-fidelity-matrix.md`
+- PR #53 — M20
+- PR #54 — M21
+- PR #55 — M22
