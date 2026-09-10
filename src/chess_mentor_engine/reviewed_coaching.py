@@ -20,10 +20,10 @@ from chess_mentor_engine.coaching import (
     MODEL_COACHING_RECORD_SCHEMA_VERSION,
     MODEL_COACHING_REQUEST_SCHEMA_VERSION,
     ModelCoachEndpoint,
-    ModelCoachProvider,
     ModelCoachingEvaluationGeneration,
     ModelCoachingEvaluator,
     ModelCoachingGeneration,
+    ModelCoachProvider,
     ModelEvaluatorEndpoint,
     bind_model_coaching_evaluation,
     bind_model_coaching_response,
@@ -372,13 +372,17 @@ def _source_records(
     candidate_ref = launch.get("candidate_ref")
     batch_ref = launch.get("batch_ref")
     if type(candidate_ref) is not dict or type(batch_ref) is not dict:
-        raise PersistentReviewedCoachingError("M21 launch source references are invalid")
+        raise PersistentReviewedCoachingError(
+            "M21 launch source references are invalid"
+        )
 
     batch = queue["batch"]
     if type(batch) is not dict or batch.get("batch_id") != batch_ref.get("batch_id"):
         raise PersistentReviewedCoachingError("M18/M21 diagnostic batch mismatch")
     if batch_ref.get("fingerprint") != _fingerprint(batch):
-        raise PersistentReviewedCoachingError("M21 diagnostic batch fingerprint mismatch")
+        raise PersistentReviewedCoachingError(
+            "M21 diagnostic batch fingerprint mismatch"
+        )
 
     candidates = batch.get("candidates")
     if type(candidates) is not list:
@@ -386,7 +390,10 @@ def _source_records(
     matches = [
         item
         for item in candidates
-        if type(item) is dict and item.get("candidate_id") == candidate_ref.get("candidate_id")
+        if (
+            type(item) is dict
+            and item.get("candidate_id") == candidate_ref.get("candidate_id")
+        )
     ]
     if len(matches) != 1:
         raise PersistentReviewedCoachingError(
