@@ -7,14 +7,6 @@ import json
 from pathlib import Path
 
 import pytest
-from test_m23_diagnostic_to_persistent_tutor_cli import _queue
-from test_m24_provider_conformance import (
-    S15,
-    _Evaluator,
-    _Provider,
-    _evaluator_endpoint,
-    _provider_endpoint,
-)
 from test_m8_qualification import (
     S0,
     S1,
@@ -28,6 +20,14 @@ from test_m8_qualification import (
     S11,
     S13,
     _m6_bundle,
+)
+from test_m23_diagnostic_to_persistent_tutor_cli import _queue
+from test_m24_provider_conformance import (
+    S15,
+    _Evaluator,
+    _evaluator_endpoint,
+    _Provider,
+    _provider_endpoint,
 )
 from test_reasoning_discrepancy_facts import (
     _a1_prompt,
@@ -261,7 +261,10 @@ def test_repository_cli_persists_review_without_advancing_m8(tmp_path, capsys) -
     assert recovered.session.explanation is None
 
 
-def test_identical_repository_invocation_is_content_idempotent(tmp_path, capsys) -> None:
+def test_identical_repository_invocation_is_content_idempotent(
+    tmp_path,
+    capsys,
+) -> None:
     store, db, _, compared_ref = _store_lineage(tmp_path)
     argv = (
         compared_ref.artifact_id,
