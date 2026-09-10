@@ -182,7 +182,9 @@ def build_persisted_coach_review_reference(
         raise PersistedReviewReferenceError("M27 ledger schema mismatch")
     runs = ledger.ledger_record.get("runs")
     if type(runs) is not list or len(runs) != 1:
-        raise PersistedReviewReferenceError("M27 ledger must verify exactly one M26 run")
+        raise PersistedReviewReferenceError(
+            "M27 ledger must verify exactly one M26 run"
+        )
     entry = runs[0]
     if type(entry) is not dict:
         raise PersistedReviewReferenceError("M27 run entry is malformed")
@@ -202,7 +204,9 @@ def build_persisted_coach_review_reference(
         _m28_read_model(review_artifact.payload)
     )
     if surface.read_model != review_artifact.payload:
-        raise PersistedReviewReferenceError("M28 did not preserve the exact M25 payload")
+        raise PersistedReviewReferenceError(
+            "M28 did not preserve the exact M25 payload"
+        )
 
     return PersistedReviewReferenceResult(
         run_ref=run_ref,
