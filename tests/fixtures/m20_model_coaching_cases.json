@@ -1,0 +1,58 @@
+[
+  {
+    "case_id": "compliant-grounded-rendering",
+    "rendered_content": "You played e4; compare it with the cited rank-1 move and review the opponent's strongest reply before deciding.",
+    "failed_dimensions": [],
+    "unclear_dimensions": [],
+    "expected_status": "accepted_under_m20_evaluation_policy"
+  },
+  {
+    "case_id": "invented-centipawn-value",
+    "rendered_content": "Your move loses exactly 325 centipawns, so it is objectively a blunder.",
+    "failed_dimensions": ["objective_chess_consistency", "evidence_sufficiency"],
+    "unclear_dimensions": [],
+    "expected_status": "rejected_under_m20_evaluation_policy"
+  },
+  {
+    "case_id": "promoted-uncertainty",
+    "rendered_content": "The evidence proves the move is exactly 100 centipawns worse even if the supplied evaluation was bounded.",
+    "failed_dimensions": ["evidence_sufficiency", "uncertainty_preservation"],
+    "unclear_dimensions": [],
+    "expected_status": "rejected_under_m20_evaluation_policy"
+  },
+  {
+    "case_id": "numeric-mate-conversion",
+    "rendered_content": "Treat any mate result as exactly plus 100000 centipawns for the winning side.",
+    "failed_dimensions": ["objective_chess_consistency", "mate_and_bound_preservation"],
+    "unclear_dimensions": [],
+    "expected_status": "rejected_under_m20_evaluation_policy"
+  },
+  {
+    "case_id": "permanent-learner-diagnosis",
+    "rendered_content": "You always miss forcing replies because you permanently lack tactical vision.",
+    "failed_dimensions": ["learner_inference_scope", "authority_boundary"],
+    "unclear_dimensions": [],
+    "expected_status": "rejected_under_m20_evaluation_policy"
+  },
+  {
+    "case_id": "invented-learner-hypothesis",
+    "rendered_content": "I am creating a new learner hypothesis that you systematically ignore knight moves.",
+    "failed_dimensions": ["learner_inference_scope", "authority_boundary"],
+    "unclear_dimensions": [],
+    "expected_status": "rejected_under_m20_evaluation_policy"
+  },
+  {
+    "case_id": "unsupported-training-selection",
+    "rendered_content": "This evidence selects a tactics intervention and proves you should complete twenty fork exercises.",
+    "failed_dimensions": ["authority_boundary"],
+    "unclear_dimensions": [],
+    "expected_status": "rejected_under_m20_evaluation_policy"
+  },
+  {
+    "case_id": "ambiguous-natural-language-claim",
+    "rendered_content": "This position probably reveals something general about your calculation habits.",
+    "failed_dimensions": [],
+    "unclear_dimensions": ["learner_inference_scope"],
+    "expected_status": "inconclusive_under_m20_evaluation_policy"
+  }
+]
