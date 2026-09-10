@@ -1,187 +1,138 @@
 # Chess Mentor Engine — Milestone Handoff
 
-**Handoff scope:** completed M23–M25 milestone / Packages 1–3  
+**Handoff scope:** completed M26–M28 milestone / Packages 1–3  
 **Repository:** `ThorStarlord/Chess-Mentor-Engine`  
-**Pre-handoff feature baseline:** `13db09f7cf4c066c49988875e89760ce204c2515`  
+**Milestone start baseline:** M25 merge `13db09f7cf4c066c49988875e89760ce204c2515`  
+**Post-feature baseline:** M28 merge `4975fd65ba22ac1df6d32cd09512cc7c36c42ce8`  
 **Prepared:** 2026-09-10  
 
-This is the durable handoff for the milestone that operationalized the qualified
-diagnostic-to-tutor path, added provider/evaluator execution conformance, and created
-a stable authority-separated coach-review read model for future application surfaces.
+This is the durable handoff for the milestone that closed the persisted compared-session to reviewed-coaching seam, added privacy-bounded mechanical execution verification, and made the qualified M25 review model inspectable through a deterministic local HTML reference surface.
 
-Use [`docs/product/repository-build-status.md`](docs/product/repository-build-status.md)
-as the moving implementation boundary, this file as the completed M23–M25 milestone
-summary, and
-[`docs/runbooks/m23-m25-milestone-runbook.md`](docs/runbooks/m23-m25-milestone-runbook.md)
-for restart and qualification commands.
+Use [`docs/product/repository-build-status.md`](docs/product/repository-build-status.md) as the moving implementation boundary, this file as the completed M26–M28 milestone summary, and [`docs/runbooks/m26-m28-milestone-runbook.md`](docs/runbooks/m26-m28-milestone-runbook.md) for restart and qualification commands.
 
 ## Milestone outcome
 
-All three queued packages are implemented, qualified on exact candidate heads, and
-merged into `main`.
+All three queued packages are implemented, qualified on exact candidate heads, and merged into `main`.
 
 ```text
-Package 1 / M23  Diagnostic-to-Persistent-Tutor Operator Bridge      MERGED - PR #57
-Package 2 / M24  Provider / Evaluator Execution Conformance          MERGED - PR #58
-Package 3 / M25  Coach Review Read Model & Presentation Contract     MERGED - PR #59
+Package 1 / M26  Persistent Compared-Session -> Reviewed-Coaching Operator  MERGED - PR #61
+Package 2 / M27  Reviewed-Coaching Execution Ledger & Fidelity             MERGED - PR #62
+Package 3 / M28  Thin M25 Local Review Reference Surface                   MERGED - PR #63
 ```
 
-The milestone closes the three priorities left by the M20–M22 handoff:
+The completed local chain is now:
 
 ```text
-M18 diagnostic queue
--> M23 cme-candidate-tutor operator
--> explicit M21 participant selection + capture consent
--> exact M5 PlayerDecisionContext
--> replay-verifiable persisted M8 state=selected
--> existing M13 persistent tutor transitions
-
-M16 deterministic grounding
--> M19 request
--> M24 provider execution conformance
--> M19 bind/record
--> M20 evaluation request
--> M24 evaluator execution conformance
--> M20 bounded evaluation
-
-M15 objective evidence
-+ M18 diagnostic selection
-+ M21 participant authority
-+ M8 tutor state
-+ M16 deterministic grounding
-+ M19 model prose
-+ M20 evaluator judgment
--> M25 authority-separated application read model
--> cme-coach-review local inspection
+replay-verified M13/M8 state=compared
+-> M26 cme-reviewed-coaching
+   -> exact retained M18/M21/M8 lineage verification
+   -> exact M3/M4 reconstruction
+   -> M15 projection
+   -> M16 deterministic grounding
+   -> optional M19/M20 through M24-compatible application adapters
+   -> M25 authority-separated coach-review read model
+   -> atomic M26 persistence
+-> M27 cme-reviewed-coaching-ledger
+   -> persisted dependency / request-response / identity fidelity verification
+   -> privacy-bounded execution ledger
+-> M28 cme-coach-review-reference
+   -> strict M25 bundle validation
+   -> deterministic static semantic HTML reference surface
 ```
 
-The previous statement that M21 had no CLI bridge into persistent M13 tutoring is no
-longer true: M23 closes that local operator/persistence seam. M24 does not implement a
-live vendor transport or grant retry authority. M25 is a read model, not a production
-UI and not a new semantic authority layer.
+M26 does not advance the persisted M8 tutor session. `cme tutor explain` remains the explicit explanation transition. M27 verifies mechanics rather than semantic truth. M28 is a structural local reference surface rather than a production UI.
 
-## Package 1 — M23 Diagnostic-to-Persistent-Tutor Operator Bridge
+## Package 1 — M26 Persistent Compared-Session -> Reviewed-Coaching Operator
 
-**PR:** #57  
-**Final candidate head:** `8131685b434f52066e375e0914a2cf3ecf13c4c9`  
-**Merge commit:** `105fed42425a28d2733485b832e42ff656812279`  
-**CI run:** `34499329989`
+**PR:** #61  
+**Final candidate head:** `394bf9b22833077c898c4251c0eef3eb1b6fe866`  
+**Merge commit:** `3936b53f203b186efdf5f734b2b8ec2a266c41f4`  
+**CI run:** `34518649749`
 
 Delivered:
 
-- installed repository-local `cme-candidate-tutor` command;
-- exact reconstruction and validation of an M18 diagnostic queue and selected
-  `DiagnosticCandidateBatch` member;
-- explicit, separate participant candidate selection and evidence-capture consent;
-- reuse of native M21 authorization/launch behavior rather than duplicating its
-  authority;
-- exact PGN/source/game/root-ply/child provenance checks;
-- native M5 `PlayerDecisionContext` creation and only initial M8 `state=selected`;
-- atomic local artifact lineage from M18 queue -> M21 authorization -> M21 launch ->
-  M8 checkpoint, plus exact prompt dependencies;
-- reload/replay verification after persistence;
-- rejection coverage for declined selection/consent, impossible authorization,
-  source/policy/candidate drift, wrong PGN, missing candidate, incomplete prompts,
-  and repeated identical invocation.
+- installed repository-local `cme-reviewed-coaching` command;
+- replay verification of an exact persisted M13/M8 `compared` checkpoint;
+- exact M8 -> M21 launch -> M21 authorization -> M18 queue lineage recovery;
+- reconstruction of retained M3/M4 evidence and deterministic M15/M16 composition;
+- M25 read-model assembly and atomic append-only persistence;
+- optional Python integration seam for explicit M24-compatible provider/evaluator adapters without giving the CLI production-provider authority;
+- content-idempotent repeated invocation;
+- fail-closed rejection for wrong tutor state, missing M21 lineage, identity/fingerprint drift, invalid adapter combinations, provider/evaluator failures, and partial-write risk;
+- preservation of the source tutor checkpoint at `compared`, with no implicit M8 explanation transition.
 
 Qualification evidence:
 
 ```text
-659 passed, 8 intentional external-engine skips
-Focused M23 suite: 11 passed
+718 passed, 8 intentional external-engine skips
 Ruff: PASS
-Editable package build/install: PASS
-Independent Stockfish witness: PASS
+Independent Stockfish witness: 8/8 PASS
 ```
 
-M23 creates no automatic M6 discrepancy, M7 learner hypothesis, M9 training decision,
-model language, or pedagogical-efficacy claim.
+M26 chooses no model/evaluator provider, uses no credentials, performs no live external call, grants no automatic retry, and establishes no semantic or pedagogical truth for model output.
 
-See
-[`docs/runbooks/m23-diagnostic-to-persistent-tutor.md`](docs/runbooks/m23-diagnostic-to-persistent-tutor.md).
+See [`docs/runbooks/m26-persistent-reviewed-coaching-operator.md`](docs/runbooks/m26-persistent-reviewed-coaching-operator.md).
 
-## Package 2 — M24 Provider / Evaluator Execution Conformance
+## Package 2 — M27 Reviewed-Coaching Execution Ledger & Fidelity Qualification
 
-**PR:** #58  
-**Final candidate head:** `e44ae84749de7820e9d403019ec7bddb5687639e`  
-**Merge commit:** `14f51b5e763f26b5c0608ecce8a237271641a94c`  
-**CI run:** `34500991230`
+**PR:** #62  
+**Final candidate head:** `b1699ad16193cb3b5541fa08c2b1b54e526f2040`  
+**Merge commit:** `492c1024834e3ae9d942d17941d5b22cc8dbcee7`  
+**CI run:** `34520178321`
 
 Delivered:
 
-- provider-neutral execution wrappers around the existing M19 provider and M20
-  evaluator contracts;
-- deep-frozen detached JSON requests so adapters do not receive mutable source
-  requests by reference;
-- explicit provider/model/evaluator endpoint identity matching;
-- content-addressed success/failure execution provenance;
-- fail-closed failure classification for `invalid_request`, `request_mutation`,
-  `timeout`, `transient`, `permanent`, `malformed_response`, `identity_mismatch`, and
-  `chronology_violation`;
-- retryability metadata only for timeout/transient outcomes, with no automatic retry;
-- conformant runners that return successful generations to the already-qualified
-  M19/M20 binders;
-- hermetic fake-provider/evaluator qualification including mutation, malformed
-  result, identity, chronology, and deterministic failure behavior.
+- installed repository-local `cme-reviewed-coaching-ledger` command;
+- content-addressed `m27.reviewed-coaching-execution-ledger.v1` artifact;
+- exact M26 -> M25 -> M18/M21/M8/M16/M19/M20/M24 dependency and identity verification;
+- M24 request/response binding verification against persisted M19/M20 provenance;
+- hard preservation of `automatic_retry = false` and M20 `truth_status = not_established_by_m20_evaluation`;
+- stable run ordering and content-idempotent ledger construction;
+- privacy-bounded output containing references and transport-neutral execution metadata only, without copying request payloads, model rendered content, evaluator rationales, or participant responses;
+- fail-closed rejection for forged M25 projection content, retry-authority promotion, provider-response provenance drift, duplicate/missing run selection, participant-scope drift, and malformed storage inputs.
 
 Qualification evidence:
 
 ```text
-686 passed, 8 intentional external-engine skips
-Focused M24 suite: 27 passed
+728 passed, 8 intentional external-engine skips
 Ruff: PASS
-Editable package build/install: PASS
-Independent Stockfish witness: PASS
+Independent Stockfish witness: 8/8 PASS
 ```
 
-M24 chooses no production vendor, installs no vendor SDK, uses no credentials, makes
-no live provider call, and establishes no semantic truth for arbitrary model prose or
-evaluator output.
+`mechanically_verified` means content identity, fingerprint, dependency closure, request/response binding, and M25 projection preservation only. It is not a claim about model quality, evaluator truth, engine universality, provider readiness, privacy approval, or tutoring efficacy.
 
-See
-[`docs/runbooks/m24-provider-evaluator-conformance.md`](docs/runbooks/m24-provider-evaluator-conformance.md).
+See [`docs/runbooks/m27-reviewed-coaching-execution-ledger.md`](docs/runbooks/m27-reviewed-coaching-execution-ledger.md).
 
-## Package 3 — M25 Coach Review Read Model & Presentation Contract
+## Package 3 — M28 Thin M25 Local Review Reference Surface
 
-**PR:** #59  
-**Final candidate head:** `9927171cb5f09bf0274d0e2c36e9ab736a90baee`  
-**Merge commit:** `13db09f7cf4c066c49988875e89760ce204c2515`  
-**CI run:** `34502823382`
+**PR:** #63  
+**Final candidate head:** `cde21c1e426e1e0c8d0edc35ebe0f1d99e10cdee`  
+**Merge commit:** `4975fd65ba22ac1df6d32cd09512cc7c36c42ce8`  
+**CI run:** `34521780789`
 
 Delivered:
 
-- content-addressed `m25.coach-review-read-model.v1` projection;
-- installed repository-only `cme-coach-review` JSON inspection command;
-- frozen, structurally separate sections for M15 objective evidence, M18 diagnostic
-  selection, M21 participant authority, M8 tutor state, M16 deterministic grounding,
-  M19 model coaching, and M20 model evaluation;
-- mechanical cross-layer ID/fingerprint and progressive-dependency checks;
-- verbatim preservation of M15 White-versus-decision-mover perspective, bounds,
-  exactness, symbolic mate, unavailable/partial/incompatible/failure states, and
-  evidence provenance;
-- explicit preservation of M20
-  `truth_status = not_established_by_m20_evaluation`;
-- model-overclaim isolation so arbitrary M19 prose cannot mutate objective or
-  deterministic-grounding sections;
-- golden fidelity signatures covering eight M22 evidence regimes plus adversarial
-  cross-layer drift/rejection cases.
+- installed repository-local `cme-coach-review-reference` command;
+- deterministic `m28.coach-review-reference-surface.v1` identity;
+- strict M25-bundle validation before rendering and direct M25 identity/separation-contract checks;
+- static semantic HTML using native landmarks, headings, captions, scoped column headers, source labels, and fingerprints;
+- exact preservation of canonical White versus decision-mover score perspectives, bounds, mate representation, exact/partial/bounded/incompatible/unavailable/failure states, and M20 truth-status ceiling;
+- explicit authority labels for M15, M18, M21, M8, M16, M19, and M20 layers;
+- inert HTML escaping for model/evaluator/source content, with no JavaScript or external assets;
+- non-destructive output behavior: existing HTML files are never overwritten;
+- deterministic structural snapshot coverage plus all eight M22 evidence regimes and adversarial rejection cases.
 
 Qualification evidence:
 
 ```text
-709 passed, 8 intentional external-engine skips
-Focused M25 suite: 23 passed
+746 passed, 8 intentional external-engine skips
 Ruff: PASS
-Editable package build/install: PASS
-Independent Stockfish witness: PASS
+Independent Stockfish witness: 8/8 PASS
 ```
 
-M25 creates no chess facts, consent, tutor transition, learner hypothesis, training
-selection, model output, evaluator verdict, production UI, or pedagogical-quality
-claim.
+M28 qualifies deterministic local rendering and bounded semantic structure only. It does not establish production visual design, usability, browser/device/screen-reader compatibility, localization, disclosure correctness, or accessibility conformance.
 
-See
-[`docs/runbooks/m25-coach-review-read-model.md`](docs/runbooks/m25-coach-review-read-model.md).
+See [`docs/runbooks/m28-coach-review-reference-surface.md`](docs/runbooks/m28-coach-review-reference-surface.md).
 
 ## Current operational surfaces
 
@@ -191,112 +142,89 @@ Installed commands now include:
 cme
 cme-candidate-tutor
 cme-coach-review
+cme-reviewed-coaching
+cme-reviewed-coaching-ledger
+cme-coach-review-reference
 ```
 
-The principal local flow is:
+Principal local operator path:
 
 ```text
 cme diagnose ...
 -> cme-candidate-tutor ...
--> cme tutor status / present-position / present-stage / respond / freeze / reveal /
-   compare / attach-hypothesis / explain / complete
--> application-owned M16/M19/M20 orchestration as applicable
--> cme-coach-review <m25-bundle.json>
+-> cme tutor present-position / present-stage / respond / freeze / reveal / compare ...
+-> cme-reviewed-coaching '<session-id>:<snapshot-fingerprint>' ...
+-> cme-reviewed-coaching-ledger ...
+-> cme-coach-review <m25-bundle.json>            # optional JSON inspection
+-> cme-coach-review-reference <m25-bundle.json> --output review.html
 ```
 
-M24 is a Python execution/conformance API, not a standalone CLI. Exact commands and
-focused qualification suites are consolidated in the M23–M25 milestone runbook.
+The `cme-reviewed-coaching` CLI is deterministic-only and invokes no model provider. The Python `run_persistent_reviewed_coaching(...)` API is the explicit seam for hermetic/application-owned M24-compatible provider/evaluator adapters. M28 currently consumes a strict M25 bundle file rather than loading an M25 artifact directly from the local database.
+
+Exact commands and focused qualification suites are consolidated in the M26–M28 milestone runbook.
 
 ## Verified evidence and remaining gates
 
 ### Software qualification
 
-No repository-only or hermetic software gate from M23–M25 remains pending. Each
-package was merged only after the exact repaired candidate head passed the repository
-pytest/Ruff gate and the independent Stockfish integration job. Earlier candidates
-that had only style issues were not treated as merge-ready; their repaired heads were
-re-qualified from scratch.
+No repository-only or hermetic software gate from the M26–M28 queue remains pending. Each package was merged only after its final repaired candidate head passed the repository pytest/Ruff gate and the independent Stockfish integration job. Intermediate candidates with test or style defects were repaired and re-qualified on fresh exact-head CI runs before merge.
 
 ### Human QA / external authority still pending
 
-The following are intentionally outside the completed milestone:
+The following remain intentionally outside the completed milestone:
 
-- end-user review of candidate-selection and capture-consent disclosure, wording,
-  timing, and the actual pre-reveal contamination boundary;
-- browser/desktop visual QA, accessibility, localization, interaction design, and
-  usability testing for any future M25 presentation surface;
+- end-user review of diagnostic candidate selection and capture-consent disclosure, wording, timing, and pre-reveal contamination boundaries;
+- real browser/device visual QA, screen-reader testing, accessibility conformance review, localization, interaction design, and usability testing for M28 or any successor surface;
 - production model/provider and evaluator-provider selection;
-- production credentials, secrets injection, privacy/security review, data
-  transmission policy, and retention policy;
-- live transport behavior, provider-specific timeout/retry/backoff/rate limits,
-  latency SLOs, cost budgets, billing controls, and incident policy;
-- semantic correctness, safety, and pedagogical quality of arbitrary model-authored
-  coaching;
-- completeness/correctness of a production evaluator beyond the bounded M20 policy;
-- empirical tutoring efficacy, transfer, intervention-caused improvement, causal
-  learner diagnosis, permanent-weakness claims, or automatic mastery;
-- hosted authentication/authorization, multi-user tenancy, production persistence,
-  observability, and deployment qualification.
+- production credentials, secrets injection, privacy/security approval, data-transmission policy, and retention policy;
+- live provider transport behavior, timeout/retry/backoff/rate-limit policy, latency SLOs, cost budgets, billing controls, and incident handling;
+- semantic correctness, safety, and pedagogical quality of arbitrary model-authored coaching;
+- completeness/correctness of a production evaluator beyond the bounded M20 contract;
+- empirical tutoring efficacy, transfer, intervention-caused improvement, causal learner diagnosis, permanent-weakness claims, or automatic mastery;
+- hosted authentication/authorization, multi-user tenancy, production persistence, observability operations, and deployment qualification.
 
-These are explicit external/human gates. M23–M25 do not silently claim them.
+These are explicit human/external authority gates. M26–M28 do not silently claim them.
 
 ## Recommended next priorities
 
-The M23–M25 queue is complete. A future audit should re-check live `main` before
-turning these suggestions into packages, but the strongest current next directions
-are:
+The M26–M28 queue is complete. A future milestone should begin with a fresh live-main audit before promoting any suggestion below into an approved package queue.
 
-1. **Persistent compared-session -> reviewed-coaching operator pipeline.** Add a
-   bounded local operator over a replay-verified M13 compared checkpoint and exact
-   M3/M4 evidence that can produce M16 grounding, invoke M24-qualified fake/provider
-   seams for M19/M20, assemble M25, and persist exact lineage. Keep model/evaluator
-   execution optional and do not silently replace the explicit-input semantics of
-   `cme tutor explain`.
-2. **Execution-envelope observability and privacy contract.** Extend the M24-neutral
-   boundary with explicit redaction/secrets-injection seams, transport-independent
-   attempt/latency/cost metadata, and deterministic retry-attempt history using fake
-   adapters first. Do not freeze a vendor or credential flow in repository code.
-3. **Thin local review/reference presentation over M25.** Render the qualified M25
-   authority-separated sections through a deliberately small local reference surface
-   with deterministic snapshots and accessibility-oriented semantics. Treat polished
-   browser UX, disclosure correctness, and production design quality as later human
-   gates.
+1. **Persisted reviewed-coaching -> reference-surface bridge.** Add a bounded repository-local operator that starts from a participant-scoped M26 run or M25 artifact in the existing local store, verifies its M27 mechanical closure, and renders M28 without requiring a hand-assembled M25 bundle file. Preserve all existing authority boundaries and non-overwrite behavior.
+2. **Deterministic local review package / navigation.** Add participant-scoped list/show/export tooling for M26 runs, M27 ledgers, M25 reviews, and M28 reference outputs, with content-addressed manifests and exact source fingerprints. Keep sensitive source/model/participant content out of summary indexes unless explicitly requested from the authoritative artifact.
+3. **Hermetic execution-envelope privacy and retry preflight.** Add fake-adapter-only seams for secret injection/redaction validation, deterministic attempt-history simulation, and retry-plan policy checks without storing credentials, making live calls, or granting automatic retry authority. Production provider, privacy, security, and cost decisions remain external gates.
 
 These are recommendations, not an approved work-package queue.
 
 ## Restart instructions for a future engineer or chat session
 
 1. Read this `STATUS.md`.
-2. Read `CONTEXT.md`, `docs/product/repository-build-status.md`, and
-   `docs/runbooks/m23-m25-milestone-runbook.md`.
+2. Read `CONTEXT.md`, `docs/product/repository-build-status.md`, and `docs/runbooks/m26-m28-milestone-runbook.md`.
 3. Confirm live `main` and recent commits before relying on hashes in this handoff.
-4. Run the focused M23–M25 suites and then the full repository gate.
+4. Run the focused M26–M28 suites, then the full repository gate and independent Stockfish witness.
 5. Preserve these boundaries:
 
 ```text
-M23 operator/persistence != diagnostic or learner-inference authority
-M24 execution conformance != production vendor approval or semantic truth
-M25 read model != production UI or new evidence authority
+M26 orchestration != tutor-state transition or model-provider authority
+M27 mechanical verification != semantic truth, retry authority, or privacy approval
+M28 static reference rendering != production UI/accessibility/usability approval
 M16 deterministic grounding != M19 model prose
 M20 evaluator acceptance != objective chess truth
 participant selection != evidence-capture consent
 ```
 
-6. Do not expose diagnostic engine rationale as if it were clean pre-reveal
-   participant evidence.
-7. Do not treat a skipped Stockfish suite as an independent-engine pass.
-8. Before a new milestone, reconcile live `main` and propose a fresh bounded package
-   queue rather than automatically continuing these recommendations.
+6. Do not silently turn M26 into `cme tutor explain`; that transition remains explicit.
+7. Do not expose M19 prose or M20 judgments as if they were M15 objective evidence.
+8. Do not treat a skipped Stockfish suite as an independent-engine pass.
+9. Before a new milestone, reconcile live `main` and propose a fresh bounded package queue rather than automatically implementing the recommendations above.
 
 ## Key references
 
-- `README.md`
 - `CONTEXT.md`
 - `docs/product/repository-build-status.md`
-- `docs/runbooks/m23-m25-milestone-runbook.md`
-- `docs/runbooks/m23-diagnostic-to-persistent-tutor.md`
-- `docs/runbooks/m24-provider-evaluator-conformance.md`
-- `docs/runbooks/m25-coach-review-read-model.md`
-- PR #57 — M23
-- PR #58 — M24
-- PR #59 — M25
+- `docs/runbooks/m26-m28-milestone-runbook.md`
+- `docs/runbooks/m26-persistent-reviewed-coaching-operator.md`
+- `docs/runbooks/m27-reviewed-coaching-execution-ledger.md`
+- `docs/runbooks/m28-coach-review-reference-surface.md`
+- PR #61 — M26
+- PR #62 — M27
+- PR #63 — M28
