@@ -12,6 +12,16 @@ from .model import (
     TutorSessionEventKind,
     TutorSessionState,
 )
+from .orchestration import (
+    CANDIDATE_TUTOR_AUTHORIZATION_SCHEMA_VERSION,
+    CANDIDATE_TUTOR_LAUNCH_SCHEMA_VERSION,
+    CandidateSelectionDecision,
+    CandidateTutorAuthorization,
+    CandidateTutorOrchestrationError,
+    CaptureConsentDecision,
+    record_candidate_tutor_authorization,
+    start_candidate_tutor_session,
+)
 from .session import (
     WORKFLOW_VERSION,
     TutorSessionError,
@@ -28,6 +38,12 @@ from .session import (
 )
 
 __all__ = [
+    "CANDIDATE_TUTOR_AUTHORIZATION_SCHEMA_VERSION",
+    "CANDIDATE_TUTOR_LAUNCH_SCHEMA_VERSION",
+    "CandidateSelectionDecision",
+    "CandidateTutorAuthorization",
+    "CandidateTutorOrchestrationError",
+    "CaptureConsentDecision",
     "WORKFLOW_VERSION",
     "TutorComparison",
     "TutorExplanation",
@@ -46,8 +62,10 @@ __all__ = [
     "freeze_tutor_response",
     "present_tutor_capture_stage",
     "present_tutor_position",
+    "record_candidate_tutor_authorization",
     "record_tutor_explanation",
     "record_tutor_reasoning_comparison",
     "reveal_tutor_objective_evidence",
+    "start_candidate_tutor_session",
     "start_tutor_session",
 ]
