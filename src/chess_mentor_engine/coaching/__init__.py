@@ -1,5 +1,19 @@
 """Provider-neutral model coaching and bounded output evaluation."""
 
+from .conformance import (
+    EXECUTION_SCHEMA_VERSION,
+    ConformanceExecutionOutcome,
+    ModelCoachEndpoint,
+    ModelEvaluatorEndpoint,
+    ModelExecutionConformanceError,
+    PermanentExternalExecutionError,
+    RequestMutationError,
+    TransientExternalExecutionError,
+    execute_model_coach_provider,
+    execute_model_coaching_evaluator,
+    run_conformant_model_coaching,
+    run_conformant_model_coaching_evaluation,
+)
 from .evaluation import (
     EVALUATION_DIMENSIONS,
     MODEL_COACHING_EVALUATION_RECORD_SCHEMA_VERSION,
@@ -26,10 +40,13 @@ from .model import (
 
 __all__ = [
     "EVALUATION_DIMENSIONS",
+    "EXECUTION_SCHEMA_VERSION",
     "MODEL_COACHING_EVALUATION_RECORD_SCHEMA_VERSION",
     "MODEL_COACHING_EVALUATION_REQUEST_SCHEMA_VERSION",
     "MODEL_COACHING_RECORD_SCHEMA_VERSION",
     "MODEL_COACHING_REQUEST_SCHEMA_VERSION",
+    "ConformanceExecutionOutcome",
+    "ModelCoachEndpoint",
     "ModelCoachProvider",
     "ModelCoachingError",
     "ModelCoachingEvaluationError",
@@ -37,11 +54,20 @@ __all__ = [
     "ModelCoachingEvaluationJudgment",
     "ModelCoachingEvaluator",
     "ModelCoachingGeneration",
+    "ModelEvaluatorEndpoint",
+    "ModelExecutionConformanceError",
+    "PermanentExternalExecutionError",
+    "RequestMutationError",
+    "TransientExternalExecutionError",
     "bind_model_coaching_evaluation",
     "bind_model_coaching_response",
     "build_model_coaching_evaluation_request",
     "build_model_coaching_request",
+    "execute_model_coach_provider",
+    "execute_model_coaching_evaluator",
     "record_model_coaching_response",
+    "run_conformant_model_coaching",
+    "run_conformant_model_coaching_evaluation",
     "run_model_coaching",
     "run_model_coaching_evaluation",
 ]
