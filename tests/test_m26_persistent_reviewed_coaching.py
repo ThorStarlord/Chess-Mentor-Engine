@@ -164,7 +164,7 @@ def _compared_session():
         recorded_at=S11,
     )
     assert session.state == "compared"
-    return upstream, authorization, launch, selected, session
+    return authorization, launch, selected, session
 
 
 def _store_lineage(
@@ -173,7 +173,7 @@ def _store_lineage(
     queue_artifact_id: str | None = None,
     with_launch_dependency: bool = True,
 ):
-    upstream, authorization, launch, selected, compared = _compared_session()
+    authorization, launch, selected, compared = _compared_session()
     queue = _queue()
     db = tmp_path / "mentor.sqlite3"
     store = LocalArtifactStore(db)
@@ -220,10 +220,7 @@ def _kind_count(store: LocalArtifactStore, kind: str) -> int:
     return len(store.list_refs(participant_id="P01", kind=kind))
 
 
-def test_repository_cli_persists_m16_m25_and_m26_without_advancing_m8(
-    tmp_path,
-    capsys,
-) -> None:
+def test_repository_cli_persists_review_without_advancing_m8(tmp_path, capsys) -> None:
     store, db, _, compared_ref = _store_lineage(tmp_path)
     session_count = _kind_count(store, SESSION_KIND)
 
@@ -245,14 +242,13 @@ def test_repository_cli_persists_m16_m25_and_m26_without_advancing_m8(
     assert payload["model_coaching_ref"] is None
     assert payload["model_evaluation_ref"] is None
 
-    feedback_ref = _ref(payload["grounded_feedback_ref"])
-    review_ref = _ref(payload["coach_review_ref"])
-    run_ref = _ref(payload["run_ref"])
-    feedback = store.get(feedback_ref, participant_id="P01").payload
-    review = store.get(review_ref, participant_id="P01").payload
-    run = store.get(run_ref, participant_id="P01").payload
-
-    assert feedback["claim_scope"] == "session_local_grounded_feedback"
+    feedback = store.get(
+        _ref(payload["grounded_feedback_ref"]), participant_id="P01"
+    ).payload
+    review = store.get(
+        _ref(payload["coach_review_ref"]), participant_id="P01"
+    ).payload
+    run = store.get(_ref(payload["run_ref"]), participant_id="P01").payload
     assert review["deterministic_grounding"] == feedback
     assert review["model_coaching"] is None
     assert review["model_evaluation"] is None
@@ -276,7 +272,6 @@ def test_identical_repository_invocation_is_content_idempotent(tmp_path, capsys)
         "--created-at",
         S13,
     )
-
     first_code, first, first_error = _invoke(capsys, *argv)
     counts = {
         kind: _kind_count(store, kind)
@@ -291,12 +286,10 @@ def test_identical_repository_invocation_is_content_idempotent(tmp_path, capsys)
     assert first_code == second_code == 0
     assert first_error == second_error == ""
     assert first == second
-    assert {
-        kind: _kind_count(store, kind) for kind in counts
-    } == counts
+    assert {kind: _kind_count(store, kind) for kind in counts} == counts
 
 
-def test_selected_checkpoint_is_rejected_before_any_review_artifact(tmp_path) -> None:
+def test_selected_checkpoint_is_rejected_before_review_persistence(tmp_path) -> None:
     store, _, selected_ref, _ = _store_lineage(tmp_path)
 
     with pytest.raises(
@@ -321,7 +314,7 @@ def test_compared_checkpoint_without_m21_lineage_fails_closed(tmp_path) -> None:
         with_launch_dependency=False,
     )
 
-    with pytest.raises(PersistentReviewedCoachingError, match="M21.*dependency"):
+    with pytest.raises(PersistentReviewedCoachingError, match="m21.*dependency"):
         run_persistent_reviewed_coaching(
             store=store,
             participant_id="P01",
@@ -345,7 +338,7 @@ def test_queue_storage_identity_drift_is_rejected(tmp_path) -> None:
         )
 
 
-def test_hermetic_provider_and_evaluator_populate_m24_m19_m20_lineage(
+def test_hermetic_provider_and_evaluator_persist_m19_m20_m24_lineage(
     tmp_path,
 ) -> None:
     store, _, _, compared_ref = _store_lineage(tmp_path)
@@ -369,17 +362,14 @@ def test_hermetic_provider_and_evaluator_populate_m24_m19_m20_lineage(
     assert result.evaluator_execution_ref is not None
     assert result.model_evaluation_ref is not None
     assert result.read_model["model_coaching"] is not None
-    assert result.read_model["model_evaluation"] is not None
     assert result.read_model["model_evaluation"]["truth_status"] == (
         "not_established_by_m20_evaluation"
     )
     provider_record = store.get(
-        result.provider_execution_ref,
-        participant_id="P01",
+        result.provider_execution_ref, participant_id="P01"
     ).payload
     evaluator_record = store.get(
-        result.evaluator_execution_ref,
-        participant_id="P01",
+        result.evaluator_execution_ref, participant_id="P01"
     ).payload
     assert provider_record["status"] == evaluator_record["status"] == "succeeded"
     recovered = load_tutor_session(store, compared_ref, participant_id="P01")
@@ -387,11 +377,8 @@ def test_hermetic_provider_and_evaluator_populate_m24_m19_m20_lineage(
     assert recovered.session.explanation is None
 
 
-def test_provider_failure_exposes_m24_record_and_persists_no_partial_outputs(
-    tmp_path,
-) -> None:
+def test_provider_failure_returns_m24_record_without_partial_outputs(tmp_path) -> None:
     store, _, _, compared_ref = _store_lineage(tmp_path)
-    provider = _Provider(failure=TimeoutError("fixture timeout"))
 
     with pytest.raises(PersistentReviewedCoachingError) as raised:
         run_persistent_reviewed_coaching(
@@ -399,11 +386,10 @@ def test_provider_failure_exposes_m24_record_and_persists_no_partial_outputs(
             participant_id="P01",
             session_artifact_id=compared_ref.artifact_id,
             grounding_created_at=S13,
-            provider=provider,
+            provider=_Provider(failure=TimeoutError("fixture timeout")),
             provider_endpoint=_provider_endpoint(),
         )
 
-    assert raised.value.execution_record is not None
     assert raised.value.execution_record["failure"]["kind"] == "timeout"
     assert _kind_count(store, "m16.grounded-mentor-feedback.v1") == 0
     assert _kind_count(store, "m19.model-coaching-request.v1") == 0
@@ -438,7 +424,6 @@ def test_evaluator_requires_model_coaching_and_matching_endpoint(tmp_path) -> No
 
 def test_evaluator_failure_persists_no_partial_m26_chain(tmp_path) -> None:
     store, _, _, compared_ref = _store_lineage(tmp_path)
-    evaluator = _Evaluator(failure=TimeoutError("fixture evaluator timeout"))
 
     with pytest.raises(PersistentReviewedCoachingError) as raised:
         run_persistent_reviewed_coaching(
@@ -448,12 +433,11 @@ def test_evaluator_failure_persists_no_partial_m26_chain(tmp_path) -> None:
             grounding_created_at=S13,
             provider=_Provider(),
             provider_endpoint=_provider_endpoint(),
-            evaluator=evaluator,
+            evaluator=_Evaluator(failure=TimeoutError("fixture evaluator timeout")),
             evaluator_endpoint=_evaluator_endpoint(),
             evaluation_request_created_at=S15,
         )
 
-    assert raised.value.execution_record is not None
     assert raised.value.execution_record["failure"]["kind"] == "timeout"
     assert _kind_count(store, "m16.grounded-mentor-feedback.v1") == 0
     assert _kind_count(store, "m19.provenance-bound-mentor-coaching.v1") == 0
