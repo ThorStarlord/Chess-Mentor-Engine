@@ -19,13 +19,14 @@ The third question is a product hypothesis, not a claim that the system has
 established a causal cognitive mechanism.
 
 Use [current build status](docs/product/repository-build-status.md) as the moving
-implementation/qualification authority. Historical milestone details remain in
-architecture records, ADRs, runbooks, and Git history. Frozen research protocols
-and pilot artifacts are not superseded by software qualification.
+implementation/qualification authority and [STATUS.md](STATUS.md) as the completed
+M17–M19 milestone handoff. Historical milestone details remain in architecture
+records, ADRs, runbooks, and Git history. Frozen research protocols and pilot
+artifacts are not superseded by software qualification.
 
 ## Current implementation
 
-The bounded evidence stack now extends through the M19 candidate:
+The bounded evidence stack is qualified through M19:
 
 - **M1-M4:** canonical PGN/game/position provenance, deterministic chess context and
   features, normalized UCI evidence, objective played-decision comparison, and
@@ -56,10 +57,10 @@ The bounded evidence stack now extends through the M19 candidate:
 - **M18:** `cme diagnose`, which analyzes an explicit played-ply window and applies
   an explicit versioned M4 selection policy to produce an auditable deterministic
   candidate/control batch.
-- **M19 candidate:** provider-neutral model-language rendering over a content-
-  addressed request that contains the exact recomputed M16 grounding and a
-  fingerprinted authority ceiling. Accepted prose is recorded through the existing
-  M8 explanation transition with explicit model provenance.
+- **M19:** provider-neutral model-language rendering over a content-addressed
+  request that contains the exact recomputed M16 grounding and a fingerprinted
+  authority ceiling. Accepted prose is recorded through the existing M8 explanation
+  transition with explicit model provenance.
 
 Recent promotion sequence:
 
@@ -67,15 +68,14 @@ Recent promotion sequence:
 M16 Grounded Mentor Feedback Composer  MERGED - PR #48
 M17 Analysis-to-Presentation Bridge    MERGED - PR #49
 M18 Diagnostic Move-Analysis Queue     MERGED - PR #50
-M19 Provenance-Bound Mentor Coaching   CURRENT CANDIDATE - PR #51
+M19 Provenance-Bound Mentor Coaching   MERGED - PR #51
 ```
 
-M18 qualified at exact head
-`65297abd366bf092a60ed4fa202e2e51bb1950cd` in CI run `34436086912`: 589
+M19 qualified at exact head
+`f465a7f5355d8e9304a557cbbc26971d1aa18c27` in CI run `34436883416`: 598
 native tests passed with 8 intentional external-engine skips, Ruff passed, and the
 independent Stockfish witness passed 8/8. It merged as
-`00bab82dc963bff005c9753b498f1e50a8c513d4`. PR #51 and Git history are the
-authority for M19 candidate-head qualification and eventual merge provenance.
+`25672c1b375181b6eb48e4ee9c8283e16dc12665`.
 
 ## Separation of responsibilities
 
@@ -243,6 +243,10 @@ does **not** establish:
 
 M16 remains the deterministic factual grounding ceiling. M19 proves provenance-
 bound model-language integration, not model quality.
+
+The completed M17–M19 milestone and recommended next priorities are recorded in
+[STATUS.md](STATUS.md). A future milestone should re-audit live `main` before
+creating a new package queue.
 
 ## Research and product hypotheses
 
