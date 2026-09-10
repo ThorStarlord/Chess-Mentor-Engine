@@ -198,7 +198,8 @@ def _evaluation_summary(value: Any) -> str:
         )
     if kind == "mate":
         return (
-            f"winner={value.get('winner')}; plies_to_mate={value.get('plies_to_mate')}; "
+            f"winner={value.get('winner')}; "
+            f"plies_to_mate={value.get('plies_to_mate')}; "
             f"decision mover {mover.get('side')} favours_perspective="
             f"{_display(mover.get('favours_perspective'))}; bound={mover.get('bound')}"
         )
@@ -542,7 +543,10 @@ def _render_grounding(value: Any) -> str:
             (
                 f'<article aria-labelledby="{section_id}">',
                 f'<h3 id="{section_id}">{_e(section.get("kind"))}</h3>',
-                f'<p><strong>Claim scope:</strong> {_e(section.get("claim_scope"))}</p>',
+                (
+                    '<p><strong>Claim scope:</strong> '
+                    f'{_e(section.get("claim_scope"))}</p>'
+                ),
                 f'<p class="source-content">{_e(section.get("content"))}</p>',
                 "</article>",
             )
