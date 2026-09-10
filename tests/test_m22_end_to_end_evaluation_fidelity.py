@@ -9,22 +9,9 @@ from dataclasses import replace
 from pathlib import Path
 
 import pytest
-from test_m15_evaluation_presentation import (
-    MATE_PGN,
-    _analysis as _m15_analysis,
-    _game as _m15_game,
-    _line as _m15_line,
-    _provenance as _m15_provenance,
-    _request as _m15_request,
-)
-from test_m20_model_coaching_evaluation import (
-    S15,
-    _evaluation_generation,
-    _judgments,
-    _m19_sources,
-    _m20_request,
-)
-from test_m8_qualification import S13, S14, _through_compare
+import test_m8_qualification as m8
+import test_m15_evaluation_presentation as m15
+import test_m20_model_coaching_evaluation as m20
 
 from chess_mentor_engine.analysis import (
     AnalysisFailure,
@@ -50,7 +37,9 @@ from chess_mentor_engine.presentation import (
 )
 from chess_mentor_engine.selection import compare_played_decision
 
-_MATRIX_PATH = Path(__file__).parent / "fixtures" / "m22_evaluation_fidelity_matrix.json"
+_MATRIX_PATH = (
+    Path(__file__).parent / "fixtures" / "m22_evaluation_fidelity_matrix.json"
+)
 _MATRIX_CASES = json.loads(_MATRIX_PATH.read_text(encoding="utf-8"))
 _REQUIRED_SCENARIOS = {
     "exact_white_root_multipv",
@@ -83,83 +72,83 @@ def _rehash_content_addressed_record(record: dict, prefix: str) -> dict:
 
 def _scenario(name: str):
     if name == "exact_white_root_multipv":
-        game = _m15_game()
+        game = m15._game()
         position = game.positions[0]
-        root = _m15_analysis(
+        root = m15._analysis(
             position,
             (
-                _m15_line(1, "d2d4", CentipawnEvaluation(40), "d7d5"),
-                _m15_line(2, "e2e4", CentipawnEvaluation(10), "e7e5"),
+                m15._line(1, "d2d4", CentipawnEvaluation(40), "d7d5"),
+                m15._line(2, "e2e4", CentipawnEvaluation(10), "e7e5"),
             ),
         )
         played = None
     elif name == "bounded_black_perspective":
-        game = _m15_game()
+        game = m15._game()
         position = game.positions[1]
-        root = _m15_analysis(
+        root = m15._analysis(
             position,
             (
-                _m15_line(
+                m15._line(
                     1,
                     "c7c5",
                     CentipawnEvaluation(-50, bound="lower"),
                     "g1f3",
                 ),
-                _m15_line(2, "e7e5", CentipawnEvaluation(-20), "g1f3"),
+                m15._line(2, "e7e5", CentipawnEvaluation(-20), "g1f3"),
             ),
         )
         played = None
     elif name == "symbolic_terminal_mate":
-        game = _m15_game(MATE_PGN)
+        game = m15._game(m15.MATE_PGN)
         position = game.positions[3]
-        root = _m15_analysis(
+        root = m15._analysis(
             position,
-            (_m15_line(1, "d8h4", MateEvaluation("black", 1)),),
-            request=_m15_request(1),
+            (m15._line(1, "d8h4", MateEvaluation("black", 1)),),
+            request=m15._request(1),
         )
         played = None
     elif name == "partial_root":
-        game = _m15_game()
+        game = m15._game()
         position = game.positions[0]
-        root = _m15_analysis(
+        root = m15._analysis(
             position,
-            (_m15_line(1, "d2d4", CentipawnEvaluation(40), "d7d5"),),
-            request=_m15_request(2),
+            (m15._line(1, "d2d4", CentipawnEvaluation(40), "d7d5"),),
+            request=m15._request(2),
             status="partial",
         )
         played = None
     elif name == "empty_complete_root":
-        game = _m15_game()
+        game = m15._game()
         position = game.positions[0]
-        root = _m15_analysis(position, (), request=_m15_request(1))
+        root = m15._analysis(position, (), request=m15._request(1))
         played = None
     elif name in {"compatible_child_reanalysis", "incompatible_child_regime"}:
-        game = _m15_game()
+        game = m15._game()
         position = game.positions[0]
-        request = _m15_request(1)
-        root_engine = _m15_provenance("FidelityFish A")
+        request = m15._request(1)
+        root_engine = m15._provenance("FidelityFish A")
         child_engine = root_engine
         if name == "incompatible_child_regime":
-            child_engine = _m15_provenance("FidelityFish B")
-        root = _m15_analysis(
+            child_engine = m15._provenance("FidelityFish B")
+        root = m15._analysis(
             position,
-            (_m15_line(1, "d2d4", CentipawnEvaluation(40), "d7d5"),),
+            (m15._line(1, "d2d4", CentipawnEvaluation(40), "d7d5"),),
             request=request,
             provenance=root_engine,
         )
-        played = _m15_analysis(
+        played = m15._analysis(
             game.positions[1],
-            (_m15_line(1, "e7e5", CentipawnEvaluation(20), "g1f3"),),
+            (m15._line(1, "e7e5", CentipawnEvaluation(20), "g1f3"),),
             request=request,
             provenance=child_engine,
         )
     elif name == "failed_child":
-        game = _m15_game()
+        game = m15._game()
         position = game.positions[0]
-        root = _m15_analysis(
+        root = m15._analysis(
             position,
-            (_m15_line(1, "d2d4", CentipawnEvaluation(40), "d7d5"),),
-            request=_m15_request(1),
+            (m15._line(1, "d2d4", CentipawnEvaluation(40), "d7d5"),),
+            request=m15._request(1),
         )
         child_position = game.positions[1]
         played = AnalysisFailure(
@@ -233,9 +222,13 @@ def _presentation_signature(presentation: dict) -> dict[str, object]:
         "mate_relation": comparison["mate_relation"],
         "terminal_outcome": comparison["terminal_outcome"],
         "child_status": None if child is None else child["status"],
-        "child_evidence_quality": None if child is None else child["evidence_quality"],
+        "child_evidence_quality": (
+            None if child is None else child["evidence_quality"]
+        ),
         "child_failure_code": (
-            None if child is None or child["status"] != "failure" else child["failure"]["code"]
+            None
+            if child is None or child["status"] != "failure"
+            else child["failure"]["code"]
         ),
     }
     signature.update(_evaluation_fields(comparison["best_evaluation"], "best"))
@@ -297,7 +290,7 @@ def test_m3_m4_to_m15_matrix_preserves_declared_evaluation_semantics(case) -> No
 
 
 def test_exact_chain_preserves_same_evaluation_through_m15_m16_m19_and_m20() -> None:
-    upstream, session, model_request, coaching, m20_request = _m20_request()
+    upstream, session, model_request, coaching, m20_request = m20._m20_request()
     presentation = build_evaluation_presentation(
         root_analysis=upstream.analysis,
         comparison=upstream.comparison,
@@ -306,7 +299,7 @@ def test_exact_chain_preserves_same_evaluation_through_m15_m16_m19_and_m20() -> 
         session=session,
         root_analysis=upstream.analysis,
         decision_comparison=upstream.comparison,
-        created_at=S13,
+        created_at=m8.S13,
     )
 
     assert presentation["comparison"]["exact_centipawn_delta_for_mover"] == 60
@@ -331,7 +324,7 @@ def test_exact_chain_preserves_same_evaluation_through_m15_m16_m19_and_m20() -> 
         session=session,
         root_analysis=upstream.analysis,
         decision_comparison=upstream.comparison,
-        generation=_evaluation_generation(m20_request),
+        generation=m20._evaluation_generation(m20_request),
     )
     assert evaluation["qualification_status"] == "accepted_under_m20_evaluation_policy"
     assert evaluation["source_integrity"] == "verified_against_exact_m16_m19_sources"
@@ -343,18 +336,18 @@ def test_exact_chain_preserves_same_evaluation_through_m15_m16_m19_and_m20() -> 
 
 def test_model_overclaim_is_rejected_without_mutating_true_source_evaluation() -> None:
     rendered = "Your move loses exactly 325 centipawns, so it is objectively a blunder."
-    upstream, session, model_request, coaching = _m19_sources(rendered)
+    upstream, session, model_request, coaching = m20._m19_sources(rendered)
     request = build_model_coaching_evaluation_request(
         coaching=coaching,
         model_coaching_request=model_request,
         session=session,
         root_analysis=upstream.analysis,
         decision_comparison=upstream.comparison,
-        created_at=S15,
+        created_at=m20.S15,
     )
-    generation = _evaluation_generation(
+    generation = m20._evaluation_generation(
         request,
-        judgments=_judgments(
+        judgments=m20._judgments(
             failed=("objective_chess_consistency", "evidence_sufficiency")
         ),
     )
@@ -385,7 +378,7 @@ def test_model_overclaim_is_rejected_without_mutating_true_source_evaluation() -
 
 
 def test_rehashed_m20_presentation_drift_is_rejected_against_exact_sources() -> None:
-    upstream, session, model_request, coaching, request = _m20_request()
+    upstream, session, model_request, coaching, request = m20._m20_request()
     tampered = copy.deepcopy(request)
     tampered["evaluation_presentation"]["comparison"][
         "exact_centipawn_delta_for_mover"
@@ -406,12 +399,12 @@ def test_rehashed_m20_presentation_drift_is_rejected_against_exact_sources() -> 
             session=session,
             root_analysis=upstream.analysis,
             decision_comparison=upstream.comparison,
-            generation=_evaluation_generation(tampered),
+            generation=m20._evaluation_generation(tampered),
         )
 
 
 def test_rehashed_m19_grounding_drift_is_rejected_against_recomputed_m16() -> None:
-    upstream, session, model_request, _ = _m19_sources()
+    upstream, session, model_request, _ = m20._m19_sources()
     tampered = copy.deepcopy(model_request)
     tampered["grounded_feedback"]["sections"][0]["content"] += (
         " Rehashed M22 semantic drift."
@@ -425,7 +418,7 @@ def test_rehashed_m19_grounding_drift_is_rejected_against_recomputed_m16() -> No
         model_id="m22-fixture-model",
         model_version="1",
         run_id="m22-rehashed-grounding-drift",
-        generated_at=S14,
+        generated_at=m8.S14,
     )
 
     with pytest.raises(
@@ -457,7 +450,7 @@ def test_m15_rejects_source_reference_drift_instead_of_reprojecting_it() -> None
 
 
 def test_m16_rejects_analysis_drift_instead_of_rewording_feedback() -> None:
-    upstream, session, _ = _through_compare()
+    upstream, session, _ = m8._through_compare()
     drifted = replace(
         upstream.analysis,
         result_fingerprint="m22-not-the-bound-analysis",
@@ -468,5 +461,5 @@ def test_m16_rejects_analysis_drift_instead_of_rewording_feedback() -> None:
             session=session,
             root_analysis=drifted,
             decision_comparison=upstream.comparison,
-            created_at=S13,
+            created_at=m8.S13,
         )
