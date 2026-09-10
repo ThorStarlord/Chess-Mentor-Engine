@@ -1,0 +1,183 @@
+[
+  {
+    "case_id": "exact-white-root-multipv",
+    "scenario": "exact_white_root_multipv",
+    "expected": {
+      "side_to_move": "white",
+      "root_evidence_quality": "exact",
+      "comparison_evidence_quality": "exact",
+      "comparison_kind": "worse_for_mover",
+      "preference": "worse_for_mover",
+      "played_evaluation_source": "root_multipv",
+      "compatibility": "same_root_analysis",
+      "exact_centipawn_delta_for_mover": 30,
+      "best_kind": "centipawn",
+      "best_white_centipawns": 40,
+      "best_white_bound": "exact",
+      "best_mover_centipawns": 40,
+      "best_mover_bound": "exact",
+      "played_kind": "centipawn",
+      "played_white_centipawns": 10,
+      "played_mover_centipawns": 10,
+      "mate_relation": null,
+      "terminal_outcome": null,
+      "child_status": null
+    }
+  },
+  {
+    "case_id": "bounded-black-perspective",
+    "scenario": "bounded_black_perspective",
+    "expected": {
+      "side_to_move": "black",
+      "root_evidence_quality": "bounded",
+      "comparison_evidence_quality": "bounded",
+      "comparison_kind": "bound_limited",
+      "preference": "incomparable",
+      "played_evaluation_source": "root_multipv",
+      "compatibility": "same_root_analysis",
+      "exact_centipawn_delta_for_mover": null,
+      "best_kind": "centipawn",
+      "best_white_centipawns": -50,
+      "best_white_bound": "lower",
+      "best_mover_centipawns": 50,
+      "best_mover_bound": "upper",
+      "played_kind": "centipawn",
+      "played_white_centipawns": -20,
+      "played_mover_centipawns": 20,
+      "mate_relation": null,
+      "terminal_outcome": null,
+      "child_status": null
+    }
+  },
+  {
+    "case_id": "symbolic-terminal-mate",
+    "scenario": "symbolic_terminal_mate",
+    "expected": {
+      "side_to_move": "black",
+      "root_evidence_quality": "exact",
+      "comparison_evidence_quality": "exact",
+      "comparison_kind": "terminal_relation",
+      "preference": "approximately_equal_under_policy",
+      "played_evaluation_source": "terminal_child",
+      "compatibility": "not_applicable",
+      "exact_centipawn_delta_for_mover": null,
+      "best_kind": "mate",
+      "best_mate_winner": "black",
+      "best_plies_to_mate": 1,
+      "best_mover_favours": true,
+      "mate_relation": "forced_mate_completed",
+      "terminal_outcome": "checkmate",
+      "child_status": null
+    }
+  },
+  {
+    "case_id": "partial-root-remains-non-exact",
+    "scenario": "partial_root",
+    "expected": {
+      "side_to_move": "white",
+      "root_evidence_quality": "partial",
+      "comparison_evidence_quality": "partial",
+      "comparison_kind": "partial_evidence",
+      "preference": "incomparable",
+      "played_evaluation_source": "unavailable",
+      "compatibility": "not_assessed",
+      "exact_centipawn_delta_for_mover": null,
+      "best_kind": "centipawn",
+      "best_white_centipawns": 40,
+      "best_mover_centipawns": 40,
+      "mate_relation": null,
+      "terminal_outcome": null,
+      "child_status": null
+    }
+  },
+  {
+    "case_id": "empty-complete-root-is-unavailable",
+    "scenario": "empty_complete_root",
+    "expected": {
+      "side_to_move": "white",
+      "root_evidence_quality": "unavailable",
+      "comparison_evidence_quality": "unavailable",
+      "comparison_kind": "incomparable",
+      "preference": "incomparable",
+      "played_evaluation_source": "unavailable",
+      "compatibility": "not_assessed",
+      "exact_centipawn_delta_for_mover": null,
+      "best_kind": null,
+      "played_kind": null,
+      "mate_relation": null,
+      "terminal_outcome": null,
+      "child_status": null
+    }
+  },
+  {
+    "case_id": "compatible-child-reanalysis",
+    "scenario": "compatible_child_reanalysis",
+    "expected": {
+      "side_to_move": "white",
+      "root_evidence_quality": "exact",
+      "comparison_evidence_quality": "exact",
+      "comparison_kind": "worse_for_mover",
+      "preference": "worse_for_mover",
+      "played_evaluation_source": "child_reanalysis",
+      "compatibility": "compatible",
+      "exact_centipawn_delta_for_mover": 20,
+      "best_kind": "centipawn",
+      "best_white_centipawns": 40,
+      "best_mover_centipawns": 40,
+      "played_kind": "centipawn",
+      "played_white_centipawns": 20,
+      "played_mover_centipawns": 20,
+      "mate_relation": null,
+      "terminal_outcome": null,
+      "child_status": "complete",
+      "child_evidence_quality": "exact"
+    }
+  },
+  {
+    "case_id": "incompatible-child-regime",
+    "scenario": "incompatible_child_regime",
+    "expected": {
+      "side_to_move": "white",
+      "root_evidence_quality": "exact",
+      "comparison_evidence_quality": "incompatible",
+      "comparison_kind": "incompatible_analysis_regime",
+      "preference": "incomparable",
+      "played_evaluation_source": "child_reanalysis",
+      "compatibility": "incompatible",
+      "exact_centipawn_delta_for_mover": null,
+      "best_kind": "centipawn",
+      "best_white_centipawns": 40,
+      "best_mover_centipawns": 40,
+      "played_kind": "centipawn",
+      "played_white_centipawns": 20,
+      "played_mover_centipawns": 20,
+      "mate_relation": null,
+      "terminal_outcome": null,
+      "child_status": "complete",
+      "child_evidence_quality": "exact"
+    }
+  },
+  {
+    "case_id": "failed-child-remains-unavailable",
+    "scenario": "failed_child",
+    "expected": {
+      "side_to_move": "white",
+      "root_evidence_quality": "exact",
+      "comparison_evidence_quality": "unavailable",
+      "comparison_kind": "incomparable",
+      "preference": "incomparable",
+      "played_evaluation_source": "child_reanalysis",
+      "compatibility": "not_assessed",
+      "exact_centipawn_delta_for_mover": null,
+      "best_kind": "centipawn",
+      "best_white_centipawns": 40,
+      "best_mover_centipawns": 40,
+      "played_kind": null,
+      "mate_relation": null,
+      "terminal_outcome": null,
+      "child_status": "failure",
+      "child_evidence_quality": "unavailable",
+      "child_failure_code": "ENGINE_CRASHED"
+    }
+  }
+]
