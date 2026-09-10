@@ -20,8 +20,8 @@ from chess_mentor_engine.candidate_tutor_cli import (
     M18_QUEUE_KIND,
     M21_AUTH_KIND,
     M21_LAUNCH_KIND,
-    main as candidate_main,
 )
+from chess_mentor_engine.candidate_tutor_cli import main as candidate_main
 from chess_mentor_engine.cli import main as cme_main
 from chess_mentor_engine.selection import SelectionPolicy, apply_selection_policy
 from chess_mentor_engine.storage import (
