@@ -33,8 +33,9 @@ Each arrow remains an authority boundary. Qualified software behavior is not pro
 of a causal cognitive diagnosis, permanent learner trait, effective intervention,
 mastery, model correctness, or empirical tutoring value.
 
-Use [current build status](docs/product/repository-build-status.md) as the concise
-status authority and [CONTEXT.md](CONTEXT.md) for contributor orientation.
+Use [current build status](docs/product/repository-build-status.md) as the moving
+implementation authority, [STATUS.md](STATUS.md) as the completed M17–M19 milestone
+handoff, and [CONTEXT.md](CONTEXT.md) for contributor orientation.
 
 ## Implemented milestones
 
@@ -49,13 +50,46 @@ status authority and [CONTEXT.md](CONTEXT.md) for contributor orientation.
 | M14 | Engine-backed `cme analyze` workflow over qualified M3/M4 contracts, with optional immutable participant-scoped package archival. |
 | M15 | Deterministic evaluation presentation with explicit perspective, mate/bound/partial semantics, PVs, engine identity, and exact evidence references. |
 | M16 | Deterministic grounded mentor-feedback composition over exact M15/M6 and optional complete active-current M7 evidence. |
-| M17 | Opt-in `cme analyze --with-presentation` bridge over exact in-memory M14/M3/M4 records. |
-| M18 | `cme diagnose` workflow for bounded engine analysis plus explicit versioned M4 candidate/control selection. |
-| M19 | Current candidate: provider-neutral model-language rendering bound to exact recomputed M16 grounding and explicit model provenance. |
+| M17 | Qualified/merged opt-in `cme analyze --with-presentation` bridge over exact in-memory M14/M3/M4 records (PR #49). |
+| M18 | Qualified/merged `cme diagnose` workflow for bounded engine analysis plus explicit versioned M4 candidate/control selection (PR #50). |
+| M19 | Qualified/merged provider-neutral model-language rendering bound to exact recomputed M16 grounding and explicit model provenance (PR #51). |
 
 The UCI provider remains version `0.2`: Black-root score bounds are normalized into
 White evaluation ordering, invalid MultiPV ranks fail closed, mate remains symbolic,
 and engine provenance is preserved.
+
+## M17–M19 milestone handoff
+
+The completed milestone is summarized in [STATUS.md](STATUS.md). The two new CLI
+entry points used by the milestone are:
+
+```bash
+cme analyze games.pgn \
+  --game-index 0 \
+  --ply-index 12 \
+  --engine /path/to/stockfish \
+  --depth 14 \
+  --multipv 3 \
+  --with-presentation
+
+cme diagnose games.pgn \
+  --game-index 0 \
+  --start-ply 0 \
+  --end-ply 30 \
+  --policy ./selection-policy.json \
+  --engine /path/to/stockfish \
+  --depth 14 \
+  --multipv 3
+```
+
+M19 is intentionally a Python API rather than a new CLI command. Its focused
+qualification suite is included in the milestone regression set:
+
+```bash
+python -m pytest tests/test_m17_analysis_presentation_bridge.py
+python -m pytest tests/test_m18_diagnostic_analysis_queue.py
+python -m pytest tests/test_m19_provenance_bound_model_coaching.py
+```
 
 ## Install
 
@@ -345,7 +379,8 @@ learner hypotheses, and authored language into one opaque authority.
 
 ## Documentation map
 
-- [Current build status](docs/product/repository-build-status.md) — current milestone and qualification authority.
+- [Milestone handoff](STATUS.md) — completed M17–M19 package summary, qualification evidence, operations, and next priorities.
+- [Current build status](docs/product/repository-build-status.md) — moving milestone and qualification authority.
 - [CONTEXT.md](CONTEXT.md) — contributor orientation and authority boundaries.
 - [M13 persistent tutor CLI](docs/runbooks/m13-persistent-tutor-cli.md) — replay-verified tutor workflow.
 - [M14 engine analysis CLI](docs/runbooks/m14-engine-analysis-cli.md) — objective engine-backed analysis package.

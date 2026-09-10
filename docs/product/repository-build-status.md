@@ -1,12 +1,13 @@
 # Chess Mentor Engine — Current Build Status
 
 **Status authority:** current implementation and qualification boundary.  
-**Current implementation boundary:** M19 — Provenance-Bound Mentor Coaching, PR #51.  
-**Merged baseline before M19:** `00bab82dc963bff005c9753b498f1e50a8c513d4` (M18 merge).  
+**Current implementation boundary:** M19 — Provenance-Bound Mentor Coaching, QUALIFIED / MERGED PR #51.  
+**Post-milestone `main` baseline:** `25672c1b375181b6eb48e4ee9c8283e16dc12665`.  
 
 This file is the concise moving authority for repository state. Historical
 qualification details remain in feature PRs, ADRs, architecture records, runbooks,
-and Git history. Software qualification is not empirical tutoring efficacy.
+and Git history. See [`STATUS.md`](../../STATUS.md) for the completed M17–M19
+milestone handoff. Software qualification is not empirical tutoring efficacy.
 
 ## Milestone board
 
@@ -29,7 +30,7 @@ M15 - Evaluation Presentation Contract           QUALIFIED - MERGED PR #47
 M16 - Grounded Mentor Feedback Composer          QUALIFIED - MERGED PR #48
 M17 - Analysis-to-Presentation CLI Bridge         QUALIFIED - MERGED PR #49
 M18 - Diagnostic Move-Analysis Queue             QUALIFIED - MERGED PR #50
-M19 - Provenance-Bound Mentor Coaching           CURRENT CANDIDATE - PR #51
+M19 - Provenance-Bound Mentor Coaching           QUALIFIED - MERGED PR #51
 ```
 
 Supporting repairs/capabilities remain part of this baseline:
@@ -49,10 +50,11 @@ Post-M10 documentation consolidation             MERGED - PR #42
 | M16 / PR #48 | `44314e9de8be5c17d7357849568fa2d3816bc387` | `ec48032c5866461b767697dc20df0c8b6b945b3b` | run `34413803156`: 577 passed, 8 intentional skips, Ruff PASS, Stockfish 8/8 PASS |
 | M17 / PR #49 | `c91ffa33a0797e0894f1f2dc519600be39f6afcc` | `4672a2b5dc34cae736be8e260f439afe6acfb1e6` | run `34435288183`: 582 passed, 8 intentional skips, Ruff PASS, Stockfish 8/8 PASS |
 | M18 / PR #50 | `65297abd366bf092a60ed4fa202e2e51bb1950cd` | `00bab82dc963bff005c9753b498f1e50a8c513d4` | run `34436086912`: 589 passed, 8 intentional skips, Ruff PASS, Stockfish 8/8 PASS |
+| M19 / PR #51 | `f465a7f5355d8e9304a557cbbc26971d1aa18c27` | `25672c1b375181b6eb48e4ee9c8283e16dc12665` | run `34436883416`: 598 passed, 8 intentional skips, Ruff PASS, Stockfish 8/8 PASS |
 
-PR #51 and Git history are authoritative for the exact M19 final candidate head,
-qualification run, and eventual merge provenance. Any candidate-head change requires
-a fresh full CI and independent Stockfish pass before merge.
+M17–M19 are complete. Any next milestone must begin from live `main`, reconcile this
+status authority and `STATUS.md`, then establish a new bounded package queue before
+implementation.
 
 ## Current evidence path
 
