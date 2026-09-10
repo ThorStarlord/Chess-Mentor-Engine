@@ -1,0 +1,44 @@
+{
+  "html_lang": "en",
+  "main_id": "coach-review-main",
+  "top_level_section_ids": [
+    "objective-evidence",
+    "diagnostic-selection",
+    "participant-authority",
+    "tutor-state",
+    "deterministic-grounding",
+    "model-coaching",
+    "model-evaluation"
+  ],
+  "h2_headings": [
+    "Claim boundary",
+    "Objective evidence",
+    "Diagnostic selection",
+    "Participant authority",
+    "Tutor state",
+    "Deterministic grounding",
+    "Model coaching",
+    "Model evaluation",
+    "Source identity"
+  ],
+  "exact_case_table_captions": [
+    "Score semantics",
+    "Best evaluation score perspectives",
+    "Played evaluation score perspectives",
+    "Root analysis candidates",
+    "Source fingerprints"
+  ],
+  "required_landmarks": [
+    "header",
+    "aside",
+    "main",
+    "footer"
+  ],
+  "forbidden_elements": [
+    "script",
+    "form",
+    "input",
+    "button",
+    "iframe"
+  ]
+}
