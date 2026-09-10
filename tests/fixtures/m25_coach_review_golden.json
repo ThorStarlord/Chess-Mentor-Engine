@@ -1,0 +1,130 @@
+[
+  {
+    "scenario": "exact_white_root_multipv",
+    "expected": {
+      "side_to_move": "white",
+      "root_quality": "exact",
+      "comparison_quality": "exact",
+      "comparison_kind": "worse_for_mover",
+      "exact_delta": 30,
+      "best_kind": "centipawn",
+      "best_mover_centipawns": 40,
+      "best_mover_bound": "exact",
+      "child_status": null,
+      "child_quality": null,
+      "child_failure_code": null
+    }
+  },
+  {
+    "scenario": "bounded_black_perspective",
+    "expected": {
+      "side_to_move": "black",
+      "root_quality": "bounded",
+      "comparison_quality": "bounded",
+      "comparison_kind": "bound_limited",
+      "exact_delta": null,
+      "best_kind": "centipawn",
+      "best_mover_centipawns": 50,
+      "best_mover_bound": "upper",
+      "child_status": null,
+      "child_quality": null,
+      "child_failure_code": null
+    }
+  },
+  {
+    "scenario": "symbolic_terminal_mate",
+    "expected": {
+      "side_to_move": "black",
+      "root_quality": "exact",
+      "comparison_quality": "exact",
+      "comparison_kind": "terminal_relation",
+      "exact_delta": null,
+      "best_kind": "mate",
+      "best_mover_centipawns": null,
+      "best_mover_bound": "exact",
+      "child_status": null,
+      "child_quality": null,
+      "child_failure_code": null
+    }
+  },
+  {
+    "scenario": "partial_root",
+    "expected": {
+      "side_to_move": "white",
+      "root_quality": "partial",
+      "comparison_quality": "partial",
+      "comparison_kind": "partial_evidence",
+      "exact_delta": null,
+      "best_kind": "centipawn",
+      "best_mover_centipawns": 40,
+      "best_mover_bound": "exact",
+      "child_status": null,
+      "child_quality": null,
+      "child_failure_code": null
+    }
+  },
+  {
+    "scenario": "empty_complete_root",
+    "expected": {
+      "side_to_move": "white",
+      "root_quality": "unavailable",
+      "comparison_quality": "unavailable",
+      "comparison_kind": "incomparable",
+      "exact_delta": null,
+      "best_kind": null,
+      "best_mover_centipawns": null,
+      "best_mover_bound": null,
+      "child_status": null,
+      "child_quality": null,
+      "child_failure_code": null
+    }
+  },
+  {
+    "scenario": "compatible_child_reanalysis",
+    "expected": {
+      "side_to_move": "white",
+      "root_quality": "exact",
+      "comparison_quality": "exact",
+      "comparison_kind": "worse_for_mover",
+      "exact_delta": 20,
+      "best_kind": "centipawn",
+      "best_mover_centipawns": 40,
+      "best_mover_bound": "exact",
+      "child_status": "complete",
+      "child_quality": "exact",
+      "child_failure_code": null
+    }
+  },
+  {
+    "scenario": "incompatible_child_regime",
+    "expected": {
+      "side_to_move": "white",
+      "root_quality": "exact",
+      "comparison_quality": "incompatible",
+      "comparison_kind": "incompatible_analysis_regime",
+      "exact_delta": null,
+      "best_kind": "centipawn",
+      "best_mover_centipawns": 40,
+      "best_mover_bound": "exact",
+      "child_status": "complete",
+      "child_quality": "exact",
+      "child_failure_code": null
+    }
+  },
+  {
+    "scenario": "failed_child",
+    "expected": {
+      "side_to_move": "white",
+      "root_quality": "exact",
+      "comparison_quality": "unavailable",
+      "comparison_kind": "incomparable",
+      "exact_delta": null,
+      "best_kind": "centipawn",
+      "best_mover_centipawns": 40,
+      "best_mover_bound": "exact",
+      "child_status": "failure",
+      "child_quality": "unavailable",
+      "child_failure_code": "ENGINE_CRASHED"
+    }
+  }
+]
