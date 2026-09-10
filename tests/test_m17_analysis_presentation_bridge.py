@@ -7,7 +7,11 @@ from dataclasses import replace
 from pathlib import Path
 
 import chess_mentor_engine.cli as cli_module
-from chess_mentor_engine.analysis import AnalysisLimit, AnalysisRequest, PositionAnalysis
+from chess_mentor_engine.analysis import (
+    AnalysisLimit,
+    AnalysisRequest,
+    PositionAnalysis,
+)
 from chess_mentor_engine.chess import ingest_pgn
 from chess_mentor_engine.cli import main
 from chess_mentor_engine.selection import compare_played_decision
