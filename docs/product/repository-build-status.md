@@ -1,12 +1,12 @@
 # Chess Mentor Engine — Current Build Status
 
 **Status authority:** current implementation and qualification boundary.  
-**Current implementation boundary:** M19 — Provenance-Bound Mentor Coaching, QUALIFIED / MERGED PR #51.  
-**Post-milestone `main` baseline:** `25672c1b375181b6eb48e4ee9c8283e16dc12665`.  
+**Current implementation boundary:** M22 — End-to-End Evaluation Fidelity Matrix, QUALIFIED / MERGED PR #55.  
+**Post-milestone `main` baseline:** `7f59c6add7ffe042d8c2b65d6273867673b6d74b`.  
 
 This file is the concise moving authority for repository state. Historical
-qualification details remain in feature PRs, ADRs, architecture records, runbooks,
-and Git history. See [`STATUS.md`](../../STATUS.md) for the completed M17–M19
+qualification details remain in feature PRs, runbooks, ADRs, architecture records,
+and Git history. See [`STATUS.md`](../../STATUS.md) for the completed M20–M22
 milestone handoff. Software qualification is not empirical tutoring efficacy.
 
 ## Milestone board
@@ -31,6 +31,9 @@ M16 - Grounded Mentor Feedback Composer          QUALIFIED - MERGED PR #48
 M17 - Analysis-to-Presentation CLI Bridge         QUALIFIED - MERGED PR #49
 M18 - Diagnostic Move-Analysis Queue             QUALIFIED - MERGED PR #50
 M19 - Provenance-Bound Mentor Coaching           QUALIFIED - MERGED PR #51
+M20 - Model Coaching Evaluation Contract         QUALIFIED - MERGED PR #53
+M21 - Candidate-to-Tutor Orchestration           QUALIFIED - MERGED PR #54
+M22 - End-to-End Evaluation Fidelity Matrix      QUALIFIED - MERGED PR #55
 ```
 
 Supporting repairs/capabilities remain part of this baseline:
@@ -39,20 +42,21 @@ Supporting repairs/capabilities remain part of this baseline:
 UCI evidence contract repair / provider 0.2      MERGED - PR #39
 Durable artifacts + verified M8 replay           MERGED - PR #40
 Post-M10 documentation consolidation             MERGED - PR #42
+M17-M19 milestone handoff                         MERGED - PR #52
 ```
 
 ## Recent promotion provenance
 
 | Milestone | Qualified/final head | Merged commit | Qualification |
 | --- | --- | --- | --- |
-| M14 / PR #46 | `c2e1ded12ae3dd40402c67ddb713db7f6c38fdbc` | `6112b3a970c3b2a4b10b58a6cb3b438d332e605e` | run `34411793232`: 554 passed, 8 intentional skips, Ruff PASS, Stockfish 8/8 PASS |
-| M15 / PR #47 | `275bafceb949fc564b80a5f0b09b062514d7602c` | `c93faf74cb1d7b54d05853cd4775a57c725cfc7b` | run `34412807819`: 566 passed, 8 intentional skips, Ruff PASS, Stockfish 8/8 PASS |
-| M16 / PR #48 | `44314e9de8be5c17d7357849568fa2d3816bc387` | `ec48032c5866461b767697dc20df0c8b6b945b3b` | run `34413803156`: 577 passed, 8 intentional skips, Ruff PASS, Stockfish 8/8 PASS |
 | M17 / PR #49 | `c91ffa33a0797e0894f1f2dc519600be39f6afcc` | `4672a2b5dc34cae736be8e260f439afe6acfb1e6` | run `34435288183`: 582 passed, 8 intentional skips, Ruff PASS, Stockfish 8/8 PASS |
 | M18 / PR #50 | `65297abd366bf092a60ed4fa202e2e51bb1950cd` | `00bab82dc963bff005c9753b498f1e50a8c513d4` | run `34436086912`: 589 passed, 8 intentional skips, Ruff PASS, Stockfish 8/8 PASS |
 | M19 / PR #51 | `f465a7f5355d8e9304a557cbbc26971d1aa18c27` | `25672c1b375181b6eb48e4ee9c8283e16dc12665` | run `34436883416`: 598 passed, 8 intentional skips, Ruff PASS, Stockfish 8/8 PASS |
+| M20 / PR #53 | `583ccda3a357605bc9ff2318ce85bc940031730b` | `2d57b953ee8336a5bdd05f00f48905d000158691` | run `34481292153`: 616 passed, 8 intentional skips, Ruff PASS, Stockfish 8/8 PASS |
+| M21 / PR #54 | `537c9d9751103bc5c0569fa26b12a229cc47a6fe` | `20ddff116aa501f2644bfcdbef69d4c173d93763` | run `34483038324`: 633 passed, 8 intentional skips, Ruff PASS, Stockfish 8/8 PASS |
+| M22 / PR #55 | `10e7dac9ef0b6ebafce9b5d307ec99e1fd254ca5` | `7f59c6add7ffe042d8c2b65d6273867673b6d74b` | run `34484791539`: 648 passed, 8 intentional skips, Ruff PASS, Stockfish 8/8 PASS |
 
-M17–M19 are complete. Any next milestone must begin from live `main`, reconcile this
+M20–M22 are complete. Any next milestone must begin from live `main`, reconcile this
 status authority and `STATUS.md`, then establish a new bounded package queue before
 implementation.
 
@@ -64,21 +68,27 @@ PGN / canonical position
 -> provenance-bound engine evidence
 -> objective played-decision comparison / bounded diagnostic selection
 -> deterministic evaluation presentation projection
+-> explicit participant candidate selection + capture consent
 -> frozen participant decision evidence
 -> position-local reasoning discrepancy
 -> participant-specific hypothesis + contradiction/challenge evidence
 -> controlled evidence-aware tutor session
 -> deterministic grounded session-local mentor feedback
 -> provenance-bound model language rendering
+-> explicit bounded model-output evaluation
 -> explicit training applicability / selected | ineligible | unclear
 -> predeclared outcome protocol
 -> practice / near / far / real-game outcome evidence
 -> append-only longitudinal learner state
 ```
 
-Every arrow remains an authority boundary. M19 adds a model-authored language layer;
-it does not make the model a source of objective chess truth, M6/M7 learner truth,
-training authority, or outcome evidence.
+M22 separately qualifies covered cross-layer fidelity invariants over:
+
+```text
+M3/M4 -> M15 -> M16 -> M19 -> M20
+```
+
+Every arrow remains an authority boundary.
 
 ## Current product surfaces
 
@@ -89,9 +99,7 @@ participant-scoped artifact reads, and replay-verified append-only M8 tutor
 transitions. M13 does not generate explanation text; `cme tutor explain` records
 explicitly supplied text and provenance.
 
-See the M12 and M13 runbooks for command-level details.
-
-### M14-M17 — Engine analysis and presentation
+### M14-M18 — Engine analysis, presentation, and diagnostic queue
 
 M14 adds bounded external-UCI analysis through:
 
@@ -99,16 +107,9 @@ M14 adds bounded external-UCI analysis through:
 cme analyze <pgn> --ply-index N --engine <uci> ...
 ```
 
-M17 adds the opt-in `--with-presentation` bridge. The exact in-memory M3 root
-analysis, optional played-child analysis, and native M4 comparison are passed to the
-qualified M15 projector before optional archival. M15 preserves canonical White
-scores, decision-mover projection, bound direction, symbolic mate, partial/failure
-states, engine identity, and exact evidence references.
-
-Optional M14 archival still stores only `m14.analysis-package.v1`. A M15 integrity
-failure exits before archival.
-
-### M18 — Diagnostic move-analysis queue
+M17 adds the opt-in `--with-presentation` bridge through qualified M15. M15 preserves
+canonical White scores, decision-mover projection, bound direction, symbolic mate,
+partial/failure states, engine identity, and exact evidence references.
 
 M18 adds:
 
@@ -116,36 +117,26 @@ M18 adds:
 cme diagnose <pgn> --policy <selection-policy.json> --engine <uci> ...
 ```
 
-The command analyzes one selected game over an explicit inclusive played-ply window,
-derives M4C objective signals, applies an explicit versioned M4D `SelectionPolicy`,
-and produces the native deterministic `DiagnosticCandidateBatch` plus its complete
-auditable source pool.
-
-M18 does not embed universal move-quality thresholds. Failed, partial, bounded, or
-incompatible engine evidence remains explicit; the workflow does not invent an exact
-score or silently weaken policy to fill a batch. See the
-[M18 runbook](../runbooks/m18-diagnostic-analysis-queue.md).
+It analyzes an explicit game window and produces the native deterministic
+`DiagnosticCandidateBatch` plus an auditable source pool. It does not embed universal
+move-quality thresholds or manufacture exact values from weak evidence.
 
 ### M16 — Deterministic grounded mentor feedback
 
-M16 remains the deterministic factual grounding ceiling for mentor language:
+M16 remains the deterministic factual grounding ceiling:
 
 ```text
 chess_mentor_engine.feedback.compose_grounded_mentor_feedback
 chess_mentor_engine.feedback.record_grounded_mentor_feedback
 ```
 
-It requires an exact M8 session in `compared` state and exact M3/M4 evidence already
-bound into the M6 reasoning context and objective reveal. It rebuilds M15, preserves
-every M6 assertion, optionally preserves complete active-current M7 context, and
-keeps non-exact evidence non-exact.
-
-M16 may record its deterministic template output through M8 with
-`actor_kind=template`. It does not invoke a model.
+It recomputes M15, verifies exact M3/M4 evidence already bound into the M6/M8
+context, preserves M6 and optional complete active-current M7 context, and keeps
+non-exact evidence non-exact.
 
 ### M19 — Provenance-bound model coaching
 
-M19 introduces `chess_mentor_engine.coaching` with:
+M19 exposes provider-neutral model-language APIs:
 
 ```text
 build_model_coaching_request
@@ -156,54 +147,105 @@ ModelCoachingGeneration
 ModelCoachProvider
 ```
 
-`build_model_coaching_request` first recomputes the exact M16 grounded feedback. The
-M19 request is then content-addressed over the current tutor snapshot, exact M16
-record, and a versioned instruction ceiling that restricts the model to language
-rendering, Socratic reflection, and explanation of existing evidence/uncertainty.
-
-A provider result may contain only request identity/fingerprint echo, prose,
-provider/model identity, provider run ID, and generation time. It cannot submit new
-M3/M4/M6/M7/M9 structures through the M19 generation contract.
-
-Before recording, M19 revalidates request shape/identity, exact instruction contract,
-recomputed M16 grounding, request echo, and chronology. Accepted prose is recorded
-through the existing M8 explanation transition with:
-
-```text
-actor_kind = model
-actor_id = <provider_id>:<model_id>
-actor_version = <model_version>
-instruction_fingerprint = exact M19 instruction fingerprint
-run_id = provider run ID
-```
-
-The M19 coaching record deliberately states:
+Accepted records retain:
 
 ```text
 grounding_status = request_bound_not_semantically_verified
 claim_scope = session_local_model_rendering
 ```
 
-This is important: provenance binding proves which evidence and instructions were
-supplied to which model run. It does **not** prove that model prose is factually
-correct, pedagogically optimal, or effective. Production provider/transport choice
-remains deferred. See the
-[M19 runbook](../runbooks/m19-provenance-bound-model-coaching.md).
+Model provenance proves what grounded request reached what model run; it does not
+establish semantic correctness or pedagogical quality.
+
+### M20 — Bounded model-output evaluation
+
+M20 exposes:
+
+```text
+build_model_coaching_evaluation_request
+bind_model_coaching_evaluation
+run_model_coaching_evaluation
+ModelCoachingEvaluationGeneration
+ModelCoachingEvaluationJudgment
+```
+
+The request is rebuilt from exact M16/M19 sources before evaluation. M20 v1 requires
+one verdict for each frozen dimension:
+
+```text
+grounding_consistency
+objective_chess_consistency
+evidence_sufficiency
+uncertainty_preservation
+mate_and_bound_preservation
+learner_inference_scope
+authority_boundary
+```
+
+Aggregate outcomes are accepted, rejected, or inconclusive under the M20 policy.
+Every result still states:
+
+```text
+truth_status = not_established_by_m20_evaluation
+claim_scope = bounded_model_output_quality_assessment
+```
+
+M20 does not select or endorse a production evaluator.
+
+### M21 — Diagnostic candidate to tutor session
+
+M21 exposes:
+
+```text
+record_candidate_tutor_authorization
+start_candidate_tutor_session
+```
+
+Candidate selection and evidence-capture consent are separate participant decisions.
+Launch requires exact M18 candidate/batch/source identity plus exact canonical game
+binding. M21 derives the M1 position context internally, creates only M5 decision
+context plus initial M8 `state=selected`, and stops.
+
+It does not choose candidates, expose diagnostic rationale as clean pre-reveal input,
+create M6/M7 learner inference, select M9 training, or generate mentor language.
+
+### M22 — End-to-end evaluation fidelity qualification
+
+M22 introduces no production runtime authority. Its machine-readable matrix and
+regression suite cover eight semantic regimes across native M3/M4/M15 contracts and
+an exact M15/M16/M19/M20 lineage.
+
+The matrix verifies preservation of:
+
+- canonical White versus decision-mover perspective;
+- exact versus bounded/non-exact semantics;
+- lower/upper bound reversal for Black mover projection;
+- symbolic mate without centipawn sentinels;
+- partial/unavailable/incompatible/failure states;
+- source fingerprints and evidence references;
+- fail-closed behavior for rehashed cross-layer semantic drift.
+
+See the [M22 runbook](../runbooks/m22-end-to-end-evaluation-fidelity-matrix.md).
 
 ## Qualification commands
 
-Focused current product surface:
+Focused current milestone:
 
 ```bash
-python -m pytest tests/test_m11_qualification.py
-python -m pytest tests/test_m12_cli.py
-python -m pytest tests/test_m13_persistent_tutor_cli.py
-python -m pytest tests/test_m14_engine_analysis_cli.py
-python -m pytest tests/test_m15_evaluation_presentation.py
-python -m pytest tests/test_m16_grounded_mentor_feedback.py
-python -m pytest tests/test_m17_analysis_presentation_bridge.py
-python -m pytest tests/test_m18_diagnostic_analysis_queue.py
-python -m pytest tests/test_m19_provenance_bound_model_coaching.py
+python -m pytest tests/test_m20_model_coaching_evaluation.py
+python -m pytest tests/test_m21_diagnostic_candidate_tutor_orchestration.py
+python -m pytest tests/test_m22_end_to_end_evaluation_fidelity.py
+```
+
+Focused mentor/evaluation path:
+
+```bash
+python -m pytest \
+  tests/test_m15_evaluation_presentation.py \
+  tests/test_m16_grounded_mentor_feedback.py \
+  tests/test_m19_provenance_bound_model_coaching.py \
+  tests/test_m20_model_coaching_evaluation.py \
+  tests/test_m22_end_to_end_evaluation_fidelity.py
 ```
 
 Engine/comparison contracts:
@@ -229,9 +271,10 @@ witness. No standalone static type checker is configured.
 ## Current claim ceiling
 
 The repository now has qualified deterministic chess/evidence contracts, persistent
-bounded tutor state, a diagnostic analysis queue, deterministic grounded feedback,
-and a provider-neutral model-language boundary with exact request/model provenance.
-It still does **not** claim:
+bounded tutor state, a diagnostic analysis queue, participant-authorized candidate
+launch, deterministic grounded feedback, a provider-neutral model-language boundary,
+a bounded model-output-evaluation contract, and a hermetic cross-layer fidelity
+matrix. It still does **not** claim:
 
 - causal cognitive diagnosis or permanent learner traits;
 - optimal/effective intervention selection;
@@ -241,11 +284,14 @@ It still does **not** claim:
 - automatic M6 diagnosis generation from engine output;
 - automatic M7/M11 mutation from tutor, analysis, or model-coaching calls;
 - semantic correctness, safety, or pedagogical quality of arbitrary model prose;
-- a production LLM provider, provider transport, retry/rate-limit policy, or secrets
-  architecture;
+- semantic completeness/correctness of an arbitrary M20 evaluator;
+- a production LLM/evaluator provider, provider transport, retry/rate-limit policy,
+  cost/latency/privacy policy, or secrets architecture;
+- correct disclosure/consent behavior in an external end-user UI;
 - a web UI, authenticated hosted service, or production multi-user persistence;
 - empirical tutoring efficacy.
 
-M16 remains the deterministic grounding ceiling. M19 proves that model-authored
-language can be request-bound, provenance-bearing, and isolated from upstream
-structured authority; it does not certify the language itself.
+M16 remains the deterministic grounding ceiling. M19 proves request/model provenance,
+not model quality. M20 records bounded evaluator judgments, not objective truth. M21
+is participant-authorized orchestration, not inference. M22 proves only the covered
+repository fidelity invariants.
