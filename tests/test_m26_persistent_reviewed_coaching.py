@@ -9,6 +9,7 @@ from pathlib import Path
 import pytest
 from test_m23_diagnostic_to_persistent_tutor_cli import _queue
 from test_m24_provider_conformance import (
+    S15,
     _Evaluator,
     _Provider,
     _evaluator_endpoint,
@@ -26,7 +27,6 @@ from test_m8_qualification import (
     S8,
     S11,
     S13,
-    S15,
     _m6_bundle,
 )
 from test_reasoning_discrepancy_facts import (
@@ -72,8 +72,6 @@ from chess_mentor_engine.tutoring import (
     reveal_tutor_objective_evidence,
     start_candidate_tutor_session,
 )
-
-S16 = "2026-09-08T10:16:00-03:00"
 
 
 def _fingerprint(value: object) -> str:
