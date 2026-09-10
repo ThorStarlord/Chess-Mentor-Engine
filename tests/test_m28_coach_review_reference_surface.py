@@ -255,7 +255,7 @@ def test_model_content_is_html_escaped_and_never_becomes_markup() -> None:
 
     assert "<script>" not in surface.html
     assert "<button>move</button>" not in surface.html
-    assert "&lt;script&gt;alert(&quot; in surface.html
+    assert '&lt;script&gt;alert(&quot;' in surface.html
     assert "&lt;button&gt;move&lt;/button&gt;" in surface.html
     parsed = _parse(surface.html)
     assert "script" not in parsed.tags
