@@ -25,7 +25,7 @@ and pilot artifacts are not superseded by software qualification.
 
 ## Current implementation
 
-The bounded evidence stack now extends through M16:
+The bounded evidence stack now extends through M17:
 
 - **M1-M4:** canonical PGN/game/position provenance, deterministic chess context and
   features, normalized UCI evidence, objective played-decision comparison, and
@@ -58,6 +58,10 @@ The bounded evidence stack now extends through M16:
   M6 assertion, optionally preserves complete active-current M7 context, emits
   bounded reflection questions, and may record the result through the existing M8
   explanation transition with template provenance.
+- **M17:** opt-in `cme analyze --with-presentation` bridge. It sends the exact
+  in-memory M14/M3/M4 records through M15 before optional archival, adds the verified
+  projection as a separate response field, and leaves the M14 archive contract
+  unchanged.
 
 Recent promotion sequence:
 
@@ -67,16 +71,16 @@ M12 Local Evidence CLI                MERGED - PR #44
 M13 Persistent Tutor Session CLI      MERGED - PR #45
 M14 Engine-Backed Analysis CLI        MERGED - PR #46
 M15 Evaluation Presentation Contract  MERGED - PR #47
-M16 Grounded Mentor Feedback Composer CURRENT IMPLEMENTATION - PR #48
+M16 Grounded Mentor Feedback Composer MERGED - PR #48
+M17 Analysis-to-Presentation Bridge   CURRENT IMPLEMENTATION - PR #49
 ```
 
-M15 was qualified at exact head `275bafceb949fc564b80a5f0b09b062514d7602c`
-in CI run `34412807819` and merged as
-`c93faf74cb1d7b54d05853cd4775a57c725cfc7b`. The repaired M16 runtime head
-`f3118f9d0d56de3499aa6f2b7bb72bc5d7ed4ac2` passed both repository CI jobs in
-run `34413596649`: native tests and Ruff passed, and the independent Stockfish
-witness passed. PR #48 and Git history remain authoritative for the final
-documentation-bearing head and merge provenance.
+M16 was qualified at exact final head
+`44314e9de8be5c17d7357849568fa2d3816bc387` in CI run `34413803156`: 577
+native tests passed with 8 intentional external-engine skips, Ruff passed, and the
+independent Stockfish witness passed 8/8. It merged as
+`ec48032c5866461b767697dc20df0c8b6b945b3b`. PR #49 and Git history are the
+authority for M17 candidate-head qualification and eventual merge provenance.
 
 ## Separation of responsibilities
 
@@ -91,8 +95,9 @@ score.
 read model, including a decision-mover score view and evidence-quality labels. It
 must preserve the canonical White evaluation, reverse ordering bounds when the
 perspective reverses, keep mate symbolic, preserve fingerprints/provenance, and
-fail closed on evidence drift. It does not define move-quality thresholds or learner
-diagnoses.
+fail closed on evidence drift. M17 exposes this exact projector from the M14 CLI
+without changing M15 authority. It does not define move-quality thresholds or
+learner diagnoses.
 
 **Feedback-composition authority:** M16 may turn already-qualified M15/M6 and
 optional complete active-current M7 evidence into deterministic session-local
@@ -137,10 +142,11 @@ engine analysis != evaluation presentation != grounded feedback != model coachin
 ```
 
 M14 owns the engine-backed evidence package. M15 owns only a versioned,
-deterministic projection of exact M3/M4 records. M16 owns deterministic composition
-from those exact records plus existing M6/M7 evidence; it is not authorization to
-invent new chess truth, causal learner diagnoses, training prescriptions, or
-unversioned model claims.
+deterministic projection of exact M3/M4 records. M17 only exposes that projection
+from the same exact M14 analysis path; it does not alter the M14 archive or M15
+semantics. M16 owns deterministic composition from exact objective records plus
+existing M6/M7 evidence; it is not authorization to invent new chess truth, causal
+learner diagnoses, training prescriptions, or unversioned model claims.
 
 ## CLI and API boundaries
 
@@ -160,7 +166,20 @@ an explicit external UCI executable or PATH name. Optional M14 archival requires
 existing artifact database plus an explicit participant; it never creates a new
 learner or tutor state record.
 
-M15 and M16 are currently Python APIs rather than new CLI mutations:
+M17 adds an opt-in presentation projection to the existing analysis command:
+
+```text
+cme analyze ... --with-presentation
+```
+
+With the flag, the CLI passes the exact in-memory root analysis, optional played
+child analysis, and M4 comparison into `build_evaluation_presentation`. The M15
+projection is emitted separately from the M14 package and is built before optional
+archival. Without the flag, M14 output remains unchanged. Optional archival still
+stores only `m14.analysis-package.v1`.
+
+M15 remains available as a Python API; M16 remains a Python API rather than a new
+CLI mutation:
 
 ```python
 from chess_mentor_engine.presentation import build_evaluation_presentation
@@ -203,13 +222,15 @@ python -m pytest tests/test_m13_persistent_tutor_cli.py
 python -m pytest tests/test_m14_engine_analysis_cli.py
 python -m pytest tests/test_m15_evaluation_presentation.py
 python -m pytest tests/test_m16_grounded_mentor_feedback.py
+python -m pytest tests/test_m17_analysis_presentation_bridge.py
 ```
 
 ## Current claim ceiling and stop boundary
 
 The repository can now preserve a longitudinal evidence history, expose selected
 qualified capabilities through a local CLI, project exact engine/comparison evidence
-into a deterministic UI-safe read model, and compose deterministic grounded
+into a deterministic UI-safe read model, carry that projection directly from the
+M14 analysis command when explicitly requested, and compose deterministic grounded
 session-local feedback after an exact tutor comparison. It still does **not**
 establish:
 

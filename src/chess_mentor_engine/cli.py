@@ -24,6 +24,10 @@ from chess_mentor_engine.chess import (
     ingest_pgn,
 )
 from chess_mentor_engine.evidence import PlayerEvidenceError
+from chess_mentor_engine.presentation import (
+    EvaluationPresentationError,
+    build_evaluation_presentation,
+)
 from chess_mentor_engine.selection import (
     DecisionComparisonError,
     compare_played_decision,
@@ -256,8 +260,18 @@ def _cmd_analyze(args: argparse.Namespace) -> dict[str, Any]:
         ),
         "decision_comparison": comparison.to_dict(),
     }
+    presentation = None
+    if getattr(args, "with_presentation", False):
+        presentation = build_evaluation_presentation(
+            root_analysis=root_analysis,
+            comparison=comparison,
+            played_analysis=played_analysis,
+        )
     archive_ref = _archive_analysis_package(args, package)
-    return {"package": package, "archive_ref": archive_ref}
+    payload = {"package": package, "archive_ref": archive_ref}
+    if presentation is not None:
+        payload["presentation"] = presentation
+    return payload
 
 
 def _cmd_artifacts_list(args: argparse.Namespace) -> dict[str, Any]:
@@ -398,6 +412,11 @@ def build_parser() -> argparse.ArgumentParser:
         help="Repeatable UCI option; MultiPV is controlled separately.",
     )
     analyze.add_argument(
+        "--with-presentation",
+        action="store_true",
+        help="Also emit the verified M15 UI-safe evaluation projection.",
+    )
+    analyze.add_argument(
         "--db", help="Existing artifact DB for optional package archival."
     )
     analyze.add_argument(
@@ -457,6 +476,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         ChessEvidenceError,
         CliError,
         DecisionComparisonError,
+        EvaluationPresentationError,
         json.JSONDecodeError,
         OSError,
         PlayerEvidenceError,

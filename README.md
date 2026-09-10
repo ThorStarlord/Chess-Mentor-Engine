@@ -50,6 +50,7 @@ M1-M10 setup and research protocols remain in the
 | M14 | Engine-backed `cme analyze` workflow over qualified M3/M4 contracts, with optional immutable participant-scoped package archival. |
 | M15 | Deterministic evaluation presentation projection with explicit perspective, mate/bound/partial semantics, PVs, engine identity, and exact evidence references. |
 | M16 | Deterministic grounded mentor-feedback composition over exact M15/M6 and optional complete active-current M7 evidence, with native M8 explanation recording. |
+| M17 | Opt-in `cme analyze --with-presentation` bridge that sends exact M14/M3/M4 records through M15 without changing the M14 archive contract. |
 
 The UCI provider remains version `0.2`: Black-root score bounds are normalized into
 White evaluation ordering, explicit invalid MultiPV ranks fail closed, mate remains
@@ -101,6 +102,23 @@ complete root MultiPV, the exact canonical child is reanalyzed under the same
 request. Regime drift remains `incompatible_analysis_regime`; bounded, partial,
 mate, terminal, and failure states are not coerced into fake centipawn precision.
 
+M17 can project those exact in-memory records through M15 in the same CLI request:
+
+```bash
+cme analyze games.pgn \
+  --game-index 0 \
+  --ply-index 12 \
+  --engine /path/to/stockfish \
+  --depth 14 \
+  --multipv 3 \
+  --with-presentation
+```
+
+The opt-in response adds a top-level `presentation` with schema
+`m15.evaluation-presentation.v1`. M15 revalidates the exact M3/M4 relationship and
+fails closed on evidence drift. Without `--with-presentation`, the M14 response is
+unchanged.
+
 Optional archival requires an **existing** local artifact database and an explicit
 participant scope:
 
@@ -114,8 +132,11 @@ cme analyze games.pgn \
   --participant P01
 ```
 
-See the [M14 runbook](docs/runbooks/m14-engine-analysis-cli.md). M14 remains the
-objective evidence package; M15 is the separate deterministic presentation layer.
+Even when `--with-presentation` is used, optional archival stores only the exact
+`m14.analysis-package.v1` payload. The presentation is a derived response and is
+built before archival so projection failure cannot leave a storage side effect.
+See the [M14 runbook](docs/runbooks/m14-engine-analysis-cli.md) and
+[M17 runbook](docs/runbooks/m17-analysis-presentation-bridge.md).
 
 ### Inspect verified local artifacts
 
@@ -151,8 +172,9 @@ generate engine evidence, M6 assessments, M7 hypotheses, explanation prose,
 training decisions, or automatic M11 mutations. See the
 [M13 runbook](docs/runbooks/m13-persistent-tutor-cli.md).
 
-M16 is currently a Python API, not a new CLI command. The existing `cme tutor
-explain` command remains the explicit-input M13 surface.
+M15 remains a Python API and is also exposed as an opt-in projection from
+`cme analyze` through M17. M16 remains a Python API rather than a new CLI command.
+The existing `cme tutor explain` command remains the explicit-input M13 surface.
 
 ## Python APIs
 
@@ -252,6 +274,7 @@ python -m pytest tests/test_m13_persistent_tutor_cli.py
 python -m pytest tests/test_m14_engine_analysis_cli.py
 python -m pytest tests/test_m15_evaluation_presentation.py
 python -m pytest tests/test_m16_grounded_mentor_feedback.py
+python -m pytest tests/test_m17_analysis_presentation_bridge.py
 ```
 
 Related engine/comparison contracts:
@@ -282,8 +305,9 @@ The repository can preserve and connect objective chess evidence, frozen player
 evidence, bounded learner hypotheses, tutoring state, intervention/outcome evidence,
 longitudinal history, deterministic display semantics, and deterministic grounded
 session-local feedback. M12-M14 expose a usable local CLI over selected qualified
-capabilities; M15 and M16 expose downstream presentation/feedback contracts as
-Python APIs.
+capabilities, and M17 now carries exact M14 analysis/comparison evidence directly
+through the M15 UI-safe presentation contract. M16 remains the downstream grounded
+feedback API.
 
 It still does **not** establish:
 
@@ -310,6 +334,7 @@ learner hypotheses, and authored language into one opaque authority.
 - [M14 engine analysis CLI](docs/runbooks/m14-engine-analysis-cli.md) — objective engine-backed analysis package.
 - [M15 evaluation presentation](docs/runbooks/m15-evaluation-presentation.md) — deterministic UI-safe evidence projection.
 - [M16 grounded mentor feedback](docs/runbooks/m16-grounded-mentor-feedback.md) — deterministic evidence-bound feedback composition.
+- [M17 analysis presentation bridge](docs/runbooks/m17-analysis-presentation-bridge.md) — opt-in CLI projection over exact M14/M3/M4 records.
 - [Architecture overview](docs/architecture/architecture.md) — earlier layer map and historical implementation boundary.
 - [Decision records](docs/decisions/README.md) — normative bounded contracts.
 - [Product build plan](docs/product/chess-mentor-engine-repository-build-plan.md) — planning history and broader product direction.
