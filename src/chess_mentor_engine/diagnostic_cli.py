@@ -120,7 +120,9 @@ def _selection_quotas(value: object) -> tuple[SelectionQuota, ...]:
         unknown = set(item) - _QUOTA_KEYS
         if unknown:
             names = ", ".join(sorted(unknown))
-            raise DiagnosticCliError(f"policy quota {index} has unknown fields: {names}")
+            raise DiagnosticCliError(
+                f"policy quota {index} has unknown fields: {names}"
+            )
         if "signal_kind" not in item:
             raise DiagnosticCliError(f"policy quota {index} is missing signal_kind")
         signal_kind = item["signal_kind"]
