@@ -189,7 +189,7 @@ _BUNDLE_KEYS = {
 
 
 class CoachReviewReadModelError(ValueError):
-    """M25 cannot project the supplied records without crossing authority layers."""
+    """M25 cannot project supplied records without crossing authority layers."""
 
 
 def _fingerprint(value: object) -> str:
@@ -206,7 +206,11 @@ def _dict(value: Any, label: str) -> dict[str, Any]:
     return value
 
 
-def _strict(value: Any, keys: set[str], label: str) -> dict[str, Any]:
+def _strict(
+    value: Any,
+    keys: set[str],
+    label: str,
+) -> dict[str, Any]:
     data = _dict(value, label)
     if set(data) != keys:
         raise CoachReviewReadModelError(f"{label} shape mismatch")
@@ -215,7 +219,9 @@ def _strict(value: Any, keys: set[str], label: str) -> dict[str, Any]:
 
 def _nonempty(value: Any, label: str) -> str:
     if type(value) is not str or not value:
-        raise CoachReviewReadModelError(f"{label} must be a non-empty string")
+        raise CoachReviewReadModelError(
+            f"{label} must be a non-empty string"
+        )
     return value
 
 
@@ -226,7 +232,10 @@ def _validate_content_identity(
     prefix: str,
     label: str,
 ) -> None:
-    fingerprint = _nonempty(record.get("fingerprint"), f"{label} fingerprint")
+    fingerprint = _nonempty(
+        record.get("fingerprint"),
+        f"{label} fingerprint",
+    )
     payload = {
         key: value
         for key, value in record.items()
@@ -234,29 +243,59 @@ def _validate_content_identity(
     }
     expected = _fingerprint(payload)
     if fingerprint != expected:
-        raise CoachReviewReadModelError(f"{label} fingerprint mismatch")
+        raise CoachReviewReadModelError(
+            f"{label} fingerprint mismatch"
+        )
     if record.get(id_key) != f"{prefix}_{expected[:20]}":
         raise CoachReviewReadModelError(f"{label} identity mismatch")
 
 
 def _validate_presentation(value: Any) -> dict[str, Any]:
-    presentation = _strict(value, _PRESENTATION_KEYS, "M15 presentation")
+    presentation = _strict(
+        value,
+        _PRESENTATION_KEYS,
+        "M15 presentation",
+    )
     if presentation["schema_version"] != PRESENTATION_SCHEMA_VERSION:
-        raise CoachReviewReadModelError("M15 presentation schema mismatch")
+        raise CoachReviewReadModelError(
+            "M15 presentation schema mismatch"
+        )
     if presentation["score_semantics"] != _SCORE_SEMANTICS:
         raise CoachReviewReadModelError("M15 score semantics drifted")
+
     subject = _dict(presentation["subject"], "M15 subject")
-    comparison = _dict(presentation["comparison"], "M15 comparison")
-    for key in ("game_id", "position_id", "side_to_move", "played_move_uci"):
+    comparison = _dict(
+        presentation["comparison"],
+        "M15 comparison",
+    )
+    for key in (
+        "game_id",
+        "position_id",
+        "side_to_move",
+        "played_move_uci",
+    ):
         _nonempty(subject.get(key), f"M15 subject {key}")
     _nonempty(comparison.get("comparison_id"), "M15 comparison id")
+
     quality = comparison.get("evidence_quality")
-    if quality not in {"exact", "bounded", "partial", "incompatible", "unavailable"}:
-        raise CoachReviewReadModelError("M15 comparison evidence quality is invalid")
-    if quality != "exact" and comparison.get("exact_centipawn_delta_for_mover") is not None:
+    if quality not in {
+        "exact",
+        "bounded",
+        "partial",
+        "incompatible",
+        "unavailable",
+    }:
+        raise CoachReviewReadModelError(
+            "M15 comparison evidence quality is invalid"
+        )
+    if (
+        quality != "exact"
+        and comparison.get("exact_centipawn_delta_for_mover") is not None
+    ):
         raise CoachReviewReadModelError(
             "non-exact M15 evidence exposed an exact centipawn delta"
         )
+
     for key in ("best_evaluation", "played_evaluation"):
         evaluation = comparison.get(key)
         if evaluation is None:
@@ -270,7 +309,11 @@ def _validate_presentation(value: Any) -> dict[str, Any]:
 
 
 def _validate_signal(signal: Any) -> dict[str, Any]:
-    data = _strict(signal, _SIGNAL_KEYS, "M18 selection signal")
+    data = _strict(
+        signal,
+        _SIGNAL_KEYS,
+        "M18 selection signal",
+    )
     payload = {
         key: data[key]
         for key in (
@@ -284,8 +327,11 @@ def _validate_signal(signal: Any) -> dict[str, Any]:
             "detail",
         )
     }
-    if data["signal_id"] != f"signal_{_fingerprint(payload)[:20]}":
-        raise CoachReviewReadModelError("M18 selection signal identity mismatch")
+    expected_id = f"signal_{_fingerprint(payload)[:20]}"
+    if data["signal_id"] != expected_id:
+        raise CoachReviewReadModelError(
+            "M18 selection signal identity mismatch"
+        )
     return data
 
 
@@ -293,12 +339,19 @@ def _validate_candidate(
     value: Any,
     presentation: dict[str, Any],
 ) -> dict[str, Any]:
-    candidate = _strict(value, _CANDIDATE_KEYS, "M18 diagnostic candidate")
+    candidate = _strict(
+        value,
+        _CANDIDATE_KEYS,
+        "M18 diagnostic candidate",
+    )
     signals = candidate["signals"]
     if type(signals) is not list or not signals:
-        raise CoachReviewReadModelError("M18 diagnostic candidate signals are invalid")
+        raise CoachReviewReadModelError(
+            "M18 diagnostic candidate signals are invalid"
+        )
     for signal in signals:
         _validate_signal(signal)
+
     payload = {
         "position_id": candidate["position_id"],
         "game_id": candidate["game_id"],
@@ -310,15 +363,24 @@ def _validate_candidate(
     }
     expected_id = f"candidate_{_fingerprint(payload)[:20]}"
     if candidate["candidate_id"] != expected_id:
-        raise CoachReviewReadModelError("M18 diagnostic candidate identity mismatch")
+        raise CoachReviewReadModelError(
+            "M18 diagnostic candidate identity mismatch"
+        )
+
     subject = presentation["subject"]
     comparison = presentation["comparison"]
     if candidate["game_id"] != subject["game_id"]:
-        raise CoachReviewReadModelError("M18/M15 game identity mismatch")
+        raise CoachReviewReadModelError(
+            "M18/M15 game identity mismatch"
+        )
     if candidate["position_id"] != subject["position_id"]:
-        raise CoachReviewReadModelError("M18/M15 position identity mismatch")
+        raise CoachReviewReadModelError(
+            "M18/M15 position identity mismatch"
+        )
     if candidate["comparison_id"] != comparison["comparison_id"]:
-        raise CoachReviewReadModelError("M18/M15 comparison identity mismatch")
+        raise CoachReviewReadModelError(
+            "M18/M15 comparison identity mismatch"
+        )
     return candidate
 
 
@@ -326,11 +388,21 @@ def _validate_batch(
     value: Any,
     candidate: dict[str, Any],
 ) -> dict[str, Any]:
-    batch = _strict(value, _BATCH_KEYS, "M18 diagnostic batch")
+    batch = _strict(
+        value,
+        _BATCH_KEYS,
+        "M18 diagnostic batch",
+    )
     candidates = batch["candidates"]
     if type(candidates) is not list:
-        raise CoachReviewReadModelError("M18 diagnostic batch candidates are invalid")
-    matches = [item for item in candidates if item == candidate]
+        raise CoachReviewReadModelError(
+            "M18 diagnostic batch candidates are invalid"
+        )
+    matches = [
+        item
+        for item in candidates
+        if item == candidate
+    ]
     if len(matches) != 1:
         raise CoachReviewReadModelError(
             "M18 candidate is not exactly represented in diagnostic batch"
@@ -339,11 +411,15 @@ def _validate_batch(
         raise CoachReviewReadModelError(
             "M18 candidate is absent from batch source candidate ids"
         )
+
     payload = {
         "selection_policy": batch["selection_policy"],
         "policy_fingerprint": batch["policy_fingerprint"],
         "requested_size": batch["requested_size"],
-        "candidate_ids": [item["candidate_id"] for item in candidates],
+        "candidate_ids": [
+            item["candidate_id"]
+            for item in candidates
+        ],
         "control_candidate_ids": batch["control_candidate_ids"],
         "source_candidate_ids": batch["source_candidate_ids"],
         "source_pool_fingerprint": batch["source_pool_fingerprint"],
@@ -352,8 +428,11 @@ def _validate_batch(
         "shortfall": batch["shortfall"],
         "control_shortfall": batch["control_shortfall"],
     }
-    if batch["batch_id"] != f"batch_{_fingerprint(payload)[:20]}":
-        raise CoachReviewReadModelError("M18 diagnostic batch identity mismatch")
+    expected_id = f"batch_{_fingerprint(payload)[:20]}"
+    if batch["batch_id"] != expected_id:
+        raise CoachReviewReadModelError(
+            "M18 diagnostic batch identity mismatch"
+        )
     return batch
 
 
@@ -372,23 +451,44 @@ def _validate_authorization(
         authorization["schema_version"]
         != CANDIDATE_TUTOR_AUTHORIZATION_SCHEMA_VERSION
     ):
-        raise CoachReviewReadModelError("M21 authorization schema mismatch")
+        raise CoachReviewReadModelError(
+            "M21 authorization schema mismatch"
+        )
     if authorization["actor_kind"] != "participant":
-        raise CoachReviewReadModelError("M21 authorization is not participant-authored")
+        raise CoachReviewReadModelError(
+            "M21 authorization is not participant-authored"
+        )
     if authorization["selection_decision"] != "selected":
-        raise CoachReviewReadModelError("M21 candidate was not selected")
+        raise CoachReviewReadModelError(
+            "M21 candidate was not selected"
+        )
     if authorization["capture_consent"] != "granted":
-        raise CoachReviewReadModelError("M21 capture consent was not granted")
-    if authorization["claim_scope"] != "participant_candidate_and_capture_authorization":
-        raise CoachReviewReadModelError("M21 authorization claim scope mismatch")
+        raise CoachReviewReadModelError(
+            "M21 capture consent was not granted"
+        )
+    if (
+        authorization["claim_scope"]
+        != "participant_candidate_and_capture_authorization"
+    ):
+        raise CoachReviewReadModelError(
+            "M21 authorization claim scope mismatch"
+        )
     if authorization["candidate_id"] != candidate["candidate_id"]:
-        raise CoachReviewReadModelError("M21 authorization candidate mismatch")
+        raise CoachReviewReadModelError(
+            "M21 authorization candidate mismatch"
+        )
     if authorization["candidate_fingerprint"] != _fingerprint(candidate):
-        raise CoachReviewReadModelError("M21 authorization candidate fingerprint mismatch")
+        raise CoachReviewReadModelError(
+            "M21 authorization candidate fingerprint mismatch"
+        )
     if authorization["batch_id"] != batch["batch_id"]:
-        raise CoachReviewReadModelError("M21 authorization batch mismatch")
+        raise CoachReviewReadModelError(
+            "M21 authorization batch mismatch"
+        )
     if authorization["batch_fingerprint"] != _fingerprint(batch):
-        raise CoachReviewReadModelError("M21 authorization batch fingerprint mismatch")
+        raise CoachReviewReadModelError(
+            "M21 authorization batch fingerprint mismatch"
+        )
     _validate_content_identity(
         authorization,
         id_key="authorization_id",
@@ -405,29 +505,56 @@ def _validate_launch(
     candidate: dict[str, Any],
     batch: dict[str, Any],
 ) -> dict[str, Any]:
-    launch = _strict(value, _LAUNCH_KEYS, "M21 candidate launch")
+    launch = _strict(
+        value,
+        _LAUNCH_KEYS,
+        "M21 candidate launch",
+    )
     if launch["schema_version"] != CANDIDATE_TUTOR_LAUNCH_SCHEMA_VERSION:
         raise CoachReviewReadModelError("M21 launch schema mismatch")
-    if launch["claim_scope"] != "participant_authorized_candidate_to_tutor_start":
-        raise CoachReviewReadModelError("M21 launch claim scope mismatch")
-    if launch["authorization_ref"] != {
+    if (
+        launch["claim_scope"]
+        != "participant_authorized_candidate_to_tutor_start"
+    ):
+        raise CoachReviewReadModelError(
+            "M21 launch claim scope mismatch"
+        )
+
+    expected_auth_ref = {
         "authorization_id": authorization["authorization_id"],
         "fingerprint": authorization["fingerprint"],
-    }:
-        raise CoachReviewReadModelError("M21 launch authorization reference mismatch")
-    if launch["candidate_ref"] != {
+    }
+    if launch["authorization_ref"] != expected_auth_ref:
+        raise CoachReviewReadModelError(
+            "M21 launch authorization reference mismatch"
+        )
+
+    expected_candidate_ref = {
         "candidate_id": candidate["candidate_id"],
         "fingerprint": _fingerprint(candidate),
-    }:
-        raise CoachReviewReadModelError("M21 launch candidate reference mismatch")
-    if launch["batch_ref"] != {
+    }
+    if launch["candidate_ref"] != expected_candidate_ref:
+        raise CoachReviewReadModelError(
+            "M21 launch candidate reference mismatch"
+        )
+
+    expected_batch_ref = {
         "batch_id": batch["batch_id"],
         "fingerprint": _fingerprint(batch),
-    }:
-        raise CoachReviewReadModelError("M21 launch batch reference mismatch")
-    tutor_ref = _dict(launch["tutor_session_ref"], "M21 launch tutor reference")
+    }
+    if launch["batch_ref"] != expected_batch_ref:
+        raise CoachReviewReadModelError(
+            "M21 launch batch reference mismatch"
+        )
+
+    tutor_ref = _dict(
+        launch["tutor_session_ref"],
+        "M21 launch tutor reference",
+    )
     if tutor_ref.get("state") != "selected":
-        raise CoachReviewReadModelError("M21 launch must reference selected M8 state")
+        raise CoachReviewReadModelError(
+            "M21 launch must reference selected M8 state"
+        )
     _validate_content_identity(
         launch,
         id_key="launch_id",
@@ -442,24 +569,47 @@ def _validate_tutor_state(
     *,
     launch: dict[str, Any] | None,
 ) -> dict[str, Any]:
-    state = _strict(value, _TUTOR_STATE_KEYS, "M8 tutor state")
-    _nonempty(state["tutor_session_id"], "M8 tutor session id")
-    _nonempty(state["snapshot_fingerprint"], "M8 snapshot fingerprint")
+    state = _strict(
+        value,
+        _TUTOR_STATE_KEYS,
+        "M8 tutor state",
+    )
+    _nonempty(
+        state["tutor_session_id"],
+        "M8 tutor session id",
+    )
+    _nonempty(
+        state["snapshot_fingerprint"],
+        "M8 snapshot fingerprint",
+    )
     if state["state"] not in _ALLOWED_TUTOR_STATES:
-        raise CoachReviewReadModelError("M8 tutor state is invalid")
+        raise CoachReviewReadModelError(
+            "M8 tutor state is invalid"
+        )
     if launch is not None:
         launch_ref = launch["tutor_session_ref"]
         if state["tutor_session_id"] != launch_ref["tutor_session_id"]:
-            raise CoachReviewReadModelError("M21/M8 tutor session identity mismatch")
+            raise CoachReviewReadModelError(
+                "M21/M8 tutor session identity mismatch"
+            )
     return state
 
 
 def _validate_feedback_policy(feedback: dict[str, Any]) -> None:
     policy = _dict(feedback["policy"], "M16 policy")
-    fingerprint = _nonempty(policy.get("fingerprint"), "M16 policy fingerprint")
-    payload = {key: value for key, value in policy.items() if key != "fingerprint"}
+    fingerprint = _nonempty(
+        policy.get("fingerprint"),
+        "M16 policy fingerprint",
+    )
+    payload = {
+        key: value
+        for key, value in policy.items()
+        if key != "fingerprint"
+    }
     if fingerprint != _fingerprint(payload):
-        raise CoachReviewReadModelError("M16 policy fingerprint mismatch")
+        raise CoachReviewReadModelError(
+            "M16 policy fingerprint mismatch"
+        )
 
 
 def _validate_feedback(
@@ -468,11 +618,19 @@ def _validate_feedback(
     presentation: dict[str, Any],
     tutor_state: dict[str, Any] | None,
 ) -> dict[str, Any]:
-    feedback = _strict(value, _FEEDBACK_KEYS, "M16 grounded feedback")
+    feedback = _strict(
+        value,
+        _FEEDBACK_KEYS,
+        "M16 grounded feedback",
+    )
     if feedback["schema_version"] != FEEDBACK_SCHEMA_VERSION:
-        raise CoachReviewReadModelError("M16 grounded feedback schema mismatch")
+        raise CoachReviewReadModelError(
+            "M16 grounded feedback schema mismatch"
+        )
     if feedback["claim_scope"] != "session_local_grounded_feedback":
-        raise CoachReviewReadModelError("M16 grounded feedback claim scope mismatch")
+        raise CoachReviewReadModelError(
+            "M16 grounded feedback claim scope mismatch"
+        )
     _validate_content_identity(
         feedback,
         id_key="feedback_id",
@@ -480,31 +638,57 @@ def _validate_feedback(
         label="M16 grounded feedback",
     )
     _validate_feedback_policy(feedback)
+
     reference = _dict(
         feedback["evaluation_presentation"],
         "M16 evaluation presentation reference",
     )
     if reference.get("schema_version") != PRESENTATION_SCHEMA_VERSION:
-        raise CoachReviewReadModelError("M16/M15 presentation schema mismatch")
+        raise CoachReviewReadModelError(
+            "M16/M15 presentation schema mismatch"
+        )
     if reference.get("fingerprint") != _fingerprint(presentation):
-        raise CoachReviewReadModelError("M16/M15 presentation fingerprint mismatch")
+        raise CoachReviewReadModelError(
+            "M16/M15 presentation fingerprint mismatch"
+        )
     if (
         reference.get("decision_comparison_id")
         != presentation["comparison"]["comparison_id"]
     ):
-        raise CoachReviewReadModelError("M16/M15 decision comparison mismatch")
-    if tutor_state is not None and (
-        feedback["tutor_session_id"] != tutor_state["tutor_session_id"]
+        raise CoachReviewReadModelError(
+            "M16/M15 decision comparison mismatch"
+        )
+    if (
+        tutor_state is not None
+        and feedback["tutor_session_id"] != tutor_state["tutor_session_id"]
     ):
-        raise CoachReviewReadModelError("M16/M8 tutor session identity mismatch")
+        raise CoachReviewReadModelError(
+            "M16/M8 tutor session identity mismatch"
+        )
+
     sections = feedback["sections"]
     if type(sections) is not list or not sections:
-        raise CoachReviewReadModelError("M16 grounded feedback sections are invalid")
-    kinds = [item.get("kind") for item in sections if type(item) is dict]
+        raise CoachReviewReadModelError(
+            "M16 grounded feedback sections are invalid"
+        )
+    kinds = [
+        item.get("kind")
+        for item in sections
+        if type(item) is dict
+    ]
     if len(kinds) != len(sections) or len(kinds) != len(set(kinds)):
-        raise CoachReviewReadModelError("M16 grounded feedback sections are malformed")
-    if "objective" not in kinds or "reasoning" not in kinds or "reflection" not in kinds:
-        raise CoachReviewReadModelError("M16 required feedback sections are missing")
+        raise CoachReviewReadModelError(
+            "M16 grounded feedback sections are malformed"
+        )
+    required_kinds = {
+        "objective",
+        "reasoning",
+        "reflection",
+    }
+    if not required_kinds.issubset(kinds):
+        raise CoachReviewReadModelError(
+            "M16 required feedback sections are missing"
+        )
     return feedback
 
 
@@ -514,19 +698,33 @@ def _validate_coaching(
     feedback: dict[str, Any],
     tutor_state: dict[str, Any] | None,
 ) -> dict[str, Any]:
-    coaching = _strict(value, _COACHING_KEYS, "M19 model coaching")
+    coaching = _strict(
+        value,
+        _COACHING_KEYS,
+        "M19 model coaching",
+    )
     if coaching["schema_version"] != MODEL_COACHING_RECORD_SCHEMA_VERSION:
-        raise CoachReviewReadModelError("M19 coaching schema mismatch")
+        raise CoachReviewReadModelError(
+            "M19 coaching schema mismatch"
+        )
     if coaching["claim_scope"] != "session_local_model_rendering":
-        raise CoachReviewReadModelError("M19 coaching claim scope mismatch")
-    if coaching["grounding_status"] != "request_bound_not_semantically_verified":
-        raise CoachReviewReadModelError("M19 grounding status mismatch")
+        raise CoachReviewReadModelError(
+            "M19 coaching claim scope mismatch"
+        )
+    if (
+        coaching["grounding_status"]
+        != "request_bound_not_semantically_verified"
+    ):
+        raise CoachReviewReadModelError(
+            "M19 grounding status mismatch"
+        )
     _validate_content_identity(
         coaching,
         id_key="coaching_id",
         prefix="model_coaching",
         label="M19 model coaching",
     )
+
     expected_feedback_ref = {
         "schema_version": feedback["schema_version"],
         "feedback_id": feedback["feedback_id"],
@@ -534,19 +732,34 @@ def _validate_coaching(
         "claim_scope": feedback["claim_scope"],
     }
     if coaching["grounded_feedback_ref"] != expected_feedback_ref:
-        raise CoachReviewReadModelError("M19/M16 grounded feedback reference mismatch")
+        raise CoachReviewReadModelError(
+            "M19/M16 grounded feedback reference mismatch"
+        )
     if coaching["tutor_session_id"] != feedback["tutor_session_id"]:
-        raise CoachReviewReadModelError("M19/M16 tutor session identity mismatch")
-    if tutor_state is not None and (
-        coaching["tutor_session_id"] != tutor_state["tutor_session_id"]
+        raise CoachReviewReadModelError(
+            "M19/M16 tutor session identity mismatch"
+        )
+    if (
+        tutor_state is not None
+        and coaching["tutor_session_id"] != tutor_state["tutor_session_id"]
     ):
-        raise CoachReviewReadModelError("M19/M8 tutor session identity mismatch")
-    _nonempty(coaching["rendered_content"], "M19 rendered coaching content")
+        raise CoachReviewReadModelError(
+            "M19/M8 tutor session identity mismatch"
+        )
+    _nonempty(
+        coaching["rendered_content"],
+        "M19 rendered coaching content",
+    )
     return coaching
 
 
-def _expected_qualification(judgments: list[dict[str, Any]]) -> str:
-    verdicts = {item["verdict"] for item in judgments}
+def _expected_qualification(
+    judgments: list[dict[str, Any]],
+) -> str:
+    verdicts = {
+        item["verdict"]
+        for item in judgments
+    }
     if "fail" in verdicts:
         return "rejected_under_m20_evaluation_policy"
     if "unclear" in verdicts:
@@ -560,53 +773,108 @@ def _validate_evaluation(
     feedback: dict[str, Any],
     coaching: dict[str, Any],
 ) -> dict[str, Any]:
-    evaluation = _strict(value, _EVALUATION_KEYS, "M20 model evaluation")
-    if evaluation["schema_version"] != MODEL_COACHING_EVALUATION_RECORD_SCHEMA_VERSION:
-        raise CoachReviewReadModelError("M20 evaluation schema mismatch")
-    if evaluation["source_integrity"] != "verified_against_exact_m16_m19_sources":
-        raise CoachReviewReadModelError("M20 source integrity status mismatch")
-    if evaluation["claim_scope"] != "bounded_model_output_quality_assessment":
-        raise CoachReviewReadModelError("M20 evaluation claim scope mismatch")
-    if evaluation["truth_status"] != "not_established_by_m20_evaluation":
-        raise CoachReviewReadModelError("M20 evaluation truth status mismatch")
+    evaluation = _strict(
+        value,
+        _EVALUATION_KEYS,
+        "M20 model evaluation",
+    )
+    if (
+        evaluation["schema_version"]
+        != MODEL_COACHING_EVALUATION_RECORD_SCHEMA_VERSION
+    ):
+        raise CoachReviewReadModelError(
+            "M20 evaluation schema mismatch"
+        )
+    if (
+        evaluation["source_integrity"]
+        != "verified_against_exact_m16_m19_sources"
+    ):
+        raise CoachReviewReadModelError(
+            "M20 source integrity status mismatch"
+        )
+    if (
+        evaluation["claim_scope"]
+        != "bounded_model_output_quality_assessment"
+    ):
+        raise CoachReviewReadModelError(
+            "M20 evaluation claim scope mismatch"
+        )
+    if (
+        evaluation["truth_status"]
+        != "not_established_by_m20_evaluation"
+    ):
+        raise CoachReviewReadModelError(
+            "M20 evaluation truth status mismatch"
+        )
     if evaluation["qualification_status"] not in _ALLOWED_EVALUATION_STATUSES:
-        raise CoachReviewReadModelError("M20 evaluation qualification status is invalid")
+        raise CoachReviewReadModelError(
+            "M20 evaluation qualification status is invalid"
+        )
     _validate_content_identity(
         evaluation,
         id_key="evaluation_id",
         prefix="model_coaching_evaluation",
         label="M20 model evaluation",
     )
-    if evaluation["model_coaching_ref"] != {
+
+    expected_coaching_ref = {
         "coaching_id": coaching["coaching_id"],
         "fingerprint": coaching["fingerprint"],
         "schema_version": coaching["schema_version"],
-    }:
-        raise CoachReviewReadModelError("M20/M19 coaching reference mismatch")
-    if evaluation["grounded_feedback_ref"] != {
+    }
+    if evaluation["model_coaching_ref"] != expected_coaching_ref:
+        raise CoachReviewReadModelError(
+            "M20/M19 coaching reference mismatch"
+        )
+
+    expected_feedback_ref = {
         "feedback_id": feedback["feedback_id"],
         "fingerprint": feedback["fingerprint"],
         "schema_version": feedback["schema_version"],
-    }:
-        raise CoachReviewReadModelError("M20/M16 feedback reference mismatch")
+    }
+    if evaluation["grounded_feedback_ref"] != expected_feedback_ref:
+        raise CoachReviewReadModelError(
+            "M20/M16 feedback reference mismatch"
+        )
+
     judgments = evaluation["judgments"]
     if type(judgments) is not list:
-        raise CoachReviewReadModelError("M20 judgments must be an array")
-    dimensions = []
+        raise CoachReviewReadModelError(
+            "M20 judgments must be an array"
+        )
+    dimensions: list[Any] = []
     for judgment in judgments:
         item = _dict(judgment, "M20 judgment")
-        if set(item) != {"dimension", "verdict", "rationale"}:
-            raise CoachReviewReadModelError("M20 judgment shape mismatch")
+        if set(item) != {
+            "dimension",
+            "verdict",
+            "rationale",
+        }:
+            raise CoachReviewReadModelError(
+                "M20 judgment shape mismatch"
+            )
         dimensions.append(item["dimension"])
         if item["verdict"] not in {"pass", "fail", "unclear"}:
-            raise CoachReviewReadModelError("M20 judgment verdict is invalid")
-        _nonempty(item["rationale"], "M20 judgment rationale")
+            raise CoachReviewReadModelError(
+                "M20 judgment verdict is invalid"
+            )
+        _nonempty(
+            item["rationale"],
+            "M20 judgment rationale",
+        )
     if len(dimensions) != len(set(dimensions)):
-        raise CoachReviewReadModelError("M20 judgment dimensions are duplicated")
+        raise CoachReviewReadModelError(
+            "M20 judgment dimensions are duplicated"
+        )
     if set(dimensions) != set(EVALUATION_DIMENSIONS):
-        raise CoachReviewReadModelError("M20 judgment dimensions are incomplete")
-    if evaluation["qualification_status"] != _expected_qualification(judgments):
-        raise CoachReviewReadModelError("M20 qualification status contradicts judgments")
+        raise CoachReviewReadModelError(
+            "M20 judgment dimensions are incomplete"
+        )
+    expected_status = _expected_qualification(judgments)
+    if evaluation["qualification_status"] != expected_status:
+        raise CoachReviewReadModelError(
+            "M20 qualification status contradicts judgments"
+        )
     return evaluation
 
 
@@ -623,22 +891,34 @@ def build_coach_review_read_model(
     model_evaluation: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Build one UI-facing projection without reinterpreting source semantics."""
-    presentation = _validate_presentation(evaluation_presentation)
+    presentation = _validate_presentation(
+        evaluation_presentation
+    )
 
     if (diagnostic_candidate is None) != (diagnostic_batch is None):
         raise CoachReviewReadModelError(
             "M18 candidate and batch must be supplied together"
         )
     if authorization is not None and diagnostic_candidate is None:
-        raise CoachReviewReadModelError("M21 authorization requires M18 selection")
+        raise CoachReviewReadModelError(
+            "M21 authorization requires M18 selection"
+        )
     if launch is not None and authorization is None:
-        raise CoachReviewReadModelError("M21 launch requires authorization")
+        raise CoachReviewReadModelError(
+            "M21 launch requires authorization"
+        )
     if tutor_state is not None and launch is None:
-        raise CoachReviewReadModelError("M8 tutor state requires M21 launch")
+        raise CoachReviewReadModelError(
+            "M8 tutor state requires M21 launch"
+        )
     if model_coaching is not None and grounded_feedback is None:
-        raise CoachReviewReadModelError("M19 coaching requires M16 grounding")
+        raise CoachReviewReadModelError(
+            "M19 coaching requires M16 grounding"
+        )
     if model_evaluation is not None and model_coaching is None:
-        raise CoachReviewReadModelError("M20 evaluation requires M19 coaching")
+        raise CoachReviewReadModelError(
+            "M20 evaluation requires M19 coaching"
+        )
 
     candidate = None
     batch = None
@@ -650,11 +930,18 @@ def build_coach_review_read_model(
     evaluation = None
 
     if diagnostic_candidate is not None:
-        candidate = _validate_candidate(diagnostic_candidate, presentation)
+        candidate = _validate_candidate(
+            diagnostic_candidate,
+            presentation,
+        )
         assert diagnostic_batch is not None
-        batch = _validate_batch(diagnostic_batch, candidate)
+        batch = _validate_batch(
+            diagnostic_batch,
+            candidate,
+        )
     if authorization is not None:
-        assert candidate is not None and batch is not None
+        assert candidate is not None
+        assert batch is not None
         authorization_record = _validate_authorization(
             authorization,
             candidate=candidate,
@@ -662,7 +949,8 @@ def build_coach_review_read_model(
         )
     if launch is not None:
         assert authorization_record is not None
-        assert candidate is not None and batch is not None
+        assert candidate is not None
+        assert batch is not None
         launch_record = _validate_launch(
             launch,
             authorization=authorization_record,
@@ -688,7 +976,8 @@ def build_coach_review_read_model(
             tutor_state=tutor_state_record,
         )
     if model_evaluation is not None:
-        assert feedback is not None and coaching is not None
+        assert feedback is not None
+        assert coaching is not None
         evaluation = _validate_evaluation(
             model_evaluation,
             feedback=feedback,
@@ -697,19 +986,60 @@ def build_coach_review_read_model(
 
     source_fingerprints = {
         "objective_evidence": _fingerprint(presentation),
-        "diagnostic_candidate": None if candidate is None else _fingerprint(candidate),
-        "diagnostic_batch": None if batch is None else _fingerprint(batch),
+        "diagnostic_candidate": (
+            None
+            if candidate is None
+            else _fingerprint(candidate)
+        ),
+        "diagnostic_batch": (
+            None
+            if batch is None
+            else _fingerprint(batch)
+        ),
         "authorization": (
-            None if authorization_record is None else authorization_record["fingerprint"]
+            None
+            if authorization_record is None
+            else authorization_record["fingerprint"]
         ),
-        "launch": None if launch_record is None else launch_record["fingerprint"],
+        "launch": (
+            None
+            if launch_record is None
+            else launch_record["fingerprint"]
+        ),
         "tutor_state": (
-            None if tutor_state_record is None else _fingerprint(tutor_state_record)
+            None
+            if tutor_state_record is None
+            else _fingerprint(tutor_state_record)
         ),
-        "deterministic_grounding": None if feedback is None else feedback["fingerprint"],
-        "model_coaching": None if coaching is None else coaching["fingerprint"],
-        "model_evaluation": None if evaluation is None else evaluation["fingerprint"],
+        "deterministic_grounding": (
+            None
+            if feedback is None
+            else feedback["fingerprint"]
+        ),
+        "model_coaching": (
+            None
+            if coaching is None
+            else coaching["fingerprint"]
+        ),
+        "model_evaluation": (
+            None
+            if evaluation is None
+            else evaluation["fingerprint"]
+        ),
     }
+
+    participant_authority = None
+    if authorization_record is not None:
+        participant_authority = {
+            "claim_scope": "participant_authorized_tutor_start",
+            "authorization": _copy(authorization_record),
+            "launch": (
+                None
+                if launch_record is None
+                else _copy(launch_record)
+            ),
+        }
+
     payload = {
         "schema_version": COACH_REVIEW_SCHEMA_VERSION,
         "section_order": [
@@ -723,14 +1053,26 @@ def build_coach_review_read_model(
         ],
         "separation_contract": {
             "objective_chess_source": "objective_evidence",
-            "score_semantics_source": "objective_evidence.score_semantics",
-            "diagnostic_selection_source": "diagnostic_selection",
-            "participant_authority_source": "participant_authority",
+            "score_semantics_source": (
+                "objective_evidence.score_semantics"
+            ),
+            "diagnostic_selection_source": (
+                "diagnostic_selection"
+            ),
+            "participant_authority_source": (
+                "participant_authority"
+            ),
             "workflow_state_source": "tutor_state",
-            "deterministic_feedback_source": "deterministic_grounding",
+            "deterministic_feedback_source": (
+                "deterministic_grounding"
+            ),
             "model_language_source": "model_coaching",
-            "bounded_quality_assessment_source": "model_evaluation",
-            "model_evaluation_truth_status": "not_established_by_m20_evaluation",
+            "bounded_quality_assessment_source": (
+                "model_evaluation"
+            ),
+            "model_evaluation_truth_status": (
+                "not_established_by_m20_evaluation"
+            ),
         },
         "source_fingerprints": source_fingerprints,
         "objective_evidence": _copy(presentation),
@@ -746,15 +1088,7 @@ def build_coach_review_read_model(
                 },
             }
         ),
-        "participant_authority": (
-            None
-            if authorization_record is None or launch_record is None
-            else {
-                "claim_scope": "participant_authorized_tutor_start",
-                "authorization": _copy(authorization_record),
-                "launch": _copy(launch_record),
-            }
-        ),
+        "participant_authority": participant_authority,
         "tutor_state": (
             None
             if tutor_state_record is None
@@ -763,9 +1097,21 @@ def build_coach_review_read_model(
                 "claim_scope": "m8_workflow_state",
             }
         ),
-        "deterministic_grounding": None if feedback is None else _copy(feedback),
-        "model_coaching": None if coaching is None else _copy(coaching),
-        "model_evaluation": None if evaluation is None else _copy(evaluation),
+        "deterministic_grounding": (
+            None
+            if feedback is None
+            else _copy(feedback)
+        ),
+        "model_coaching": (
+            None
+            if coaching is None
+            else _copy(coaching)
+        ),
+        "model_evaluation": (
+            None
+            if evaluation is None
+            else _copy(evaluation)
+        ),
     }
     fingerprint = _fingerprint(payload)
     return {
@@ -775,7 +1121,13 @@ def build_coach_review_read_model(
     }
 
 
-def build_coach_review_read_model_from_bundle(value: Any) -> dict[str, Any]:
+def build_coach_review_read_model_from_bundle(
+    value: Any,
+) -> dict[str, Any]:
     """Build M25 from the strict JSON bundle used by the inspection CLI."""
-    bundle = _strict(value, _BUNDLE_KEYS, "M25 input bundle")
+    bundle = _strict(
+        value,
+        _BUNDLE_KEYS,
+        "M25 input bundle",
+    )
     return build_coach_review_read_model(**bundle)
