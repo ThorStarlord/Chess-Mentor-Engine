@@ -23,6 +23,10 @@ from chess_mentor_engine.chess import (
     build_position_context,
     ingest_pgn,
 )
+from chess_mentor_engine.diagnostic_cli import (
+    DiagnosticCliError,
+    add_diagnostic_command,
+)
 from chess_mentor_engine.evidence import PlayerEvidenceError
 from chess_mentor_engine.presentation import (
     EvaluationPresentationError,
@@ -336,8 +340,8 @@ def build_parser() -> argparse.ArgumentParser:
         prog="cme",
         description=(
             "Inspect deterministic chess evidence, run bounded provenance-bound "
-            "engine analysis, verify local artifacts, or explicitly advance "
-            "persisted M8 tutor checkpoints."
+            "engine analysis, build diagnostic queues, verify local artifacts, or "
+            "explicitly advance persisted M8 tutor checkpoints."
         ),
         allow_abbrev=False,
     )
@@ -424,6 +428,8 @@ def build_parser() -> argparse.ArgumentParser:
     )
     analyze.set_defaults(handler=_cmd_analyze)
 
+    add_diagnostic_command(surfaces)
+
     artifacts = surfaces.add_parser(
         "artifacts", help="Read and verify an existing local artifact database."
     )
@@ -476,6 +482,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         ChessEvidenceError,
         CliError,
         DecisionComparisonError,
+        DiagnosticCliError,
         EvaluationPresentationError,
         json.JSONDecodeError,
         OSError,
