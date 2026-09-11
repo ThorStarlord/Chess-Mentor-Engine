@@ -1,7 +1,7 @@
 # Chess Knowledge Ontology
 
 **Schema:** `chess-knowledge-ontology.v1`  
-**Initial content version:** `1.0.0`  
+**Current composed content version:** `1.1.0`  
 **Authority:** Semantic vocabulary and assertion metadata; not learner-state or engine authority.
 
 ## Purpose
@@ -68,7 +68,7 @@ Machine IDs use lowercase dotted namespaces, for example:
 ```text
 tactic.fork
 tactic.absolute_pin
-mate.back_rank
+position.isolated_pawn
 principle.opening.tempo_economy
 evaluation.king_safety
 plan.improve_worst_piece
@@ -141,29 +141,27 @@ mapping collisions, and parent cycles.
 
 ## Strategic conflicts
 
-Principles are not universal laws. The ontology is designed to represent conflicts
-such as:
+Principles are not universal laws. The ontology represents conflicts explicitly.
+Examples in content version 1.1 include:
 
 ```text
-preserve bishop pair
+trade pieces when materially ahead
 vs
-exchange a key defender
+preserve piece pressure when a space advantage depends on congestion
 
-avoid early queen development
+opening king safety
 vs
-exploit an immediate tactical opportunity
+active king use in the endgame
 
-trade pieces when ahead
+opening pawn-move restraint
 vs
-preserve the attacking force
-
-avoid pawn weakness
-vs
-open a file for active pieces
+execute a concrete pawn break
 ```
 
 The presence of both principles is not an ontology contradiction. The position and
 qualified evidence determine relevance.
+
+See [`strategic-principles.md`](strategic-principles.md).
 
 ## Evaluation factors are not score decomposition
 
@@ -177,6 +175,16 @@ king safety: approximately balanced
 
 Those statements do not imply an arithmetic decomposition of a Stockfish score.
 Engine score identity and provenance remain under the engine-analysis contract.
+
+See [`positional-evaluation.md`](positional-evaluation.md).
+
+## Plans are separate from moves and interventions
+
+A plan such as `plan.create_pawn_break` is a contextual chess objective. It is not a
+claim that a particular move is engine-best, and it is not an M9 training
+intervention.
+
+See [`plans.md`](plans.md) and [`pedagogy.md`](pedagogy.md).
 
 ## External mappings
 
@@ -193,27 +201,40 @@ returned for one broader external label.
 
 See [`lichess-compatibility.md`](lichess-compatibility.md).
 
-## Machine-readable source
+## Machine-readable sources
 
-The packaged registry is:
+The default registry is composed from versioned resource fragments:
 
 ```text
 src/chess_mentor_engine/chess_knowledge/data/ontology.v1.json
+    tactical / mating / defensive vocabulary
+
+src/chess_mentor_engine/chess_knowledge/data/strategy.v1.json
+    rule facts / position features / strategic principles /
+    evaluation factors / plans
 ```
 
-Runtime loading uses only the Python standard library and validates the document
-before exposing it.
+The current registry content version is the latest fragment version, `1.1.0`. Every
+fragment is independently validated, then the combined graph is validated again.
+This catches collisions between concept families while allowing the vocabulary to
+grow without turning one JSON file into an unmaintainable monolith.
+
+Runtime loading uses only the Python standard library.
 
 The registry exposes deterministic document and per-concept fingerprints so later
 artifacts can bind to exact ontology semantics.
 
-## Initial implementation boundary
+## Current implementation boundary
 
-Ontology v1 begins with the tactical vocabulary and Lichess compatibility crosswalk.
-Strategic principles, evaluation factors, plans, assertions, detectors, model-context
-projection, and learner integration are layered on in subsequent bounded packages.
+The registry now includes tactical vocabulary, Lichess compatibility mappings,
+mechanically representable rule/position features, strategic principles, positional
+evaluation factors, plans, and selected pedagogical metadata.
 
-The ordering is intentional:
+Position-specific assertion objects, qualified detectors, coaching-context
+projection, and learner-evidence integration are later packages in this ontology
+program.
+
+The ordering remains intentional:
 
 ```text
 vocabulary
