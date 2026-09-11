@@ -143,16 +143,26 @@ def _validate_evaluation(value: Any, *, decision_mover: str, label: str) -> None
     white = value.get("white")
     mover = value.get("decision_mover")
     if type(white) is not dict or type(mover) is not dict:
-        raise ReviewDeliveryFidelityError(f"{label} perspective records are malformed")
+        raise ReviewDeliveryFidelityError(
+            f"{label} perspective records are malformed"
+        )
     if mover.get("side") != decision_mover:
-        raise ReviewDeliveryFidelityError(f"{label} decision-mover perspective drifted")
+        raise ReviewDeliveryFidelityError(
+            f"{label} decision-mover perspective drifted"
+        )
     white_bound = white.get("bound")
     mover_bound = mover.get("bound")
     if white_bound not in _ALLOWED_BOUNDS or mover_bound not in _ALLOWED_BOUNDS:
         raise ReviewDeliveryFidelityError(f"{label} bound is invalid")
-    expected_bound = white_bound if decision_mover == "white" else _reverse_bound(white_bound)
+    expected_bound = (
+        white_bound
+        if decision_mover == "white"
+        else _reverse_bound(white_bound)
+    )
     if mover_bound != expected_bound:
-        raise ReviewDeliveryFidelityError(f"{label} perspective bound inversion drifted")
+        raise ReviewDeliveryFidelityError(
+            f"{label} perspective bound inversion drifted"
+        )
 
     kind = value.get("kind")
     if kind == "centipawn":
@@ -161,25 +171,48 @@ def _validate_evaluation(value: Any, *, decision_mover: str, label: str) -> None
         white_cp = white.get("centipawns")
         mover_cp = mover.get("centipawns")
         if type(white_cp) is not int or type(mover_cp) is not int:
-            raise ReviewDeliveryFidelityError(f"{label} centipawn value is invalid")
+            raise ReviewDeliveryFidelityError(
+                f"{label} centipawn value is invalid"
+            )
         expected_cp = white_cp if decision_mover == "white" else -white_cp
         if mover_cp != expected_cp:
-            raise ReviewDeliveryFidelityError(f"{label} perspective sign inversion drifted")
+            raise ReviewDeliveryFidelityError(
+                f"{label} perspective sign inversion drifted"
+            )
         if "winner" in value or "plies_to_mate" in value:
-            raise ReviewDeliveryFidelityError(f"{label} mixes centipawn and mate semantics")
+            raise ReviewDeliveryFidelityError(
+                f"{label} mixes centipawn and mate semantics"
+            )
         return
 
     if kind == "mate":
         winner = value.get("winner")
         plies = value.get("plies_to_mate")
-        if winner not in {"white", "black"} or type(plies) is not int or plies < 0:
-            raise ReviewDeliveryFidelityError(f"{label} mate representation is invalid")
-        if "unit" in value or "centipawns" in value or "centipawns" in white or "centipawns" in mover:
-            raise ReviewDeliveryFidelityError(f"{label} numericized a symbolic mate")
+        if (
+            winner not in {"white", "black"}
+            or type(plies) is not int
+            or plies < 0
+        ):
+            raise ReviewDeliveryFidelityError(
+                f"{label} mate representation is invalid"
+            )
+        if (
+            "unit" in value
+            or "centipawns" in value
+            or "centipawns" in white
+            or "centipawns" in mover
+        ):
+            raise ReviewDeliveryFidelityError(
+                f"{label} numericized a symbolic mate"
+            )
         if white.get("favours_perspective") is not (winner == "white"):
-            raise ReviewDeliveryFidelityError(f"{label} White mate perspective drifted")
+            raise ReviewDeliveryFidelityError(
+                f"{label} White mate perspective drifted"
+            )
         if mover.get("favours_perspective") is not (winner == decision_mover):
-            raise ReviewDeliveryFidelityError(f"{label} mover mate perspective drifted")
+            raise ReviewDeliveryFidelityError(
+                f"{label} mover mate perspective drifted"
+            )
         return
 
     raise ReviewDeliveryFidelityError(f"{label} evaluation kind is unsupported")
@@ -216,7 +249,10 @@ def _validate_evaluation_semantics(presentation: Any) -> dict[str, Any]:
     if presentation.get("score_semantics") != _EXPECTED_SCORE_SEMANTICS:
         raise ReviewDeliveryFidelityError("M15 score semantics drifted")
     subject = presentation.get("subject")
-    if type(subject) is not dict or subject.get("side_to_move") not in {"white", "black"}:
+    if (
+        type(subject) is not dict
+        or subject.get("side_to_move") not in {"white", "black"}
+    ):
         raise ReviewDeliveryFidelityError("M15 decision mover is invalid")
     decision_mover = subject["side_to_move"]
 
@@ -263,48 +299,90 @@ def _validate_source_fingerprints(read_model: dict[str, Any]) -> None:
 
     objective = read_model["objective_evidence"]
     if fingerprints.get("objective_evidence") != _fingerprint(objective):
-        raise ReviewDeliveryFidelityError("M25 objective source fingerprint drifted")
+        raise ReviewDeliveryFidelityError(
+            "M25 objective source fingerprint drifted"
+        )
 
     diagnostic = read_model["diagnostic_selection"]
     if diagnostic is None:
-        if fingerprints.get("diagnostic_candidate") is not None or fingerprints.get("diagnostic_batch") is not None:
-            raise ReviewDeliveryFidelityError("M25 absent diagnostic sources retained fingerprints")
+        if (
+            fingerprints.get("diagnostic_candidate") is not None
+            or fingerprints.get("diagnostic_batch") is not None
+        ):
+            raise ReviewDeliveryFidelityError(
+                "M25 absent diagnostic sources retained fingerprints"
+            )
     else:
-        if type(diagnostic) is not dict or type(diagnostic.get("candidate")) is not dict or type(diagnostic.get("batch_ref")) is not dict:
-            raise ReviewDeliveryFidelityError("M25 diagnostic selection is malformed")
-        if fingerprints.get("diagnostic_candidate") != _fingerprint(diagnostic["candidate"]):
-            raise ReviewDeliveryFidelityError("M25 diagnostic candidate fingerprint drifted")
-        if fingerprints.get("diagnostic_batch") != diagnostic["batch_ref"].get("fingerprint"):
-            raise ReviewDeliveryFidelityError("M25 diagnostic batch fingerprint drifted")
+        if (
+            type(diagnostic) is not dict
+            or type(diagnostic.get("candidate")) is not dict
+            or type(diagnostic.get("batch_ref")) is not dict
+        ):
+            raise ReviewDeliveryFidelityError(
+                "M25 diagnostic selection is malformed"
+            )
+        if fingerprints.get("diagnostic_candidate") != _fingerprint(
+            diagnostic["candidate"]
+        ):
+            raise ReviewDeliveryFidelityError(
+                "M25 diagnostic candidate fingerprint drifted"
+            )
+        if fingerprints.get("diagnostic_batch") != diagnostic["batch_ref"].get(
+            "fingerprint"
+        ):
+            raise ReviewDeliveryFidelityError(
+                "M25 diagnostic batch fingerprint drifted"
+            )
 
     participant = read_model["participant_authority"]
     if participant is None:
-        if fingerprints.get("authorization") is not None or fingerprints.get("launch") is not None:
-            raise ReviewDeliveryFidelityError("M25 absent participant authority retained fingerprints")
+        if (
+            fingerprints.get("authorization") is not None
+            or fingerprints.get("launch") is not None
+        ):
+            raise ReviewDeliveryFidelityError(
+                "M25 absent participant authority retained fingerprints"
+            )
     else:
-        if type(participant) is not dict or type(participant.get("authorization")) is not dict:
-            raise ReviewDeliveryFidelityError("M25 participant authority is malformed")
+        if (
+            type(participant) is not dict
+            or type(participant.get("authorization")) is not dict
+        ):
+            raise ReviewDeliveryFidelityError(
+                "M25 participant authority is malformed"
+            )
         authorization = participant["authorization"]
         if fingerprints.get("authorization") != authorization.get("fingerprint"):
-            raise ReviewDeliveryFidelityError("M25 authorization fingerprint drifted")
+            raise ReviewDeliveryFidelityError(
+                "M25 authorization fingerprint drifted"
+            )
         launch = participant.get("launch")
         if launch is None:
             if fingerprints.get("launch") is not None:
-                raise ReviewDeliveryFidelityError("M25 absent launch retained a fingerprint")
-        elif type(launch) is not dict or fingerprints.get("launch") != launch.get("fingerprint"):
+                raise ReviewDeliveryFidelityError(
+                    "M25 absent launch retained a fingerprint"
+                )
+        elif (
+            type(launch) is not dict
+            or fingerprints.get("launch") != launch.get("fingerprint")
+        ):
             raise ReviewDeliveryFidelityError("M25 launch fingerprint drifted")
 
     tutor_state = read_model["tutor_state"]
     if tutor_state is None:
         if fingerprints.get("tutor_state") is not None:
-            raise ReviewDeliveryFidelityError("M25 absent tutor state retained a fingerprint")
+            raise ReviewDeliveryFidelityError(
+                "M25 absent tutor state retained a fingerprint"
+            )
     else:
         if type(tutor_state) is not dict:
             raise ReviewDeliveryFidelityError("M25 tutor state is malformed")
         source_tutor_state = _copy(tutor_state)
         source_tutor_state.pop("claim_scope", None)
         if fingerprints.get("tutor_state") != _fingerprint(source_tutor_state):
-            raise ReviewDeliveryFidelityError("M25 tutor-state fingerprint drifted")
+            raise ReviewDeliveryFidelityError(
+                "M25 tutor-state fingerprint drifted"
+            )
 
     for section, source_key in (
         ("deterministic_grounding", "deterministic_grounding"),
@@ -315,9 +393,16 @@ def _validate_source_fingerprints(read_model: dict[str, Any]) -> None:
         source_fingerprint = fingerprints.get(source_key)
         if value is None:
             if source_fingerprint is not None:
-                raise ReviewDeliveryFidelityError(f"M25 absent {section} retained a fingerprint")
-        elif type(value) is not dict or source_fingerprint != value.get("fingerprint"):
-            raise ReviewDeliveryFidelityError(f"M25 {section} fingerprint drifted")
+                raise ReviewDeliveryFidelityError(
+                    f"M25 absent {section} retained a fingerprint"
+                )
+        elif (
+            type(value) is not dict
+            or source_fingerprint != value.get("fingerprint")
+        ):
+            raise ReviewDeliveryFidelityError(
+                f"M25 {section} fingerprint drifted"
+            )
 
 
 def _evaluation_index(presentation: dict[str, Any]) -> dict[str, Any]:
@@ -330,7 +415,9 @@ def _evaluation_index(presentation: dict[str, Any]) -> dict[str, Any]:
         child_index = {
             "status": child.get("status"),
             "evidence_quality": child.get("evidence_quality"),
-            "failure_code": None if type(failure) is not dict else failure.get("code"),
+            "failure_code": (
+                None if type(failure) is not dict else failure.get("code")
+            ),
         }
     return {
         "score_semantics": _copy(presentation["score_semantics"]),
@@ -345,19 +432,26 @@ def _evaluation_index(presentation: dict[str, Any]) -> dict[str, Any]:
             "comparison_kind": comparison.get("comparison_kind"),
             "preference": comparison.get("preference"),
             "compatibility": comparison.get("compatibility"),
-            "played_evaluation_source": comparison.get("played_evaluation_source"),
+            "played_evaluation_source": comparison.get(
+                "played_evaluation_source"
+            ),
             "best_move_uci": comparison.get("best_move_uci"),
             "played_move_uci": comparison.get("played_move_uci"),
             "best_evaluation": _copy(comparison.get("best_evaluation")),
             "played_evaluation": _copy(comparison.get("played_evaluation")),
-            "exact_centipawn_delta_for_mover": comparison.get("exact_centipawn_delta_for_mover"),
+            "exact_centipawn_delta_for_mover": comparison.get(
+                "exact_centipawn_delta_for_mover"
+            ),
             "mate_relation": comparison.get("mate_relation"),
             "terminal_outcome": comparison.get("terminal_outcome"),
         },
     }
 
 
-def _section_fingerprints(read_model: dict[str, Any], section_id: str) -> dict[str, Any]:
+def _section_fingerprints(
+    read_model: dict[str, Any],
+    section_id: str,
+) -> dict[str, Any]:
     source = read_model["source_fingerprints"]
     return {key: source[key] for key in _SECTION_FINGERPRINT_KEYS[section_id]}
 
@@ -367,7 +461,9 @@ def build_review_delivery_content(read_model: dict[str, Any]) -> dict[str, Any]:
     try:
         validated = render_coach_review_reference_surface(read_model).read_model
     except CoachReviewReferenceError as exc:
-        raise ReviewDeliveryFidelityError(f"M25 read model failed M28 validation: {exc}") from exc
+        raise ReviewDeliveryFidelityError(
+            f"M25 read model failed M28 validation: {exc}"
+        ) from exc
     if validated.get("schema_version") != COACH_REVIEW_SCHEMA_VERSION:
         raise ReviewDeliveryFidelityError("M25 read-model schema drifted")
     if validated.get("section_order") != list(SECTION_ORDER):
@@ -398,13 +494,19 @@ def _flatten_delivery_fingerprints(delivery: dict[str, Any]) -> dict[str, Any]:
         section = sections[section_id]
         for key, value in section["source_fingerprints"].items():
             if key in flattened and flattened[key] != value:
-                raise ReviewDeliveryFidelityError("M32 section source fingerprints conflict")
+                raise ReviewDeliveryFidelityError(
+                    "M32 section source fingerprints conflict"
+                )
             flattened[key] = value
     return flattened
 
 
 def _validate_delivery(delivery: Any) -> dict[str, Any]:
-    delivery = _strict_dict(delivery, {"section_order", "evaluation_index", "sections"}, "M32 delivery")
+    delivery = _strict_dict(
+        delivery,
+        {"section_order", "evaluation_index", "sections"},
+        "M32 delivery",
+    )
     if delivery["section_order"] != list(SECTION_ORDER):
         raise ReviewDeliveryFidelityError("M32 section ordering drifted")
     sections = delivery["sections"]
@@ -417,17 +519,31 @@ def _validate_delivery(delivery: Any) -> dict[str, Any]:
             f"M32 {section_id} section",
         )
         if section["authority"] != _SECTION_AUTHORITIES[section_id]:
-            raise ReviewDeliveryFidelityError(f"M32 {section_id} authority drifted")
-        if type(section["present"]) is not bool or section["present"] is not (section["content"] is not None):
-            raise ReviewDeliveryFidelityError(f"M32 {section_id} presence marker drifted")
+            raise ReviewDeliveryFidelityError(
+                f"M32 {section_id} authority drifted"
+            )
+        if (
+            type(section["present"]) is not bool
+            or section["present"] is not (section["content"] is not None)
+        ):
+            raise ReviewDeliveryFidelityError(
+                f"M32 {section_id} presence marker drifted"
+            )
         expected_keys = set(_SECTION_FINGERPRINT_KEYS[section_id])
-        if type(section["source_fingerprints"]) is not dict or set(section["source_fingerprints"]) != expected_keys:
-            raise ReviewDeliveryFidelityError(f"M32 {section_id} source fingerprint set drifted")
+        if (
+            type(section["source_fingerprints"]) is not dict
+            or set(section["source_fingerprints"]) != expected_keys
+        ):
+            raise ReviewDeliveryFidelityError(
+                f"M32 {section_id} source fingerprint set drifted"
+            )
 
     presentation = sections["objective_evidence"]["content"]
     presentation = _validate_evaluation_semantics(presentation)
     if delivery["evaluation_index"] != _evaluation_index(presentation):
-        raise ReviewDeliveryFidelityError("M32 evaluation index drifted from exact M15 content")
+        raise ReviewDeliveryFidelityError(
+            "M32 evaluation index drifted from exact M15 content"
+        )
     return delivery
 
 
@@ -437,7 +553,7 @@ def build_persisted_review_delivery_bundle(
     participant_id: str,
     package_artifact_id: str,
 ) -> dict[str, Any]:
-    """Build one deterministic exact-content delivery bundle from a verified M30 package."""
+    """Build exact consumer delivery from one verified M30 package."""
     _nonempty(participant_id, "participant_id")
     _nonempty(package_artifact_id, "package_artifact_id")
     try:
@@ -452,7 +568,9 @@ def build_persisted_review_delivery_bundle(
             package_artifact_id=package_artifact_id,
         )
     except ParticipantReviewPackageError as exc:
-        raise ReviewDeliveryFidelityError(f"M30 package validation failed: {exc}") from exc
+        raise ReviewDeliveryFidelityError(
+            f"M30 package validation failed: {exc}"
+        ) from exc
 
     manifest = loaded.manifest_record
     if manifest.get("schema_version") != M30_SCHEMA_VERSION:
@@ -465,9 +583,15 @@ def build_persisted_review_delivery_bundle(
         raise ReviewDeliveryFidelityError("M30 reference-surface schema drifted")
     if reference_surface.get("fingerprint") != surface.fingerprint:
         raise ReviewDeliveryFidelityError("M30/M28 surface fingerprint drifted")
-    if reference_surface.get("m25_read_model_fingerprint") != surface.read_model.get("fingerprint"):
-        raise ReviewDeliveryFidelityError("M30/M25 read-model fingerprint drifted")
-    if fingerprints.get("m25_source_fingerprints") != surface.read_model.get("source_fingerprints"):
+    if reference_surface.get("m25_read_model_fingerprint") != (
+        surface.read_model.get("fingerprint")
+    ):
+        raise ReviewDeliveryFidelityError(
+            "M30/M25 read-model fingerprint drifted"
+        )
+    if fingerprints.get("m25_source_fingerprints") != surface.read_model.get(
+        "source_fingerprints"
+    ):
         raise ReviewDeliveryFidelityError("M30/M25 source fingerprints drifted")
 
     delivery = build_review_delivery_content(surface.read_model)
@@ -487,7 +611,9 @@ def build_persisted_review_delivery_bundle(
             "m30_artifact_digest": loaded.manifest_ref.digest,
             "m25_read_model_id": surface.read_model["read_model_id"],
             "m25_read_model_fingerprint": surface.read_model["fingerprint"],
-            "m25_source_fingerprints": _copy(surface.read_model["source_fingerprints"]),
+            "m25_source_fingerprints": _copy(
+                surface.read_model["source_fingerprints"]
+            ),
             "m28_surface_fingerprint": surface.fingerprint,
         },
         "authority_contract": dict(_AUTHORITY_CONTRACT),
@@ -503,7 +629,7 @@ def build_persisted_review_delivery_bundle(
 
 
 def validate_review_delivery_bundle(value: Any) -> dict[str, Any]:
-    """Validate one detached M32 bundle, including rehashed authority/semantic drift."""
+    """Validate a detached M32 bundle, including rehashed semantic drift."""
     bundle = _strict_dict(value, _BUNDLE_KEYS, "M32 bundle")
     if bundle["schema_version"] != M32_SCHEMA_VERSION:
         raise ReviewDeliveryFidelityError("M32 schema drifted")
@@ -523,13 +649,19 @@ def validate_review_delivery_bundle(value: Any) -> dict[str, Any]:
     parsed_refs: dict[str, ArtifactRef] = {}
     for key, ref_value in refs.items():
         if type(ref_value) is not dict:
-            raise ReviewDeliveryFidelityError(f"M32 {key} source reference is malformed")
+            raise ReviewDeliveryFidelityError(
+                f"M32 {key} source reference is malformed"
+            )
         try:
             ref = ArtifactRef(**ref_value)
         except (TypeError, ValueError, KeyError) as exc:
-            raise ReviewDeliveryFidelityError(f"M32 {key} source reference is invalid") from exc
+            raise ReviewDeliveryFidelityError(
+                f"M32 {key} source reference is invalid"
+            ) from exc
         if ref.participant_id != participant_id:
-            raise ReviewDeliveryFidelityError(f"M32 {key} participant scope drifted")
+            raise ReviewDeliveryFidelityError(
+                f"M32 {key} participant scope drifted"
+            )
         parsed_refs[key] = ref
     if parsed_refs["m30_package"].kind != M30_SCHEMA_VERSION:
         raise ReviewDeliveryFidelityError("M32 package reference kind drifted")
@@ -537,7 +669,10 @@ def validate_review_delivery_bundle(value: Any) -> dict[str, Any]:
         raise ReviewDeliveryFidelityError("M32 review reference kind drifted")
 
     source_fingerprints = bundle["source_fingerprints"]
-    if type(source_fingerprints) is not dict or set(source_fingerprints) != _SOURCE_FINGERPRINT_KEYS:
+    if (
+        type(source_fingerprints) is not dict
+        or set(source_fingerprints) != _SOURCE_FINGERPRINT_KEYS
+    ):
         raise ReviewDeliveryFidelityError("M32 source fingerprint set drifted")
     for key in (
         "m30_manifest_fingerprint",
@@ -547,15 +682,23 @@ def validate_review_delivery_bundle(value: Any) -> dict[str, Any]:
         "m28_surface_fingerprint",
     ):
         _nonempty(source_fingerprints[key], f"M32 {key}")
-    if source_fingerprints["m30_artifact_digest"] != parsed_refs["m30_package"].digest:
+    if source_fingerprints["m30_artifact_digest"] != (
+        parsed_refs["m30_package"].digest
+    ):
         raise ReviewDeliveryFidelityError("M32 package digest drifted")
 
     delivery = _validate_delivery(bundle["delivery"])
     flattened = _flatten_delivery_fingerprints(delivery)
     if source_fingerprints["m25_source_fingerprints"] != flattened:
-        raise ReviewDeliveryFidelityError("M32 delivered source fingerprints drifted from M25")
+        raise ReviewDeliveryFidelityError(
+            "M32 delivered source fingerprints drifted from M25"
+        )
 
-    payload = {key: item for key, item in bundle.items() if key not in {"delivery_id", "fingerprint"}}
+    payload = {
+        key: item
+        for key, item in bundle.items()
+        if key not in {"delivery_id", "fingerprint"}
+    }
     expected = _fingerprint(payload)
     if bundle["fingerprint"] != expected:
         raise ReviewDeliveryFidelityError("M32 bundle fingerprint mismatch")
@@ -573,7 +716,9 @@ def validate_persisted_review_delivery_bundle(
     """Rebuild a detached bundle from its exact M30 source and require equality."""
     validated = validate_review_delivery_bundle(bundle)
     if validated["participant_id"] != participant_id:
-        raise ReviewDeliveryFidelityError("M32 requested participant does not match bundle")
+        raise ReviewDeliveryFidelityError(
+            "M32 requested participant does not match bundle"
+        )
     package_ref = ArtifactRef(**validated["source_refs"]["m30_package"])
     rebuilt = build_persisted_review_delivery_bundle(
         store=store,
@@ -581,5 +726,7 @@ def validate_persisted_review_delivery_bundle(
         package_artifact_id=package_ref.artifact_id,
     )
     if rebuilt != validated:
-        raise ReviewDeliveryFidelityError("M32 bundle drifted from persisted M30/M25 sources")
+        raise ReviewDeliveryFidelityError(
+            "M32 bundle drifted from persisted M30/M25 sources"
+        )
     return validated
