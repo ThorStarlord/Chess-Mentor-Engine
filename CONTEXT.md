@@ -3,7 +3,7 @@
 > **Current implementation authority:**
 > [`docs/product/repository-build-status.md`](docs/product/repository-build-status.md)
 >  
-> **Latest completed milestone handoff:** [`STATUS.md`](STATUS.md)  
+> **Latest repository handoff:** [`STATUS.md`](STATUS.md)  
 > **Repository overview:** [`README.md`](README.md)  
 > **Architecture map:**
 > [`docs/architecture/architecture.md`](docs/architecture/architecture.md)
@@ -12,14 +12,15 @@
 
 Chess Mentor Engine is a persistent chess-learning system intended to convert
 objective chess evidence into individualized teaching decisions without collapsing
-chess truth, participant self-report, learner inference, tutoring, deterministic
-feedback, model-authored language, model-output evaluation, review mechanics, and
-pedagogy into one authority layer.
+chess truth, chess-knowledge semantics, participant self-report, learner inference,
+tutoring, deterministic feedback, model-authored language, model-output evaluation,
+review mechanics, and pedagogy into one authority layer.
 
 The central questions remain distinct:
 
 ```text
 What is objectively happening on the board?
+Which registered chess concepts describe that evidence, and under what authority?
 What did the player actually notice, consider, and expect?
 What participant-specific explanation is currently supported strongly enough to affect teaching?
 What did deterministic grounding say versus what a model rendered?
@@ -32,12 +33,15 @@ system has established causal cognitive mechanisms.
 
 ## Current implementation boundary
 
-The repository is qualified through **M34 — Hermetic Reviewed-Coaching Recovery
-Reconciliation**. The latest completed milestone is M32–M34.
+The numbered milestone sequence is qualified through **M34 — Hermetic
+Reviewed-Coaching Recovery Reconciliation**. On top of M34, the repository now also
+has a separately labeled, qualified **Chess Knowledge Ontology program K0–K7**.
 
-Use `docs/product/repository-build-status.md` for the moving implementation boundary
-and exact promotion evidence. Use `STATUS.md` for the completed M32–M34 handoff and
-`docs/runbooks/m32-m34-milestone-runbook.md` for restart and qualification commands.
+The K labels do not consume the provisional M35+ labels in the product build plan.
+Use `docs/product/repository-build-status.md` for the moving implementation boundary,
+`STATUS.md` for the latest handoff,
+`docs/runbooks/chess-knowledge-ontology-program.md` for the ontology restart path,
+and `docs/runbooks/m32-m34-milestone-runbook.md` for the previous numbered milestone.
 
 ### Capability sequence
 
@@ -63,13 +67,20 @@ and exact promotion evidence. Use `STATUS.md` for the completed M32–M34 handof
 - **M28–M31:** deterministic local review rendering, persisted-review bridging,
   participant-scoped package/navigation/export, and hermetic synthetic-canary/manual
   retry-history preflight.
-- **M32:** persisted review delivery fidelity for exact machine consumers.
-- **M33:** deterministic M16 mentor-feedback traceability to exact M15/M6/optional M7
-  sources.
-- **M34:** hermetic reconciliation of supplied synthetic multi-attempt M24 histories
-  against an already-persisted mechanically verified M26 target.
+- **M32–M34:** exact machine-consumer review delivery, deterministic M16 feedback
+  tracing, and hermetic reviewed-coaching recovery reconciliation.
+- **K0–K3:** ontology authority, strict registry/validation, stable concept IDs,
+  tactical/Lichess crosswalks, position features, strategic principles, qualitative
+  evaluation factors, candidate plans, and pedagogy metadata.
+- **K4–K5:** provenance-bound knowledge assertions plus conservative deterministic
+  detectors for a deliberately narrow mechanical subset.
+- **K6:** model-consumable ontology context bound beside an unchanged M19 request.
+- **K7:** typed ontology projection over existing M7C recurrence units while
+  preserving M7C support/contradiction relations exactly.
 
 ## Current operational path
+
+The principal product path remains:
 
 ```text
 PGN / canonical position
@@ -104,8 +115,21 @@ PGN / canonical position
 -> append-only M11 longitudinal learner state
 ```
 
-Not every application invokes every optional downstream layer. Every arrow remains an
-authority boundary.
+The ontology is a cross-cutting semantic layer:
+
+```text
+canonical chess subject
+-> K0–K3 concept definition / registry
+-> optional K4 assertion
+-> optional K5 deterministic detector
+
+K4 assertion bundle
+   +--> K6 model sidecar + exact unchanged M19 request
+   +--> K7 learner projection + exact existing M7C assessment
+```
+
+Not every application invokes every optional layer. Every arrow remains an authority
+boundary.
 
 ## Separation of responsibilities
 
@@ -119,6 +143,41 @@ states are preserved rather than coerced into fake precision.
 
 Objective chess authority does not establish player cognition, learner traits, or
 pedagogical effectiveness.
+
+### Chess-knowledge definition authority
+
+K0–K3 own the registered vocabulary: stable concept identity, human-readable
+semantics, hierarchy/relationships, external crosswalks, detector-support metadata,
+authority ceilings, and pedagogy metadata.
+
+A concept definition is not an assertion that the concept occurs in a position.
+Registry membership is not detector availability. A strategic principle is not an
+engine-score component, and a candidate plan is not a best move or an M9 training
+intervention.
+
+### Chess-knowledge assertion authority
+
+K4 represents bounded claims against exact position/move subjects with explicit
+status, authority class, evidence refs, provenance, qualifiers, ontology fingerprint,
+claim scope, and content-addressed identity.
+
+Deterministic facts, engine-derived claims, external taxonomy tags, heuristic
+assessments, model interpretations, and human ratifications remain different
+assertion authorities.
+
+An assertion remains chess-content evidence. It does not establish what a
+participant perceived and does not directly create a learner hypothesis.
+
+### Deterministic ontology detector authority
+
+K5 may assert only its explicitly qualified mechanical subset. Position detectors
+cover check/checkmate, absolute pin, bishop pair, open/semi-open files,
+isolated/doubled/passed pawns, and pawn islands. Move-transition detectors cover
+promotion/underpromotion, moved-piece fork, discovered check, and double check.
+
+Do not infer that other registered tactics, principles, evaluation factors, or plans
+are automatically detected. Extending detector scope requires exact semantics and
+positive plus near-miss/rejection qualification.
 
 ### Diagnostic-selection authority
 
@@ -134,17 +193,21 @@ is never evidence-capture consent.
 
 ### Participant-evidence authority
 
-M5 raw/frozen player responses and exposure state remain distinct from engine
-analysis. Diagnostic rationale revealed before capture may contaminate the pre-reveal
-measurement boundary; repository qualification does not prove what a future user
-interface displayed at a given moment.
+M5 raw/frozen player responses and exposure state remain distinct from engine and
+ontology evidence. Diagnostic rationale revealed before capture may contaminate the
+pre-reveal measurement boundary; repository qualification does not prove what a
+future UI displayed at a given moment.
 
 ### Learning-inference authority
 
-M6 describes position-local discrepancies. M7 represents bounded
+M6 describes position-local discrepancies. M7/M7C represents bounded
 participant-specific recurring hypotheses with support, contradiction, challenge,
-provenance, and lifecycle. Recurrence is not a causal cognitive mechanism, permanent
-trait, or automatic training eligibility decision.
+provenance, recurrence policy, and lifecycle. Recurrence is not a causal cognitive
+mechanism, permanent trait, or automatic training eligibility decision.
+
+K7 does not replace M7C. It attaches exact ontology assertions to already-classified
+M7C recurrence units and preserves the source relation verbatim. The same concept may
+occur in both supporting and contradictory units.
 
 ### Tutor-state authority
 
@@ -160,6 +223,9 @@ performance, near transfer, far transfer, real-game transfer, causality, and mas
 remain separate claims. M11 derives longitudinal learner state from exact current
 hypothesis revisions and eligible evidence.
 
+Ontology pedagogy metadata may inform future policy design but does not itself grant
+M9 applicability or selection authority.
+
 ### Deterministic feedback authority
 
 M16 composes deterministic session-local mentor feedback from exact M15/M6 and
@@ -171,6 +237,11 @@ the deterministic factual grounding ceiling.
 M19 may ask an application-supplied provider to render prose from the exact M16
 request. Provenance establishes which request reached which model run; it does not
 establish semantic correctness, safety, or pedagogical effectiveness.
+
+K6 adds an optional sidecar. It validates and references an existing M19 request by
+exact identity; it does not insert keys into or refingerprint that request. The
+sidecar provides registered definitions, assertion authority, qualifiers,
+relationships, and anti-promotion instructions to an explicitly adopting consumer.
 
 ### Model-output evaluation authority
 
@@ -197,40 +268,31 @@ review chains. M30 provides participant-scoped navigation/export.
 
 Participant scoping is an integrity boundary, not hosted authentication.
 
-### Consumer-delivery authority
+### Consumer-delivery and trace authority
 
-M32 builds `m32.persisted-review-delivery-fidelity.v1` from one exact
-participant-scoped M30 package. It preserves content order, explicit authority
-labels, score perspective, symbolic mate, bounds, partial/unavailable semantics,
-comparison state, child-analysis state, and exact source fingerprints.
-
-M32 proves repository-local consumer fidelity, not browser/device correctness,
-accessibility, usability, or production frontend quality.
-
-### Deterministic trace authority
-
-M33 builds `m33.deterministic-mentor-feedback-trace.v1` over exact persisted M16
-feedback. Every substantive deterministic component is represented by stable
-identity, ordinal, content hash, source authority, source pointer, and source fields.
-M19/M20 remain separate presence/fingerprint metadata and cannot become deterministic
-source authority.
-
-M33 establishes traceability, not semantic truth or pedagogical correctness.
+M32 preserves exact machine-consumer semantics. M33 traces every substantive M16
+component back to exact deterministic source authority. Neither establishes browser
+quality, semantic truth of arbitrary model prose, or pedagogical efficacy.
 
 ### Recovery-reconciliation authority
 
-M34 builds `m34.reviewed-coaching-recovery-reconciliation.v1` from supplied synthetic
-M24 multi-attempt histories and one already-persisted mechanically verified M26
-target. It may classify the history as `complete` or `resume_eligible`; retryable
-partial failures use full-M26 restart scope.
-
-M34 never executes or authorizes retry and does not establish external-side-effect
-idempotency or production recovery correctness.
+M34 classifies supplied synthetic M24 multi-attempt histories against one
+already-persisted mechanically verified M26 target as `complete` or
+`resume_eligible`. It never executes or authorizes retry and does not establish
+external-side-effect idempotency or production recovery correctness.
 
 ## Contracts contributors must preserve
 
 ```text
 objective chess truth != participant self-report != learner inference
+concept definition != concept assertion != learner inference
+registered concept != automatically detectable concept
+external taxonomy tag != deterministic CME detector result
+ontology concept presence != M7C hypothesis relation
+K7 descriptive projection != recurrence reclassification or learner mutation
+K6 ontology sidecar != M19 request identity or M16 factual authority
+heuristic principle != engine-evaluation decomposition
+strategic plan != best move != M9 training intervention
 local discrepancy != recurrence != causal learner trait
 supported recurrence != automatic training eligibility
 selected intervention != effective intervention
@@ -242,12 +304,8 @@ M20 evaluator acceptance != objective chess truth
 participant candidate selection != capture consent
 M23 operator/persistence != M6/M7/M9 authority
 M24 execution conformance != vendor approval or retry authority
-M25 read model != production UI or new evidence authority
 M27 mechanically_verified != semantic truth
-M28 static reference surface != production UI/accessibility/usability approval
-M29 persisted bridge != new review/evidence authority
 M30 participant navigation != authentication or privacy approval
-M31 retry-history validation != retry execution or production retry policy
 M32 machine-consumer fidelity != production UI quality or model truth
 M33 deterministic traceability != model/evaluator authority
 M34 resume eligibility != retry authorization, execution, or side-effect idempotency
@@ -255,15 +313,10 @@ M34 resume eligibility != retry authorization, execution, or side-effect idempot
 
 ## CLI and API boundaries
 
-The project is a Python 3.11+ package. Installed commands include:
+Installed commands remain:
 
 ```text
-cme games inspect
-cme position packet
-cme analyze
-cme diagnose
-cme artifacts list/show/verify
-cme tutor ...
+cme
 cme-candidate-tutor
 cme-coach-review
 cme-reviewed-coaching
@@ -273,96 +326,27 @@ cme-persisted-coach-review-reference
 cme-participant-review
 ```
 
-`cme position packet` is deterministic and engine-free. `cme analyze` and
-`cme diagnose` require an explicitly supplied UCI executable or PATH name. M18 also
-requires an explicit versioned JSON selection policy.
+The `cme` command exposes game/position inspection, bounded engine analysis,
+diagnostic queue construction, artifact inspection, and persistent tutor actions.
+K0–K7 introduce no production CLI command. Their public Python API is exposed under
+`chess_mentor_engine.chess_knowledge` and documented in
+`docs/runbooks/chess-knowledge-ontology-program.md`.
 
-M31–M34 are Python API / hermetic qualification surfaces. M32–M34 introduced no new
-production CLI commands.
+## Productization boundary
 
-## Development and qualification
+The repository still stops short of claiming:
 
-Focused latest-milestone suites:
+- hosted authentication/authorization or multi-user tenancy;
+- production database/retention architecture;
+- production LLM/evaluator vendor selection and credential transport;
+- automatic retry/backoff/rate-limit policy or external-side-effect idempotency;
+- production privacy/security approval;
+- browser/device correctness, accessibility, localization, or usability;
+- semantic safety/correctness of arbitrary model prose;
+- complete automatic detection of the ontology vocabulary;
+- causal learner traits, automatic intervention efficacy, or mastery;
+- empirical tutoring efficacy or intervention-caused improvement.
 
-```bash
-python -m pytest tests/test_m32_persisted_review_delivery_fidelity.py -rs
-python -m pytest tests/test_m33_deterministic_mentor_feedback_trace.py -rs
-python -m pytest tests/test_m34_reviewed_coaching_recovery_reconciliation.py -rs
-```
-
-Full repository merge gate:
-
-```bash
-python -m pytest -rs
-python -m ruff check .
-python -m compileall -q src tests
-STOCKFISH_EXECUTABLE=/path/to/stockfish \
-  python -m pytest tests/integration/test_stockfish_uci.py -rs
-```
-
-A skipped Stockfish suite is not an independent-engine pass. Pull-request CI remains
-the merge authority. No standalone static Python type checker is configured.
-
-## Documentation discipline
-
-The active documentation hierarchy is intentional:
-
-```text
-README.md
-  product overview / usage / navigation
-
-CONTEXT.md
-  contributor reasoning model and invariants
-
-docs/product/repository-build-status.md
-  canonical moving implementation + qualification status
-
-STATUS.md
-  latest completed milestone handoff
-
-docs/architecture/architecture.md
-  current high-level implemented architecture
-
-docs/product/chess-mentor-engine-repository-build-plan.md
-  planning history + future candidates, never an approved queue by itself
-
-docs/decisions/ and docs/runbooks/
-  historical decisions, contracts, qualification, and operating detail
-```
-
-Do not rewrite historical ADRs/runbooks merely because later milestones exist.
-Instead, keep active navigation/current-state documents aligned and point to the
-historical artifact when detailed provenance is needed.
-
-## Current claim ceiling and stop boundary
-
-The repository can preserve longitudinal evidence history, expose qualified local
-analysis/tutor surfaces, create diagnostic queues, persist an explicitly authorized
-diagnostic candidate into M5/M8, compose deterministic grounded feedback, execute
-application-owned provider/evaluator adapters through a neutral conformance seam,
-record bounded model-output evaluation, persist and mechanically verify reviewed
-coaching, deterministically render and deliver persisted review state, navigate and
-export participant-scoped review packages, trace deterministic feedback to exact
-sources, and reconcile synthetic retry histories against persisted targets.
-
-It still does **not** establish:
-
-- causal cognitive diagnosis or permanent learner traits;
-- intervention-caused improvement, automatic mastery, or universal thresholds;
-- automatic M6 discrepancy generation from engine evidence;
-- automatic M7/M11 mutation from tutoring, analysis, or model coaching;
-- semantic correctness, safety, or pedagogical optimality of arbitrary model prose;
-- semantic completeness/correctness of an arbitrary evaluator;
-- a production LLM/evaluator provider, credential/transport/retry architecture, or
-  provider-quality claim;
-- external-side-effect idempotency or production recovery correctness;
-- production privacy/security approval or live secret-management correctness;
-- correct participant disclosure/consent behavior in an external UI;
-- production UI usability, accessibility, localization, browser/device
-  compatibility, or visual correctness;
-- hosted authentication/authorization, multi-user production persistence,
-  observability, deployment readiness, or empirical tutoring efficacy.
-
-The completed M32–M34 queue ends here. Future work starts with a fresh live-`main`
-audit and an explicitly approved bounded package queue; handoff recommendations are
-not self-authorizing implementation instructions.
+Future work should increasingly be pulled by a concrete learner/tutor/product need,
+then add the minimum additional infrastructure required to preserve these authority
+boundaries.
