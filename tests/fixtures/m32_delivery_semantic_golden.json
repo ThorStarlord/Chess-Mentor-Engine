@@ -1,0 +1,56 @@
+{
+  "scenario": "bounded_black_perspective",
+  "evaluation_index": {
+    "score_semantics": {
+      "canonical_engine_perspective": "white",
+      "display_perspective": "decision_mover",
+      "centipawn_unit": "centipawns",
+      "mate_representation": "winner_and_plies_to_mate",
+      "bound_semantics": "ordering_bound_in_display_perspective"
+    },
+    "decision_mover": "black",
+    "root": {
+      "status": "complete",
+      "evidence_quality": "bounded"
+    },
+    "played_child": null,
+    "comparison": {
+      "evidence_quality": "bounded",
+      "comparison_kind": "bound_limited",
+      "preference": "incomparable",
+      "compatibility": "same_root_analysis",
+      "played_evaluation_source": "root_multipv",
+      "best_move_uci": "c7c5",
+      "played_move_uci": "e7e5",
+      "best_evaluation": {
+        "kind": "centipawn",
+        "unit": "centipawns",
+        "white": {
+          "centipawns": -50,
+          "bound": "lower"
+        },
+        "decision_mover": {
+          "side": "black",
+          "centipawns": 50,
+          "bound": "upper"
+        }
+      },
+      "played_evaluation": {
+        "kind": "centipawn",
+        "unit": "centipawns",
+        "white": {
+          "centipawns": -20,
+          "bound": "exact"
+        },
+        "decision_mover": {
+          "side": "black",
+          "centipawns": 20,
+          "bound": "exact"
+        }
+      },
+      "exact_centipawn_delta_for_mover": null,
+      "mate_relation": null,
+      "terminal_outcome": null
+    }
+  }
+}
