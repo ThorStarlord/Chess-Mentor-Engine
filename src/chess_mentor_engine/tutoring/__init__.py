@@ -1,5 +1,9 @@
 """Evidence-aware tutor-session orchestration."""
 
+from __future__ import annotations
+
+import importlib
+
 from .model import (
     TutorComparison,
     TutorExplanation,
@@ -37,13 +41,47 @@ from .session import (
     start_tutor_session,
 )
 
+_ADAPTIVE_EXPORTS = {
+    "ADAPTIVE_TUTOR_POLICY_SCHEMA_VERSION",
+    "ADAPTIVE_TUTOR_PROPOSAL_SCHEMA_VERSION",
+    "AdaptiveTutorAction",
+    "AdaptiveTutorPolicy",
+    "AdaptiveTutorPolicyRef",
+    "AdaptiveTutorProposal",
+    "ExposureEffect",
+    "ResponseEvidenceClass",
+    "build_adaptive_tutor_proposal",
+    "build_default_adaptive_tutor_policy",
+    "validate_adaptive_tutor_policy",
+    "validate_adaptive_tutor_proposal",
+}
+
+
+def __getattr__(name: str):
+    """Load M46 only after the established tutoring package is initialized."""
+    if name not in _ADAPTIVE_EXPORTS:
+        raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
+    module = importlib.import_module(f"{__name__}.adaptive")
+    value = getattr(module, name)
+    globals()[name] = value
+    return value
+
+
 __all__ = [
+    "ADAPTIVE_TUTOR_POLICY_SCHEMA_VERSION",
+    "ADAPTIVE_TUTOR_PROPOSAL_SCHEMA_VERSION",
+    "AdaptiveTutorAction",
+    "AdaptiveTutorPolicy",
+    "AdaptiveTutorPolicyRef",
+    "AdaptiveTutorProposal",
     "CANDIDATE_TUTOR_AUTHORIZATION_SCHEMA_VERSION",
     "CANDIDATE_TUTOR_LAUNCH_SCHEMA_VERSION",
     "CandidateSelectionDecision",
     "CandidateTutorAuthorization",
     "CandidateTutorOrchestrationError",
     "CaptureConsentDecision",
+    "ExposureEffect",
+    "ResponseEvidenceClass",
     "WORKFLOW_VERSION",
     "TutorComparison",
     "TutorExplanation",
@@ -57,6 +95,8 @@ __all__ = [
     "TutorSessionEventKind",
     "TutorSessionState",
     "attach_tutor_hypothesis_context",
+    "build_adaptive_tutor_proposal",
+    "build_default_adaptive_tutor_policy",
     "capture_tutor_response",
     "complete_tutor_session",
     "freeze_tutor_response",
@@ -68,4 +108,6 @@ __all__ = [
     "reveal_tutor_objective_evidence",
     "start_candidate_tutor_session",
     "start_tutor_session",
+    "validate_adaptive_tutor_policy",
+    "validate_adaptive_tutor_proposal",
 ]
