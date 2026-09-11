@@ -1,9 +1,11 @@
 from __future__ import annotations
 
+import hashlib
 from dataclasses import replace
 
 import pytest
 
+from chess_mentor_engine.chess import canonical_json
 from chess_mentor_engine.learner_intelligence import (
     EvidenceSynthesisReference,
     HypothesisEvidenceCounts,
@@ -246,7 +248,10 @@ def test_m40_supported_but_one_sided_evidence_prefers_challenge():
     plan, _, _, _ = _plan_for(_entry(), contradiction_count=0)
 
     assert plan.selected_candidate.action == "CHALLENGE_HYPOTHESIS"
-    assert "Counterevidence coverage" in plan.selected_candidate.blocking_uncertainty[0]
+    assert (
+        "Counterevidence coverage"
+        in plan.selected_candidate.blocking_uncertainty[0]
+    )
     assert plan.decision_authority == "proposal_only"
     assert plan.causal_effect == "not_established"
     assert plan.mastery == "not_established"
@@ -335,7 +340,9 @@ def test_m40_real_game_support_still_does_not_claim_mastery():
 
     assert plan.selected_candidate.action == "WAIT_FOR_REAL_GAME_EVIDENCE"
     assert plan.mastery == "not_established"
-    assert any("automatic mastery" in item for item in plan.selected_candidate.reasons)
+    assert any(
+        "automatic mastery" in item for item in plan.selected_candidate.reasons
+    )
 
 
 def test_m40_supported_with_unresolved_alternative_prefers_challenge():
@@ -343,7 +350,10 @@ def test_m40_supported_with_unresolved_alternative_prefers_challenge():
     plan, _, _, _ = _plan_for(entry)
 
     assert plan.selected_candidate.action == "CHALLENGE_HYPOTHESIS"
-    assert plan.selected_candidate.blocking_uncertainty == entry.unresolved_alternative_notes
+    assert (
+        plan.selected_candidate.blocking_uncertainty
+        == entry.unresolved_alternative_notes
+    )
 
 
 def test_m40_no_m7c_status_collects_evidence_without_m39_synthesis():
@@ -452,10 +462,6 @@ def test_m40_custom_policy_can_change_cross_hypothesis_priority_transparently():
         (action, 120 if action == "ASSIGN_PRACTICE" else priority)
         for action, priority in policy.action_priorities
     )
-    payload = {
-        **policy.identity_payload(),
-        "action_priorities": [list(item) for item in priorities],
-    }
     custom = NextSessionPolicy(
         policy_id=policy.policy_id,
         version="test-practice-first",
@@ -468,19 +474,16 @@ def test_m40_custom_policy_can_change_cross_hypothesis_priority_transparently():
             policy.challenge_supported_with_unresolved_alternatives
         ),
     )
-    custom_payload = {
-        **custom.identity_payload(),
-    }
-    import hashlib
-    from chess_mentor_engine.chess import canonical_json
-
+    custom_payload = custom.identity_payload()
     custom = replace(
         custom,
         fingerprint=hashlib.sha256(
             canonical_json(custom_payload).encode("utf-8")
         ).hexdigest(),
     )
-    assert payload["action_priorities"] != policy.identity_payload()["action_priorities"]
+    assert (
+        custom.action_priorities != policy.action_priorities
+    )
 
     challenged = _entry("h1", status="contradicted")
     practice = _entry("h2", intervention_state="selected")
