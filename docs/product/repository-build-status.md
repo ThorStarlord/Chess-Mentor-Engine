@@ -3,12 +3,10 @@
 **Status authority:** current implementation and qualification boundary.  
 **Contiguous numbered milestone boundary:** M34 — Reviewed-Coaching Recovery Reconciliation.  
 **Qualified semantic program:** Chess Knowledge Ontology K0–K7.  
-**Qualified non-contiguous post-M34 packages:** M36, M39, M40, M41, M43, M44.  
-**Current post-feature baseline:** `c8d28c235e2c2141ea96028835f360034051ea92`.
+**Qualified non-contiguous post-M34 packages:** M36, M39, M40, M41, M42, M43, M44, M45, M46.  
+**Current post-feature baseline:** `3ec19446b4957d4e8f20ed3865b7d090d55c3cb5`.
 
-This file is the moving repository authority. `STATUS.md` is the latest handoff;
-feature/program runbooks preserve qualification history. Software qualification is
-not empirical tutoring efficacy.
+This file is the moving repository authority. `STATUS.md` is the latest handoff; feature/program runbooks preserve qualification history. Software qualification is not empirical tutoring efficacy.
 
 ## Qualified capability map
 
@@ -34,11 +32,14 @@ M39      deterministic current hypothesis evidence synthesis
 M40      transparent teaching-priority / next-session proposal policy
 M43      contradiction/control evidence-acquisition candidate planning
 M41      ontology-aware intervention candidate matching before M9 selection
-M44      deterministic learner-progress presentation + local reference HTML
+M42      bounded near/far transfer and retest planning before M10 outcomes
+M44      deterministic learner-progress presentation + local reference HTML,
+         including additive M42 transfer-plan presentation
+M45      participant-scoped bounded mentor queue over M4D candidates
+M46      adaptive Socratic tutor-action proposal over the exact M8 lifecycle
 ```
 
-**M35, M37, M38, and M42 are not implemented merely because later-numbered packages
-are qualified.** Their roadmap labels remain candidate-only.
+**M35, M37, and M38 remain unimplemented labels.** Later-numbered qualified packages do not reserve or imply them. K8 is not an active semantic program.
 
 ## Recent promotion provenance
 
@@ -56,12 +57,13 @@ are qualified.** Their roadmap labels remain candidate-only.
 | M43 / PR #86 | `70728729905f69beed2f608ec02ddd94c1e9cfbf` | `a9552ee745d2bce862f2e94eb5ca9320870defbf` | run `34608614837`: 896 passed + Ruff/compile/Stockfish PASS |
 | M41 / PR #87 | `a1fd0cfb6455a68ac5ea10390e7840009a3c0be3` | `8aefe1183ce2623e50b3f732fc7de26164f4a014` | run `34610142609`: 904 passed + Ruff/compile/Stockfish PASS |
 | M44 / PR #88 | `cdbf50c9af3154f940b0c575893a1ae51309e612` | `c8d28c235e2c2141ea96028835f360034051ea92` | run `34611475360`: 912 passed + Ruff/compile/Stockfish PASS |
+| M42 / PR #90 | `4df41644b4b5ffdd9abf54d349b7048f0e514078` | `c8af423f37c9ad7a423594ffa5d43f83c2b2d4ab` | run `34623130217`: 925 passed + Ruff/compile/Stockfish PASS |
+| M45 / PR #91 | `0af40490d9a7a70699b1d015d65a53fb86af66f2` | `725de02a27c836e7fe150cc3874482cf45511444` | run `34624375982`: full pytest/Ruff/compile/Stockfish PASS |
+| M46 / PR #92 | `cc89c5cf1402d02cadf76fa0d80c903296d51aea` | `3ec19446b4957d4e8f20ed3865b7d090d55c3cb5` | run `34629592288`: 939 passed + Ruff/compile/Stockfish PASS |
 
-A “full gate” means full repository pytest, Ruff, `compileall`, and the independent
-Stockfish job on the exact final candidate head. Regular-job Stockfish skips are not
-counted as the independent-engine witness.
+A “full gate” means full repository pytest, Ruff, `compileall`, and the independent Stockfish job on the exact final candidate head. Regular-job Stockfish skips are not counted as the independent-engine witness.
 
-## Current tutor-decision-loop chain
+## Current learner/tutor decision loop
 
 ```text
 M7/M7C current learner hypothesis + recurrence/contradiction authority
@@ -71,87 +73,84 @@ M7/M7C current learner hypothesis + recurrence/contradiction authority
 + optional K7 semantic context
         |
         v
-M36 m36.learner-state-read-model.v1
+M36 learner-state read model
         |
         v
-M39 m39.hypothesis-evidence-synthesis.v1
+M39 evidence synthesis
         |
         v
-M40 m40.next-session-plan.v1
+M40 next-session proposal
         |
-        +-- CHALLENGE / CONTROL / COLLECT --> M43 evidence-acquisition candidates
-        |
+        +-- CHALLENGE / CONTROL / COLLECT --> M43 evidence candidates
         +-- TEACH_CONCEPT ----------------> M41 intervention candidates
-        |
+        +-- RUN_*_TRANSFER_TEST ----------> M42 transfer/retest plan
         `----------------------------------> M44 learner-progress presentation
+
+M4D bounded diagnostic batch + explicit participant scope
+        |
+        v
+M45 mentor queue
+        |
+        v
+M8 controlled tutor lifecycle
++ optional exact M44/M45/M42 context
+        |
+        v
+M46 next pedagogical-action proposal
+        |
+        v
+M8 remains execution / exposure / capture / reveal authority
 ```
 
-### M43 — contradiction/control evidence acquisition
+### M42 — transfer/retest planning
 
-M43 consumes exact M40 evidence-oriented proposals plus exact M39 state and an
-explicit participant-local M7B candidate pool. It can preserve already-classified M7C
-control material and rank additional evidence as **potential** review/reassessment
-candidates.
-
-It does not re-run M7C. Its claim ceiling is:
+M42 is planning-only. It selects from explicit bounded near/far transfer candidates and preserves exact M40/M9 identities. Candidate definitions state semantic relation, surface variation, freshness, held constants, varied dimensions, and provenance. Exact practice replay is rejected with M10-compatible reuse keys.
 
 ```text
-decision_authority = candidate_only
-m7c_effect = not_established
+M42 transfer plan != M10 transfer evidence
+no eligible candidate != weakened policy
+planned/completed != successful transfer
+successful transfer != mastery
+```
+
+### M45 — mentor queue
+
+M45 adds explicit participant scope around an M4D diagnostic batch and ranks a bounded queue using separate transparent ordinal dimensions. Learner relevance, contradiction/control value, transfer value, and uncertainty reduction can outrank ordinary engine severity.
+
+It does not create a learner diagnosis, re-run M7C, select an intervention, create M10 evidence, or claim an optimal review order.
+
+### M46 — adaptive Socratic tutor proposal
+
+M46 chooses one bounded next tutoring action from exact M8 session state and exact learner context without executing the action.
+
+Pre-freeze M8 evidence remains protected: no M46 adaptive hint/reveal is allowed before planned baseline capture is frozen. Assisted responses and post-reveal reflection remain separate evidence classes.
+
+M46 may consume exact M44 context, optional M45 queue/item context, and optional M42 transfer plans. Transfer tutoring requires the exact current M42 plan.
+
+Every proposal records:
+
+```text
+execution_authority = proposal_only
+model_language = not_generated
 mastery = not_established
 ```
 
-### M41 — ontology-aware intervention matching
-
-M41 consumes exact M40 `TEACH_CONCEPT` proposals, M39 concept context, the exact
-K0–K7 ontology snapshot, explicit semantic-profile sidecars, and the existing M9
-intervention registry.
-
-It can rank `eligible_candidate`, `possible_candidate`, `insufficient_information`,
-and `ineligible` interventions without parsing training prose to manufacture ontology
-semantics. Multiple eligible candidates remain multiple candidates.
-
-Its claim ceiling is:
-
-```text
-selection_authority = not_exercised
-efficacy = not_established
-mastery = not_established
-```
-
-M9 remains applicability/selection authority.
-
-### M44 — learner progress reference surface
-
-M44 composes exact M36/M39/M40 sources plus optional exact M43/M41 artifacts into a
-content-addressed presentation model and deterministic escaped HTML reference surface.
-
-It can display current hypothesis state, evidence and counterevidence, ontology
-concepts/recognition cues, M9/M10 training state, M39 uncertainty/change conditions,
-M40 next-action proposals, and optional M43/M41 candidates.
-
-M44 is `local_reference_presentation_only`: it creates no new inference, selection,
-transfer, mastery, production frontend, or execution authority.
+M8 remains the actual tutor execution/exposure/capture/reveal authority.
 
 ## Product-pulled ontology rule
 
-The ontology is now shared semantic infrastructure rather than the primary workstream.
-Do **not** create a generic K8 merely to expand vocabulary, detectors, relationships,
-or pedagogy metadata.
+The ontology is shared semantic infrastructure rather than the primary workstream. M42/M45/M46 all qualified without a generic K8.
 
-Use this sequence instead:
+Do **not** create a generic K8 merely to expand vocabulary, detectors, relationships, or pedagogy metadata.
 
 ```text
-concrete learner/tutor consumer needs semantic distinction X
+concrete consumer needs semantic distinction X
 -> prove K0-K7 cannot represent X safely
--> add the minimum ontology extension
--> add ontology rejection tests
+-> add the minimum extension
+-> add rejection tests
 -> consume it in the requesting feature
 -> qualify ontology + consumer together
 ```
-
-M41 and M44 both qualified without any ontology schema or data expansion, showing that
-the existing K0–K7 substrate is already useful without continual ontology churn.
 
 ## Current operational surfaces
 
@@ -173,9 +172,7 @@ cme-persisted-coach-review-reference
 cme-participant-review
 ```
 
-M36/M39/M40/M41/M43/M44 currently expose Python APIs and/or deterministic local
-reference surfaces; they add no production CLI command and do not automatically
-execute tutoring or model calls.
+M36/M39/M40/M41/M42/M43/M44/M45/M46 expose Python APIs and/or deterministic local reference surfaces; they add no new production CLI or hosted runtime.
 
 ## Qualification commands
 
@@ -186,8 +183,12 @@ python -m pytest tests/test_m36_learner_state_read_model.py -rs
 python -m pytest tests/test_m39_hypothesis_evidence_synthesis.py -rs
 python -m pytest tests/test_m40_next_session_planner.py -rs
 python -m pytest tests/test_m41_intervention_matching.py -rs
+python -m pytest tests/test_m42_transfer_retest_planning.py -rs
+python -m pytest tests/test_m42_m44_transfer_reference.py -rs
 python -m pytest tests/test_m43_evidence_acquisition.py -rs
 python -m pytest tests/test_m44_learner_progress_reference.py -rs
+python -m pytest tests/test_m45_batch_mentor_queue.py -rs
+python -m pytest tests/test_m46_adaptive_socratic_tutor.py -rs
 ```
 
 Full merge gate:
@@ -200,31 +201,27 @@ STOCKFISH_EXECUTABLE=/path/to/stockfish \
   python -m pytest tests/integration/test_stockfish_uci.py -rs
 ```
 
-See [`../runbooks/m41-m44-tutor-decision-loop.md`](../runbooks/m41-m44-tutor-decision-loop.md)
-for the latest focused restart path.
+See [`../runbooks/m42-m46-learner-tutor-loop.md`](../runbooks/m42-m46-learner-tutor-loop.md) for the latest restart path.
 
 ## Current claim ceiling
 
-The repository can now represent typed chess concepts, explain current learner state,
-propose a next action, prepare challenge/control evidence candidates or teaching
-intervention candidates for supported M40 seams, and present the resulting state in a
-traceable local learner-progress surface.
+The repository can now represent typed chess concepts, explain current learner state, synthesize support/counterevidence, propose a next learning action, prepare evidence/intervention/transfer candidates, present current progress, prioritize a bounded participant review queue, and propose bounded adaptive tutoring actions while preserving M8 measurement boundaries.
 
 It still does **not** establish:
 
 - causal cognitive diagnosis or permanent learner traits;
-- that an ontology concept occurrence proves what a participant noticed or missed;
-- automatic creation or mutation of M7/M11 state from derived learner-intelligence
-  artifacts;
-- that M43 can replace M7C recurrence classification;
-- that an M41 candidate is an M9 applicability mapping or selected intervention;
-- that a proposed or scheduled transfer test constitutes M10 transfer evidence;
-- mastery from successful evidence, practice, transfer, or real-game observation;
-- empirically optimal M40/M41/M43 policies;
-- production browser/device/accessibility/usability quality for M44;
+- ontology occurrence as proof of participant perception or learner weakness;
+- automatic M7/M11 mutation from derived learner-intelligence artifacts;
+- M43 candidates as M7C classifications;
+- M41 candidates as M9 applicability mappings or selections;
+- M42 plans as M10 outcomes or transfer success;
+- M45 rank as learner diagnosis or optimal review order;
+- M46 proposal as tutoring execution or uncontaminated participant evidence;
+- mastery from practice/transfer/real-game evidence;
+- empirically optimal M40–M46 policies;
+- production browser/device/accessibility/usability quality;
 - semantic correctness/safety/pedagogical quality of arbitrary model prose;
-- production provider/vendor, retry/idempotency, privacy/security, auth, hosted
-  persistence, deployment, or empirical tutoring efficacy.
+- production provider/vendor, retry/idempotency, privacy/security, auth, hosted persistence, deployment, or empirical tutoring efficacy.
 
 ## Core boundaries to preserve
 
@@ -236,29 +233,24 @@ M36 read model != learner-state mutation authority
 M39 synthesis != M7C recurrence authority
 M40 proposal != execution authority
 M43 evidence candidate != M7C contradiction/refutation
-M41 intervention candidate != M9 applicability mapping
-M41 rank != M9 selection
+M41 intervention candidate != M9 applicability mapping or selection
+M42 plan != M10 outcome evidence
 M44 rendering != learner inference
-M40 transfer-test proposal != M10 transfer evidence
+M45 mentor priority != learner diagnosis / M9 selection
+M46 proposal != M8 execution / exposure authority
+assisted response != baseline unassisted evidence
+post-reveal reflection != pre-reveal evidence
 successful evidence case != mastery
 transparent heuristic policy != empirically optimal pedagogy
 M16 deterministic grounding != M19 model prose
 M20 evaluator acceptance != objective truth
 ```
 
-## Next likely build directions
+## Next build decision
 
-A future milestone should begin with live-main reconciliation before promoting any
-candidate into an approved queue. Current strongest candidates are:
+A future milestone must begin with fresh live-main reconciliation. **Do not automatically create another backend package.** The strongest current decision is between:
 
-1. **M42 — transfer/retest planning:** consume M40 near/far-transfer proposals and
-   create bounded plans while leaving actual outcomes to M10;
-2. **M45 — batch games -> mentor queue:** prioritize a bounded recent-game set by
-   learner relevance, contradiction value, transfer value, uncertainty, and novelty;
-3. **M46 — adaptive Socratic tutor:** use qualified learner evidence, ontology
-   recognition cues, and bounded pedagogical actions while keeping model language
-   downstream of deterministic evidence;
-4. **M35/M37 only when a concrete consumer blocker pulls them forward.**
+1. a concrete local end-to-end consumer that makes the qualified loop directly exercisable (`recent games -> M45 queue -> M8/M46 tutoring -> reflection -> M42/M10 retest`); and
+2. M47 bounded multi-session study-plan composition, only if composing several qualified actions is the actual product bottleneck.
 
-Do not create a second recurrence engine under M38; reuse M7C. Do not create a generic
-K8 without a concrete consumer semantic gap.
+M35/M37 should move only when a concrete consumer/operator compatibility blocker requires them. M38 must not become a second recurrence engine; reuse M7C. K8 remains product-pulled.
