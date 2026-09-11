@@ -17,7 +17,7 @@ from chess_mentor_engine.chess import canonical_json
 from chess_mentor_engine.selection import DiagnosticCandidate, DiagnosticCandidateBatch
 
 from .evidence_synthesis import EvidenceSynthesisReference
-from .progress_model import LearnerProgressHypothesis, LearnerProgressView
+from .progress_model import LearnerProgressView
 from .transfer_retest import TransferRetestPlan
 
 MENTOR_QUEUE_SCOPE_SCHEMA_VERSION = "m45.mentor-queue-batch-scope.v1"
@@ -264,7 +264,10 @@ class MentorQueue:
             raise ValueError("M45 transfer plan refs must be unique")
         if self.decision_authority != "review_priority_proposal_only":
             raise ValueError("M45 cannot grant review execution authority")
-        if self.learner_effect != "not_established" or self.mastery != "not_established":
+        if (
+            self.learner_effect != "not_established"
+            or self.mastery != "not_established"
+        ):
             raise ValueError("M45 cannot establish learner effect or mastery")
 
     def identity_payload(self) -> dict[str, Any]:
@@ -369,7 +372,9 @@ def bind_mentor_queue_batch_scope(
     _nonempty("participant_id", participant_id)
     if not diagnostic_batch.candidates:
         raise ValueError("M45 cannot scope an empty diagnostic batch")
-    game_ids = tuple(sorted({item.game_id for item in diagnostic_batch.candidates}))
+    game_ids = tuple(
+        sorted({item.game_id for item in diagnostic_batch.candidates})
+    )
     payload = {
         "schema_version": MENTOR_QUEUE_SCOPE_SCHEMA_VERSION,
         "participant_id": participant_id,
@@ -396,7 +401,9 @@ def validate_mentor_queue_batch_scope(
 ) -> None:
     if scope.diagnostic_batch_ref != _batch_ref(diagnostic_batch):
         raise ValueError("M45 batch-scope diagnostic batch mismatch")
-    expected_games = tuple(sorted({item.game_id for item in diagnostic_batch.candidates}))
+    expected_games = tuple(
+        sorted({item.game_id for item in diagnostic_batch.candidates})
+    )
     if scope.game_ids != expected_games:
         raise ValueError("M45 batch-scope game set mismatch")
     if _digest(scope.identity_payload()) != scope.fingerprint:
@@ -441,7 +448,10 @@ def _validate_view(view: LearnerProgressView) -> None:
         raise ValueError("M45 learner-progress view identity mismatch")
 
 
-def _validate_transfer_plan(plan: TransferRetestPlan, view: LearnerProgressView) -> None:
+def _validate_transfer_plan(
+    plan: TransferRetestPlan,
+    view: LearnerProgressView,
+) -> None:
     expected = _digest(plan.identity_payload())
     if plan.fingerprint != expected:
         raise ValueError("M45 M42 transfer-plan fingerprint mismatch")
@@ -459,15 +469,21 @@ def _validate_transfer_plan(plan: TransferRetestPlan, view: LearnerProgressView)
         raise ValueError("M45 M42 current-revision mismatch")
 
 
-def _objective_importance(candidate: DiagnosticCandidate) -> tuple[int, tuple[str, ...]]:
+def _objective_importance(
+    candidate: DiagnosticCandidate,
+) -> tuple[int, tuple[str, ...]]:
     kinds = {item.kind for item in candidate.signals}
     if "MATE_RELATION" in kinds:
         return 3, ("M4 evidence includes a mate-relation signal.",)
     if "ENGINE_EVIDENCE_INVERSION" in kinds or "EXACT_CP_DELTA" in kinds:
-        return 2, ("M4 evidence includes bounded objective decision-quality signal.",)
+        return 2, (
+            "M4 evidence includes bounded objective decision-quality signal.",
+        )
     if "TOP_CANDIDATE_SEPARATION" in kinds or "ROOT_SIDE_IS_IN_CHECK" in kinds:
         return 1, ("M4 evidence includes bounded objective context signal.",)
-    return 0, ("M4 candidate is eligible without a higher-priority objective signal.",)
+    return 0, (
+        "M4 candidate is eligible without a higher-priority objective signal.",
+    )
 
 
 def _position_key(game_id: str, position_id: str) -> tuple[str, str]:
@@ -532,7 +548,8 @@ def _hypothesis_context(
             for item in evidence_matches:
                 concepts.update(item.concept_ids)
             reasons.append(
-                f"Position already participates in qualified M7C evidence for {hypothesis.hypothesis_id}."
+                "Position already participates in qualified M7C evidence for "
+                f"{hypothesis.hypothesis_id}."
             )
         if acquisition_matches:
             learner_relevance = max(learner_relevance, 2)
@@ -548,7 +565,8 @@ def _hypothesis_context(
             if hypothesis.next_action in challenge_actions:
                 action_alignment = max(action_alignment, 3)
             reasons.append(
-                f"M43 marks this position as useful challenge/control material for {hypothesis.hypothesis_id}."
+                "M43 marks this position as useful challenge/control material for "
+                f"{hypothesis.hypothesis_id}."
             )
 
     for plan in transfer_plans:
@@ -573,7 +591,9 @@ def _hypothesis_context(
         for item in matched_eligible:
             concepts.update(item.concept_ids)
         hypothesis = next(
-            item for item in view.hypotheses if item.hypothesis_id == plan.hypothesis_id
+            item
+            for item in view.hypotheses
+            if item.hypothesis_id == plan.hypothesis_id
         )
         expected_action = (
             "RUN_NEAR_TRANSFER_TEST"
@@ -582,13 +602,16 @@ def _hypothesis_context(
         )
         if hypothesis.next_action == expected_action:
             action_alignment = max(action_alignment, 3)
+        selection_label = "selected" if matched_selected else "eligible"
         reasons.append(
-            f"M42 identifies this position as {'selected' if matched_selected else 'eligible'} {plan.transfer_kind}-transfer material for {plan.hypothesis_id}."
+            f"M42 identifies this position as {selection_label} "
+            f"{plan.transfer_kind}-transfer material for {plan.hypothesis_id}."
         )
 
     if not hypothesis_ids:
         reasons.append(
-            "No current learner-specific M44/M42 linkage was found; retain objective M4 eligibility only."
+            "No current learner-specific M44/M42 linkage was found; retain "
+            "objective M4 eligibility only."
         )
     return (
         tuple(sorted(hypothesis_ids)),
@@ -614,10 +637,16 @@ def _novelty(
             games.add(item.source_game_id)
     key = _position_key(candidate.game_id, candidate.position_id)
     if key in positions:
-        return 0, "Position is already represented in current qualified M7C evidence."
+        return 0, (
+            "Position is already represented in current qualified M7C evidence."
+        )
     if candidate.game_id in games:
-        return 1, "Position is new but its game is already represented in current evidence."
-    return 2, "Position and game are new relative to current qualified M7C evidence."
+        return 1, (
+            "Position is new but its game is already represented in current evidence."
+        )
+    return 2, (
+        "Position and game are new relative to current qualified M7C evidence."
+    )
 
 
 def _base_dimensions(
@@ -625,7 +654,12 @@ def _base_dimensions(
     *,
     view: LearnerProgressView,
     transfer_plans: tuple[TransferRetestPlan, ...],
-) -> tuple[MentorQueueDimensions, tuple[str, ...], tuple[str, ...], tuple[str, ...]]:
+) -> tuple[
+    MentorQueueDimensions,
+    tuple[str, ...],
+    tuple[str, ...],
+    tuple[str, ...],
+]:
     (
         hypothesis_ids,
         concept_ids,
@@ -677,7 +711,15 @@ def _rank_key(
 def _choose_next(
     remaining: tuple[DiagnosticCandidate, ...],
     *,
-    context: dict[str, tuple[MentorQueueDimensions, tuple[str, ...], tuple[str, ...], tuple[str, ...]]],
+    context: dict[
+        str,
+        tuple[
+            MentorQueueDimensions,
+            tuple[str, ...],
+            tuple[str, ...],
+            tuple[str, ...],
+        ],
+    ],
     represented_concepts: set[str],
     game_counts: dict[str, int],
     policy: MentorQueuePolicy,
@@ -690,7 +732,9 @@ def _choose_next(
     if not eligible:
         return None, None
 
-    ranked: list[tuple[tuple[Any, ...], DiagnosticCandidate, MentorQueueDimensions]] = []
+    ranked: list[
+        tuple[tuple[Any, ...], DiagnosticCandidate, MentorQueueDimensions]
+    ] = []
     for candidate in eligible:
         base, _, concepts, _ = context[candidate.candidate_id]
         diversity = 0
@@ -728,7 +772,10 @@ def build_mentor_queue(
     created_at: str,
 ) -> MentorQueue:
     """Build one deterministic participant-scoped review-priority proposal."""
-    validate_mentor_queue_batch_scope(batch_scope, diagnostic_batch=diagnostic_batch)
+    validate_mentor_queue_batch_scope(
+        batch_scope,
+        diagnostic_batch=diagnostic_batch,
+    )
     validate_mentor_queue_policy(policy)
     _validate_view(learner_progress_view)
     _timestamp("created_at", created_at)
@@ -736,12 +783,19 @@ def build_mentor_queue(
         raise ValueError("M45 batch scope / learner-progress participant mismatch")
     for plan in transfer_plans:
         _validate_transfer_plan(plan, learner_progress_view)
-    sorted_transfers = tuple(sorted(transfer_plans, key=lambda item: item.transfer_plan_id))
+    sorted_transfers = tuple(
+        sorted(transfer_plans, key=lambda item: item.transfer_plan_id)
+    )
     transfer_ids = tuple(item.transfer_plan_id for item in sorted_transfers)
     if len(set(transfer_ids)) != len(transfer_ids):
         raise ValueError("M45 transfer plans must be unique")
 
-    candidates = tuple(sorted(diagnostic_batch.candidates, key=lambda item: item.candidate_id))
+    candidates = tuple(
+        sorted(
+            diagnostic_batch.candidates,
+            key=lambda item: item.candidate_id,
+        )
+    )
     context = {
         item.candidate_id: _base_dimensions(
             item,
