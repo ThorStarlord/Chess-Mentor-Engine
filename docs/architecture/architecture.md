@@ -1,27 +1,22 @@
-# Architecture: implemented boundaries through M34 + K0–K7
+# Architecture: implemented boundaries through M34 + K0–K7 + M36/M39/M40
 
 > **Current implementation authority:**
-> [`../product/repository-build-status.md`](../product/repository-build-status.md)
->  
-> **Latest repository handoff:** [`../../STATUS.md`](../../STATUS.md)  
-> **Contributor orientation:** [`../../CONTEXT.md`](../../CONTEXT.md)
+> [`../product/repository-build-status.md`](../product/repository-build-status.md)  
+> **Latest handoff:** [`../../STATUS.md`](../../STATUS.md)  
+> **Contributor context:** [`../../CONTEXT.md`](../../CONTEXT.md)
 
-This document is the current high-level architecture map. Detailed historical
-contracts remain in `docs/architecture/`, ratified decisions in `docs/decisions/`,
-and operational/qualification detail in `docs/runbooks/`.
+This is the current high-level authority map. Detailed contracts live in feature
+architecture docs, ADRs, tests, and runbooks.
 
-The numbered milestone boundary is **M34 — Hermetic Reviewed-Coaching Recovery
-Reconciliation**. The repository additionally has a qualified post-M34 **Chess
-Knowledge Ontology program K0–K7**. The K labels do not consume provisional M35+
-roadmap labels.
-
-The architecture remains an authority graph: each layer may consume qualified
-upstream evidence, but must not silently inherit authority it does not own.
+The contiguous numbered milestone series is qualified through **M34**. Additional
+qualified capabilities are the **K0–K7 Chess Knowledge Ontology** program and the
+non-contiguous learner-intelligence packages **M36, M39, and M40**. M35/M37/M38 are
+not implicitly implemented.
 
 ## 1. System shape
 
 ```text
-                         OBJECTIVE CHESS
+                               OBJECTIVE CHESS
 
 PGN / source
    |
@@ -40,142 +35,103 @@ M15 deterministic evaluation presentation
    v
 M18 auditable diagnostic candidate/control batch
 
-                         CHESS KNOWLEDGE SEMANTICS
+                            PARTICIPANT EVIDENCE
 
-canonical chess subject
+explicit candidate selection + separate capture consent
    |
    v
-K0-K3 versioned concept registry / vocabulary
+M21 authorization / candidate-to-session launch
    |
-   | concept definition only
    v
-K4 provenance-bound concept assertion
+M5 frozen participant decision evidence
    |
-   +--> K5 conservative deterministic detectors
+   v
+M8 controlled capture / freeze / reveal / compare state
+
+                             LEARNER INFERENCE
+
+M6 position-local reasoning discrepancy
    |
-   +--> K6 model-consumable sidecar -----------+
-   |     bound to unchanged M19 request        |
-   |                                           |
-   +--> K7 learner-knowledge projection        |
-         + existing M7C recurrence assessment  |
-         + preserves M7C relation verbatim     |
-                                               |
-                         PARTICIPANT EVIDENCE  |
-                                               |
-explicit candidate selection + capture consent|
-   |                                           |
-   v                                           |
-M21 authorization / candidate launch           |
-   |                                           |
-   v                                           |
-M5 frozen participant decision evidence        |
-   |                                           |
-   v                                           |
-M8 capture / freeze / reveal / compare          |
-                                               |
-                         LEARNER INFERENCE     |
-                                               |
-M6 position-local reasoning discrepancy        |
-   |                                           |
-   v                                           |
-M7 / M7C participant-specific hypothesis       |
-recurrence / contradiction ledger <---- K7 ----+
+   v
+M7 / M7C participant-specific hypothesis, recurrence, contradiction, review
+
+                  +-------------------+--------------------+
+                  |                                        |
+                  v                                        v
+          PEDAGOGY / OUTCOMES                      CHESS SEMANTICS
+          M9 intervention selection                K0-K7 ontology
+          M10 bounded outcome/transfer              assertions / detectors
+          M11 longitudinal state                    optional semantic projections
+                  |                                        |
+                  +-------------------+--------------------+
+                                      |
+                                      v
+                         M36 LEARNER-STATE READ MODEL
+                                      |
+                                      v
+                       M39 HYPOTHESIS EVIDENCE SYNTHESIS
+                                      |
+                                      v
+                  M40 TEACHING-PRIORITY / NEXT-ACTION PROPOSAL
 
                          DETERMINISTIC TUTOR GROUNDING
 
-compared M8 session + exact M15/M6 + optional active-current M7
+compared M8 session + exact M15/M6 + optional current M7
    |
    v
 M16 deterministic grounded mentor feedback
-
-                         MODEL / EVALUATOR BOUNDARIES
-
-M16 grounding
    |
    +--> M19 model request -> optional M24 provider execution -> M19 model prose
-   |       ^
-   |       |
-   |       +---- optional K6 ontology sidecar; M19 identity unchanged
    |
    +--> M20 evaluation request -> optional M24 evaluator execution -> M20 judgment
 
-                         PERSISTED REVIEW RUNTIME
+                            REVIEW / PERSISTENCE
 
-M26 reviewed-coaching orchestration
-   |
-   +--> atomic append-only M26 run lineage
-   |
-   v
-M25 authority-separated coach-review read model
-   |
-   v
-M27 mechanical reviewed-coaching execution ledger
-   |
-   v
-M29 persisted review -> M28 deterministic local reference surface
-   |
-   v
-M30 participant-scoped review package / navigation / export
-   |
-   v
-M32 exact machine-consumer review delivery bundle
-   |
-   v
-M33 deterministic M16 feedback trace
+M26 persistent reviewed coaching
+-> M25 review read model
+-> M27 mechanical execution ledger
+-> M29 persisted bridge -> M28 reference surface
+-> M30 participant-scoped package/navigation/export
+-> M32 machine-consumer fidelity
+-> M33 deterministic feedback trace
 
-                         EXECUTION SAFETY / RECOVERY
+                            SAFETY / RECOVERY
 
-optional M31 synthetic-canary + manual-retry-history preflight
-optional M34 synthetic multi-attempt recovery reconciliation
-
-                         PEDAGOGY / LONGITUDINAL EVIDENCE
-
-M9 explicit intervention applicability / selection
-   |
-   v
-M10 bounded practice / transfer evidence
-   |
-   v
-M11 append-only longitudinal learner state
+optional M31 synthetic privacy/manual-retry preflight
+optional M34 hermetic recovery reconciliation
 ```
 
-The ontology is cross-cutting rather than a mandatory new pipeline. Not every
-application invokes K4–K7, and K6/K7 do not replace M19 or M7C authority.
+Not every application invokes every optional branch. This is a capability/authority
+graph, not one automatic end-to-end command.
 
-## 2. Layer ownership and authority
+## 2. Layer ownership
 
-| Layer | Principal implementation | Authority owned | Authority explicitly not owned |
+| Layer | Principal implementation | Owns | Explicitly does not own |
 | --- | --- | --- | --- |
-| Chess substrate | M1–M2, `chess/` | Canonical games/positions, legality, deterministic context/features, source provenance | Player cognition, pedagogy |
-| Engine evidence | M3, `analysis/` | Versioned UCI analysis evidence, score/bound/mate/partial/failure semantics, engine provenance | Move-quality taxonomy, learner diagnosis |
-| Selection | M4/M18, `selection/` | Objective played-decision comparison, explicit diagnostic policy, candidates/controls | Participant choice, universal blunder thresholds |
-| Chess knowledge definition | K0–K3, `chess_knowledge/` | Stable concept identity, definitions, hierarchy/relationships, crosswalks, detection metadata, authority ceilings, pedagogy metadata | Concept occurrence, participant cognition, learner diagnosis, best move |
-| Chess knowledge assertion | K4 | Provenance-bound claim about an exact chess subject with explicit status/authority/evidence | Participant evidence, learner recurrence, intervention selection |
-| Chess knowledge detection | K5 | Deterministic assertions for the explicitly qualified mechanical subset | Automatic detection of all concepts, strategic interpretation |
-| Participant evidence | M5, `evidence/` | Raw/frozen participant responses, timing/exposure/capture provenance | Objective chess truth, recurring weakness claims |
-| Learning inference | M6–M7/M7C, `learning/` | Position-local discrepancy, participant-specific hypotheses, contradiction/challenge/recurrence evidence | Causal cognitive mechanisms, permanent traits |
-| Learner knowledge projection | K7 | Descriptive attachment of exact ontology assertions to already-classified M7C recurrence units | Recurrence classification, M7 mutation, causal learner traits |
-| Tutor state | M8/M13/M21/M23 | Controlled state transitions, authorization/consent binding, replayable persistence | Automatic diagnosis or training selection |
-| Training/outcomes | M9–M11 | Applicability-driven interventions, bounded outcome/transfer evidence, longitudinal state | Intervention causality, automatic mastery |
-| Presentation | M15 | Deterministic projection of exact qualified chess evidence | New chess semantics or model interpretation |
-| Deterministic feedback | M16 | Exact session-local factual mentor grounding | Arbitrary generative prose, pedagogical optimality |
-| Model language | M19 | Request/model provenance for generated language | Semantic truth or safety of arbitrary prose |
-| Model ontology sidecar | K6 | Exact ontology context plus binding to one unchanged valid M19 request | M19 schema/identity change, new M16 factual authority, automatic provider adoption |
-| Model evaluation | M20 | Bounded evaluator judgments under a frozen policy | Objective truth, complete model safety proof |
-| Execution seam | M24 | Request/endpoint identity, execution provenance, failure classification | Vendor approval, automatic retry policy, credential architecture |
-| Review runtime | M25–M30 | Authority-separated review, atomic persistence, mechanical verification, deterministic rendering/navigation | Authentication, privacy approval, production UI quality |
-| Consumer delivery | M32 | Exact machine-readable review delivery fidelity | Browser/device/a11y/usability correctness |
-| Deterministic trace | M33 | Component-level M16 source traceability | Model/evaluator truth, pedagogy |
-| Recovery reconciliation | M34 | Hermetic classification of supplied synthetic retry histories against persisted targets | Retry authorization/execution, external-side-effect idempotency |
-| Local durability | `storage/` | Immutable artifacts, dependency verification, replay/rebuild support | Independent reinterpretation of domain claims |
+| Chess substrate | M1–M2, `chess/` | canonical positions, legality, deterministic context/features | player cognition, pedagogy |
+| Engine evidence | M3, `analysis/` | UCI evidence, score/bound/mate/failure semantics, engine provenance | learner diagnosis |
+| Selection | M4/M18 | deterministic diagnostic selection policy | participant choice, universal blunder taxonomy |
+| Participant evidence | M5/M8 | captured/frozen participant reasoning and exposure state | objective chess truth, recurrence |
+| Learner inference | M6/M7/M7C | local discrepancy; participant-specific hypothesis, recurrence, contradiction/review | causal cognitive mechanisms, permanent traits |
+| Training | M9 | explicit intervention applicability/selection | intervention effectiveness |
+| Outcomes | M10 | bounded practice/near/far/real-game evidence | causal effect, mastery |
+| Longitudinal state | M11 | append-only projection of qualified learner evidence | hidden inference beyond sources |
+| Chess semantics | K0–K7 | stable ontology, assertions, qualified detector subset, sidecar/projection context | participant perception, M7C recurrence authority |
+| Learner read model | M36 | deterministic current-state composition of M7/M9/M10/M11 + optional K7 | learner-state mutation, new intervention selection |
+| Evidence synthesis | M39 | deterministic explanation of exact current M7C evidence and gaps | recurrence reclassification, future-status prediction |
+| Next-action policy | M40 | transparent ranked action proposal over current M36/M39 evidence | action execution, M9 selection, M10 evidence creation, optimality claim |
+| Deterministic feedback | M16 | exact factual mentor grounding | arbitrary generative prose |
+| Model language | M19 | request/model provenance | objective truth, learner-state authority |
+| Model evaluation | M20 | bounded evaluator judgment | objective chess truth, complete safety proof |
+| Execution seam | M24 | provider/evaluator execution provenance | vendor approval, retry policy |
+| Review/persistence | M25–M30 | local review, persistence, verification, navigation | auth/privacy approval, production UI quality |
+| Consumer fidelity | M32 | exact machine-readable delivery semantics | browser/device/a11y correctness |
+| Traceability | M33 | deterministic M16 source/component trace | semantic/pedagogical truth |
+| Recovery | M31/M34 | synthetic/manual preflight and hermetic reconciliation | production retry authorization/idempotency |
 
 ## 3. Core invariants
 
-### 3.1 Objective chess truth is not learner inference
-
-A bad engine outcome can justify an objective comparison. It cannot by itself prove
-why the player moved, what they saw, or whether a recurring cognitive weakness
-exists.
+### 3.1 Chess truth is not learner inference
 
 ```text
 engine evidence
@@ -185,124 +141,133 @@ participant self-report
 learner hypothesis
 ```
 
-### 3.2 Concept definition is not concept assertion is not learner inference
+An objectively bad move can justify chess comparison. It cannot prove why the player
+moved or establish a causal learner trait.
 
-K0–K3 define a shared semantic vocabulary. K4 assertions say that a registered
-concept applies, does not apply, or is otherwise supported within an explicit claim
-scope and authority. Neither step establishes what a participant perceived or a
-recurring learner pattern.
+### 3.2 Ontology semantics do not collapse authority
 
 ```text
-registered concept
+concept definition
 !=
-asserted concept occurrence
+concept assertion
 !=
 participant perception
 !=
-learner hypothesis
+learner inference
 ```
 
-### 3.3 Registry coverage is not detector coverage
+K7 may attach `tactic.fork` to a recurrence unit while M7C independently classifies
+that unit as supporting, contradicting, counterexample, context exception, unclear,
+or mixed. K7 preserves that relation; it does not choose it.
 
-K5 automatically detects only the exact mechanical subset for which operational
-semantics and near-miss rejection behavior have been qualified. A concept may be
-registered for human/model/external use while remaining intentionally undetected.
+### 3.3 M36 reads; it does not write
 
-External taxonomy tags also remain external authority even when the external label
-maps exactly to an internal concept ID.
-
-### 3.4 Strategic semantics do not become engine semantics
-
-Strategic principles and qualitative evaluation factors are explanatory vocabulary.
-They do not decompose a Stockfish score, and a candidate plan is neither a proven
-best move nor an M9 training intervention.
-
-### 3.5 M7C remains recurrence authority
-
-K7 consumes an exact M7C hypothesis assessment and attaches position-level ontology
-assertions to its recurrence units. It copies each source relation exactly:
+M36 is an exact current-state projection over already-qualified sources.
 
 ```text
-supports
-contradicts
-successful_counterexample
-context_exception
-unclear
-mixed
+M36 read model != M7/M11 mutation
+M36 M9 summary != new M9 selection
+M36 M10 status != mastery
 ```
 
-Ontology presence does not classify recurrence. The same concept may legitimately
-occur in both supporting and contradictory units. Missing K7 coverage means missing
-ontology evidence, not concept absence.
+Stale and non-current inputs fail closed.
 
-### 3.6 K6 does not modify M19 authority
+### 3.4 M39 explains; M7C still decides recurrence
 
-K6 validates an existing M19 request, constructs a separate ontology context, and
-binds the two by exact ID/fingerprint. The M19 request itself is not extended or
-refingerprinted.
+M39 may state:
+
+- what M7C currently classified;
+- why under the exact source assessment/policy;
+- what supporting/contradictory/control evidence exists;
+- which reviews were completed;
+- what K7 context covers the units;
+- what evidence is currently missing;
+- what kinds of future evidence could cause a future M7C assessment to change.
+
+It cannot calculate a replacement recurrence status or predict the future status.
 
 ```text
-M19 request identity
-+
-K6 ontology context identity
--> K6 sidecar binding
-
-sidecar binding != new M19 request identity
-sidecar context != M16 deterministic authority
+M39 synthesis != M7C authority
 ```
 
-### 3.7 Position-local discrepancy is not a stable trait
+### 3.5 M40 proposes; it does not execute
 
-M6 stays position-local. M7/M7C may accumulate participant-specific evidence across
-contexts, but recurrence remains descriptive evidence rather than a causal
-psychological mechanism.
+M40 selects from a bounded action vocabulary under a versioned transparent heuristic
+policy:
 
-### 3.8 Participant selection and evidence-capture consent are separate
+```text
+COLLECT_NEW_EVIDENCE
+CHALLENGE_HYPOTHESIS
+PRESENT_CONTROL
+TEACH_CONCEPT
+ASSIGN_PRACTICE
+RUN_NEAR_TRANSFER_TEST
+RUN_FAR_TRANSFER_TEST
+WAIT_FOR_REAL_GAME_EVIDENCE
+```
 
-M21/M23 require explicit candidate selection and explicit capture consent. One may
-not be inferred from the other.
+Its output carries:
 
-### 3.9 Information sequencing is part of correctness
+```text
+decision_authority = proposal_only
+```
 
-M5/M8 pre-reveal capture is meaningful only when objective analysis/diagnostic
-rationale has not already contaminated the intended measurement stage. Repository
-qualification cannot prove a future frontend displayed information in the correct
-order.
+Therefore:
 
-### 3.10 Presentation must preserve engine semantics
+```text
+M40 proposal != tutor-state transition
+M40 TEACH_CONCEPT != M9 intervention selection
+M40 ASSIGN_PRACTICE != recorded M10 practice
+M40 RUN_*_TRANSFER_TEST != M10 transfer evidence
+M40 WAIT_FOR_REAL_GAME_EVIDENCE != mastery
+```
 
-M15 and downstream consumer surfaces preserve White versus decision-mover
-perspective, symbolic mate, exact/bounded scores, partial/unavailable/failure states,
-child-analysis status, compatibility state, and exact source identity. Consumers do
-not get to invent new score semantics.
+A separately qualified consumer must implement any action.
 
-### 3.11 M16 is the deterministic factual grounding ceiling
+### 3.6 The M40 policy is inspectable, not magically optimal
 
-M16 is deterministic and bound to exact M15/M6 plus optional complete active-current
-M7 evidence. M19 and K6 may consume that grounding, but downstream model-authored
-prose does not inherit M16's authority.
+The default policy deliberately prioritizes disconfirming/control work over teaching
+when a hypothesis is contradicted, unclear, one-sided, or retains unresolved
+alternatives. It advances selected interventions through practice -> near transfer ->
+far transfer -> real-game observation according to current M10/M11 evidence.
 
-### 3.12 Evaluator acceptance is bounded judgment, not truth
+Those choices are explicit product heuristics. The repository has not established
+them as universally or empirically optimal pedagogy.
 
-M20 can say `pass`, `fail`, or `unclear` under its policy. It cannot promote its
-result into objective chess evidence or prove pedagogical effectiveness.
+### 3.7 M9, M10, and M11 remain independent authorities
 
-### 3.13 Persistence is append-oriented and replay-verifiable
+M40 refuses to resolve a mixed M9 selection state. It may propose practice or a
+transfer test only after reading upstream state; it cannot manufacture the evidence
+that would later prove completion or transfer.
 
-Important session/review artifacts are immutable/content-addressed or append-only
-where defined. Mutating workflows verify prior state and persist successor evidence
-rather than silently rewriting history.
+### 3.8 Deterministic grounding remains separate from model language
 
-### 3.14 Review, delivery, trace, and recovery keep their claim ceilings
+M16 remains the factual deterministic mentor-feedback ceiling. M19 may render prose
+from exact grounding. M20 may evaluate bounded aspects of output. Neither inherits
+objective or learner authority simply through provenance.
 
-M27 proves mechanical execution consistency, M32 exact consumer semantics, M33
-component-level deterministic provenance, and M34 supplied-history recovery
-consistency. None establishes arbitrary model truth, production UI quality, retry
-authority, or pedagogical efficacy.
+## 4. Current product path
 
-## 4. Current operational surfaces
+A bounded local product path now exists conceptually across the qualified layers:
 
-Installed commands remain:
+```text
+import/analyze games
+-> select instructive positions
+-> capture participant reasoning before reveal
+-> compare with objective evidence
+-> create/review M6/M7 learner evidence
+-> project current M11 state
+-> M36: inspect current learner state
+-> M39: inspect why a current hypothesis is believed/challenged
+-> M40: propose the next type of learning action
+```
+
+The last arrow remains a proposal boundary; no consumer yet automatically executes
+M40 actions.
+
+## 5. Current operator boundary
+
+Installed commands remain the established M12–M30 local commands:
 
 ```text
 cme games inspect
@@ -320,92 +285,59 @@ cme-persisted-coach-review-reference
 cme-participant-review
 ```
 
-M31–M34 and K0–K7 remain Python API / hermetic qualification surfaces. The ontology
-program introduces no production CLI command.
+K0–K7 and M36/M39/M40 currently expose Python API / reference-document surfaces.
+They add no production CLI and no automatic network/provider behavior.
 
-The installed operator path is intentionally local/reference-oriented. Participant
-scoping is not authentication; the static review surface is not a production UI;
-application-supplied provider adapters are not a repository-selected vendor stack.
+## 6. Persistence and provenance policy
 
-## 5. Persistence and provenance model
+Important derived outputs should remain bound to exact upstream identities and
+fingerprints rather than inferred from prose.
 
-The repository strongly prefers explicit references and fingerprints over inference
-from rendered text.
+The latest chain demonstrates this explicitly:
 
-K4 extends that rule to chess semantics: every knowledge assertion identifies its
-exact concept fingerprint, ontology fingerprint, subject, evidence refs, provenance,
-authority class, qualifiers, claim scope, and time.
+```text
+M11 snapshot
+-> exact M36 fingerprint
+-> exact M39 fingerprint per current hypothesis
+-> exact M40 policy fingerprint + M39 refs
+-> exact M40 plan fingerprint
+```
 
-K6 binds exact M19 request identity beside exact ontology-context identity. K7 binds
-exact M7C assessment identity beside exact ontology assertion bundles. Neither
-consumer bridge infers authority from prose.
+Changing a current revision, assessment, K7 projection, M36 read model, M39 synthesis,
+or M40 policy must change the downstream content identity or fail validation.
 
-Cross-layer consumers should use exact artifact identity, declared source pointers,
-schema versions, participant scope, content fingerprints, and replay/rebuild
-validation where available.
+## 7. Productization boundary
 
-## 6. Optional versus mandatory downstream layers
-
-The architecture deliberately avoids forcing every run through every layer.
-
-Examples:
-
-- engine analysis may exist without participant evidence or ontology assertions;
-- an ontology concept may be registered without an automatic detector;
-- K4 assertions may exist without K6 or K7 projection;
-- a participant-authorized tutor session may exist without M19 model prose;
-- K6 is adopted only by an explicit model consumer and does not modify existing M19
-  provider paths;
-- K7 may cover only a subset of M7C recurrence units and reports uncovered units
-  explicitly;
-- M20 evaluation is not required to make M16 factual grounding valid;
-- M31/M34 remain optional qualification/reconciliation surfaces;
-- training and longitudinal mutation remain explicit downstream decisions rather
-  than automatic consequences of analysis, ontology, or coaching.
-
-This prevents one orchestration or semantic layer from becoming an accidental god
-object.
-
-## 7. Current productization boundary
-
-The repository has strong local contracts and qualification but intentionally stops
-short of claiming a production end-user system.
-
-Not yet established:
+Not established by current repository qualification:
 
 - hosted authentication/authorization or multi-user tenancy;
-- production database/retention architecture;
-- production LLM/evaluator vendor selection and credential transport;
-- automatic retry/backoff/rate-limit policy or external-side-effect idempotency;
-- production privacy/security approval;
-- browser/device correctness, accessibility, localization, or usability;
-- semantic safety/correctness of arbitrary model prose;
-- complete automatic detection of the ontology vocabulary;
-- causal learner traits or automatic hypothesis mutation from ontology evidence;
-- automatic/optimal intervention selection from ontology pedagogy metadata;
-- empirical tutoring efficacy, transfer, mastery, or intervention-caused improvement.
+- production persistence/retention/privacy architecture;
+- production LLM/evaluator vendor and credential transport;
+- production retry/backoff/rate-limit/idempotency policy;
+- browser/device/a11y/localization/usability correctness;
+- causal cognitive diagnosis or permanent learner traits;
+- causal intervention effects;
+- mastery from current practice/transfer evidence;
+- empirical optimality of M40 action priorities;
+- empirical tutoring efficacy.
 
-These are explicit external/human/product authority gates, not omissions lower-level
-artifacts may silently paper over.
+## 8. Likely next architecture consumers
 
-## 8. Architecture evolution policy
+M40 makes future package boundaries more concrete:
 
-Future work should begin from live `main` and the current build-status authority.
-Recommendations in `STATUS.md` or the build plan remain candidate work until a fresh
-bounded package queue is approved.
+```text
+CHALLENGE_HYPOTHESIS / PRESENT_CONTROL
+    -> candidate M43 contradiction/control evidence acquisition
 
-The ontology foundation now enables product-facing work without requiring another
-large semantic-infrastructure phase. Likely next architecture questions are:
+TEACH_CONCEPT
+    -> candidate M41 intervention matching into M9 candidates
 
-1. a deterministic participant learner-state read model that can optionally consume
-   K7 concept context while preserving M7/M9/M10/M11 authority;
-2. hypothesis-evidence synthesis and contradiction search that reuse M7C rather than
-   creating a parallel recurrence engine;
-3. explicit teaching-priority/intervention-matching policies that may use ontology
-   principles/plans/pedagogy metadata without silently inheriting M9 authority;
-4. operator exposure when a concrete consumer needs M32/M33 or ontology read models;
-5. external frontend/provider/privacy/security/usability/efficacy adoption only when
-   the corresponding real authority gates can be exercised.
+RUN_NEAR_TRANSFER_TEST / RUN_FAR_TRANSFER_TEST
+    -> candidate M42 transfer/retest planning
 
-New infrastructure should increasingly be pulled by one of those concrete product
-needs rather than built speculatively.
+M36 + M39 + M40
+    -> candidate M44 learner-progress/reference surface
+```
+
+These remain candidate directions. Future work should start from live `main` and
+select the bounded consumer required by the actual active blocker.
