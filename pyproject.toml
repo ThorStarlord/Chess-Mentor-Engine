@@ -21,6 +21,7 @@ cme-reviewed-coaching-ledger = "chess_mentor_engine.reviewed_coaching_ledger_cli
 cme-coach-review-reference = "chess_mentor_engine.coach_review_reference_cli:main"
 cme-persisted-coach-review-reference = "chess_mentor_engine.persisted_review_reference_cli:main"
 cme-participant-review = "chess_mentor_engine.participant_review_package_cli:main"
+cme-local-tutor = "chess_mentor_engine.local_tutor_entry:main"
 
 [project.optional-dependencies]
 dev = [
