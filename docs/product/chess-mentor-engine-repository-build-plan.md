@@ -1,19 +1,52 @@
 # Chess Mentor Engine — Repository Build Plan
 
-**Status:** Working product-development roadmap  
-**Purpose:** Preserve the current repository-building ideas, implementation order, epistemic boundaries, and deferred decisions so future work does not accidentally promote research hypotheses into settled architecture.  
-**Scope:** Product/repository construction after the initial research pilots.  
-**Authority:** This document is a planning artifact. It does **not** supersede frozen research protocols, pilot results, or later ratified ADRs.
+> **Current implementation authority:**
+> [`repository-build-status.md`](repository-build-status.md)  
+> **Latest completed milestone handoff:** [`../../STATUS.md`](../../STATUS.md)  
+> **Current architecture map:** [`../architecture/architecture.md`](../architecture/architecture.md)
+
+**Status:** Planning history plus future candidate roadmap  
+**Current implementation boundary:** M34 — qualified / merged  
+**Authority:** This document is a planning artifact. It does **not** create an
+approved work-package queue, supersede ratified ADRs, or grant production/external
+authority.
 
 ---
 
-## 1. Product direction to preserve
+## 1. Why this document changed
+
+The original build plan was written before the repository had implemented its first
+bounded production milestones. It therefore described M1 and the early evidence
+substrate as future work.
+
+That is no longer true.
+
+The repository is now qualified through M34, including deterministic chess evidence,
+participant evidence, learner hypotheses, persistent tutoring, model/evaluator
+boundaries, reviewed-coaching persistence, participant review, machine-consumer
+fidelity, deterministic feedback traceability, and hermetic recovery reconciliation.
+
+This plan now has three jobs:
+
+1. preserve the durable product and evidence principles that motivated the build;
+2. map the original roadmap into the capabilities already delivered through M34;
+3. keep future directions explicitly **candidate** until a fresh live-`main` audit
+   promotes them into an approved bounded package queue.
+
+For present-tense implementation claims, always use
+[`repository-build-status.md`](repository-build-status.md).
+
+---
+
+## 2. Product direction to preserve
 
 Chess Mentor Engine should not become merely another engine-analysis UI.
 
-The product hypothesis is a **persistent chess tutor that learns how a particular player makes decisions, grounds its conclusions in objective chess evidence, and uses that evidence to choose what the player should practice next**.
+The product hypothesis remains a **persistent chess tutor that learns how a
+particular player makes decisions, grounds its conclusions in objective chess
+evidence, and uses that evidence to choose what the player should practice next**.
 
-The repository should therefore evolve around this evidence chain:
+The intended evidence chain remains:
 
 ```text
 Chess Evidence
@@ -29,919 +62,522 @@ Training Intervention
 Transfer / Longitudinal Evidence
 ```
 
+The implemented repository now adds operational/model/review layers around that
+chain without changing the underlying authority principle:
+
+```text
+objective chess evidence
+-> diagnostic selection
+-> participant authorization / captured reasoning
+-> discrepancy / learner hypothesis
+-> controlled tutor state
+-> deterministic mentor grounding
+-> optional model rendering + bounded evaluator judgment
+-> persisted reviewed coaching
+-> deterministic review delivery / traceability
+-> explicit intervention / outcome / longitudinal evidence
+```
+
 Three questions remain central:
 
 1. What is objectively happening on the board?
 2. What did the player actually notice, consider, and expect?
-3. What recurring explanation is currently supported strongly enough to affect training?
+3. What recurring explanation is currently supported strongly enough to affect
+   teaching?
+
+Later operational questions are also explicit:
+
+4. What did deterministic grounding establish versus what a model merely rendered?
+5. What execution/review mechanics were mechanically verified versus what still
+   requires external/human authority?
+6. Did a selected intervention produce evidence of practice success or transfer?
 
 The repository must keep those questions separate.
 
 ---
 
-## 2. Evidence and authority principles
+## 3. Durable evidence and authority principles
 
-### 2.1 Chess truth is not player psychology
+### 3.1 Chess truth is not player psychology
 
-Engine analysis can establish move quality, candidate strength, and chess consequences. It cannot establish what the player saw or why the player chose a move.
+Engine analysis can establish bounded objective chess evidence. It cannot establish
+what the player saw, why the player chose a move, or whether a causal cognitive
+mechanism exists.
 
-### 2.2 Player self-report is evidence, not objective truth
+### 3.2 Player self-report is evidence, not objective truth
 
-Player responses are direct evidence of what the player reports thinking. They may be incomplete, reconstructed, mistaken, or influenced by the measurement process.
+Participant responses are direct evidence of what the participant reports thinking.
+They may be incomplete, reconstructed, mistaken, or affected by the measurement
+sequence.
 
-### 2.3 Analyst interpretation must remain derived
+### 3.3 Analyst/model interpretation must remain derived
 
-Normalized categories such as `candidate generation failure`, `opponent resource missed`, or `plan formation incomplete` are analyst/model interpretations and must remain traceable to raw evidence.
+Reasoning discrepancies, recurring hypotheses, and model-authored explanations must
+remain traceable to the evidence they consume. Derived interpretation cannot be
+silently promoted into raw evidence.
 
-### 2.4 Local discrepancies are not stable weaknesses
+### 3.4 Local discrepancies are not stable weaknesses
 
-Use an evidence ladder:
+Use the evidence ladder:
 
 ```text
 Position observation
-→ Reasoning Discrepancy
-→ Candidate recurrence
-→ Supported participant-specific hypothesis
-→ Training-eligible hypothesis
-→ Tested intervention
-→ Transfer / competency evidence
+-> Reasoning discrepancy
+-> Candidate recurrence
+-> Supported participant-specific hypothesis
+-> Explicit training applicability / selection
+-> Bounded intervention evidence
+-> Near/far/real-game transfer evidence
 ```
 
 Never skip levels.
 
-### 2.5 Contradictory evidence is first-class
+### 3.5 Contradictory evidence is first-class
 
-The system should search for correct handling of the same apparent problem, not only failures.
+The system should preserve correct/control cases and evidence against a learner
+hypothesis, not only examples that confirm it.
 
-### 2.6 Provenance is part of product correctness
+### 3.6 Provenance is product correctness
 
-Every important claim should eventually be explainable through source game, position, engine provenance, player evidence, model/analyst interpretation, and hypothesis revision history.
+Important claims should be recoverable through exact source game/position identity,
+engine provenance, participant evidence, learner hypothesis revisions, tutor state,
+model/evaluator request identity, persisted review artifacts, and qualified source
+fingerprints.
+
+### 3.7 Deterministic grounding is different from model language
+
+M16 remains the deterministic factual mentor-feedback ceiling. M19 may render prose
+from that grounding, but request binding does not make arbitrary model prose true.
+
+### 3.8 Evaluator acceptance is bounded judgment
+
+M20 acceptance is not objective chess truth and is not proof of model safety,
+pedagogical quality, or tutoring efficacy.
+
+### 3.9 Mechanical verification is not semantic truth
+
+M27/M32/M33 can prove important persistence, delivery, and traceability properties.
+They do not establish that an arbitrary model explanation is pedagogically correct.
+
+### 3.10 Recovery eligibility is not retry authority
+
+M34 may classify a supplied synthetic execution history as `resume_eligible`. That
+does not authorize or execute a real retry and does not establish external-side-
+effect idempotency.
 
 ---
 
-## 3. Four-plane target architecture
+## 4. Original target planes and where they landed
 
-Use this as a conceptual map, not yet a frozen implementation architecture.
+The original four-plane concept remains useful as a product map, although the
+implemented architecture is now more detailed.
 
 ### Plane 1 — Chess Truth
 
-Owns:
+Originally intended to own games, positions, legality, deterministic board state,
+engine evaluations, candidates, principal variations, features, and provenance.
 
-- games;
-- positions;
-- rules and legality;
-- deterministic board state;
-- engine evaluations;
-- candidate moves;
-- principal variations;
-- deterministic tactical/structural facts;
-- source provenance.
+**Implemented primarily by M1–M4, M14–M18.**
 
 ### Plane 2 — Player Evidence
 
-Owns:
+Originally intended to own raw player responses, reported candidates, expectations,
+plans, confidence/uncertainty, timing, and exposure state.
 
-- raw player responses;
-- reported candidate moves;
-- chosen move;
-- expected opponent reply;
-- expected continuation;
-- stated plan/objective;
-- confidence/uncertainty where collected;
-- original-game recollection versus current reasoning;
-- evidence timing and exposure state.
+**Implemented primarily by M5, M8, M21, and M23.**
 
 ### Plane 3 — Learning Inference
 
-Owns:
+Originally intended to own reasoning discrepancies, recurrence, competing
+explanations, hypothesis lifecycle, evidence-for, and evidence-against.
 
-- position-level Reasoning Discrepancies;
-- controls and contradictory evidence;
-- recurrence analysis;
-- competing explanations;
-- learner hypotheses;
-- hypothesis lifecycle and strength;
-- evidence-for/evidence-against relations.
+**Implemented primarily by M6–M7 and consumed explicitly by later tutor/feedback
+layers.**
 
 ### Plane 4 — Pedagogy
 
-Owns:
+Originally intended to own interventions, exercises, outcome evidence, transfer,
+and competency claims.
 
-- training interventions;
-- lesson selection;
-- drills/exercises;
-- intervention outcomes;
-- near/far transfer;
-- real-game recurrence;
-- competency evidence.
+**Implemented in bounded form by M9–M11.**
 
-A tutoring/orchestration layer may coordinate these planes later.
+### Cross-cutting operational/review planes added later
+
+The repository later earned additional explicit boundaries:
+
+- **Operationalization:** M12–M18;
+- **Model / evaluator boundaries:** M19–M22;
+- **Persistent reviewed-coaching runtime:** M23–M27;
+- **Review / consumer surfaces:** M28–M30;
+- **Execution privacy and retry preflight:** M31;
+- **Machine-consumer fidelity:** M32;
+- **Deterministic feedback traceability:** M33;
+- **Hermetic recovery reconciliation:** M34.
+
+These additions refine the original plan rather than replacing its evidence-first
+thesis.
 
 ---
 
-# 4. Phased implementation roadmap
+# 5. Completed roadmap through M34
 
-## Phase 0 — Repository and authority reconciliation
+The original phased plan is now historical implementation provenance rather than a
+future checklist.
 
-### Goal
+| Original plan area | Current implementation outcome |
+| --- | --- |
+| Repository/authority reconciliation | Established through repeated milestone handoffs, build-status authority, CI qualification, and ADR/runbook discipline. |
+| Canonical games/positions | M1 qualified canonical game/position evidence and source provenance. |
+| Position context | M1/M2 plus later CLI surfaces provide deterministic position context. |
+| Deterministic chess features | M2 qualified low-level deterministic features. |
+| Engine abstraction | M3 qualified provenance-bound UCI evidence; provider behavior preserves bounds/mate/partial/failure semantics. |
+| Diagnostic position selection | M4 and M18 qualified explicit versioned selection and game-window candidate/control batching. |
+| Player decision evidence | M5 qualified frozen participant evidence; M21/M23 operationalized selection and capture-consent boundaries. |
+| Reasoning discrepancy | M6 qualified position-local discrepancy facts/assessment. |
+| Hypothesis / contradiction ledger | M7 qualified participant-specific append-only hypothesis lifecycle, support, challenge, and contradiction evidence. |
+| Tutor session workflow | M8 qualified tutor state; M13/M23 operationalized replay-verifiable persistence. |
+| Training intervention registry | M9 qualified explicit applicability/selection. |
+| Transfer / outcome evidence | M10 qualified bounded practice, near/far, and real-game outcome evidence. |
+| Longitudinal learner state | M11 qualified append-only longitudinal state. |
+| CLI hardening | M12–M18 and M23–M30 established the current installed local operator surfaces. |
+| LLM integration | M19/M24 created provider-neutral request/execution boundaries without selecting a production vendor. |
+| Model-output evaluation | M20 created bounded evaluator judgment without promoting it to truth. |
+| Cross-layer fidelity | M22 qualified representative evidence regimes across analysis/presentation/feedback/model/evaluator layers. |
+| Persistent reviewed coaching | M25–M27 created review read models, atomic persistence, and mechanical verification. |
+| Local review surface | M28–M30 created deterministic rendering, persisted bridging, and participant-scoped navigation/export. |
+| Privacy / retry preflight | M31 qualified synthetic-canary and manual-retry-history validation. |
+| Machine consumer contract | M32 qualified exact persisted-review delivery fidelity. |
+| Deterministic feedback trace | M33 qualified component-level traceability for M16. |
+| Recovery reconciliation | M34 qualified hermetic complete/resume-eligible reconciliation against persisted reviewed-coaching targets. |
 
-Make the repository state itself trustworthy before implementing product capabilities.
+The detailed milestone board and exact PR/CI evidence live in
+[`repository-build-status.md`](repository-build-status.md).
 
-### Tasks
+---
 
-- Reconcile local Git history with the GitHub remote.
-- Push or otherwise establish the local history as the authoritative remote history without rewriting validated research provenance.
-- Confirm the current `main` HEAD and clean working tree.
-- Preserve all frozen research protocol hashes and pilot results.
-- Add this roadmap under a repository path such as:
+# 6. Current product surfaces
+
+## 6.1 CLI / operator surface already implemented
+
+Installed commands currently include:
 
 ```text
-docs/product/repository-build-plan.md
+cme games inspect
+cme position packet
+cme analyze
+cme diagnose
+cme artifacts list/show/verify
+cme tutor ...
+cme-candidate-tutor
+cme-coach-review
+cme-reviewed-coaching
+cme-reviewed-coaching-ledger
+cme-coach-review-reference
+cme-persisted-coach-review-reference
+cme-participant-review
 ```
 
-- Add a short link from `CONTEXT.md` or `docs/product/product-definition.md` if appropriate.
+The earlier recommendation to “CLI first” has therefore been substantially
+fulfilled.
 
-### Exit criteria
+## 6.2 Local review UI already exists, but is intentionally not production UI
 
-- Remote and local repository histories agree.
-- Research history is preserved.
-- Roadmap is committed as a planning document, not an ADR or canonical architecture specification.
+M28 provides a deterministic semantic HTML reference surface, and M29/M30 make
+persisted participant-scoped review artifacts navigable/exportable.
 
----
-
-## Phase 1 — Canonical game and position substrate
-
-### Goal
-
-Create the smallest deterministic chess-domain foundation on which every later system can rely.
-
-### Candidate concepts
+The old “local web UI later” idea should now be split into two distinct statements:
 
 ```text
-GameSource
-CanonicalGame
-CanonicalPosition
-PositionRef
-GameContext
+local deterministic reference rendering    -> implemented
+production end-user frontend                -> not established
 ```
 
-### Capabilities
-
-- Parse PGN.
-- Normalize required headers.
-- Identify player color.
-- Normalize time control.
-- Classify rated/casual where source data supports it.
-- Classify human/bot where source data supports it.
-- Distinguish Standard/From Position.
-- Detect duplicates.
-- Generate stable internal IDs.
-- Produce exact FEN for positions.
-- Preserve source and source checksum.
-
-### Do not build yet
-
-- learner model;
-- tutoring dialogue;
-- recommendation engine;
-- database-backed profile;
-- GUI.
-
-### Tests
-
-- PGN parsing fixtures;
-- duplicate detection;
-- source-provenance round trip;
-- FEN correctness;
-- color/time-control normalization;
-- malformed-input behavior.
-
-### Exit criteria
-
-Given a frozen PGN fixture, the repository deterministically produces the same canonical games and positions with stable provenance.
+A real production frontend still requires explicit browser/device/a11y/usability,
+privacy, authentication, localization, and interaction-design authority.
 
 ---
 
-## Phase 2 — Position Context Packet
+# 7. LLM integration status
 
-### Goal
+The original recommendation was to avoid starting with an unconstrained LLM tutor
+and instead give models structured evidence.
 
-Make a chess position fully legible to humans and models without requiring unreliable reconstruction from FEN or SAN alone.
-
-### Candidate research-to-product concept
-
-`PositionContextPacket`
-
-### Initial deterministic fields
-
-```yaml
-position_id:
-game_id:
-move_number:
-side_to_move:
-fen:
-board_ascii:
-piece_map:
-material_summary:
-source_provenance:
-```
-
-### Engine-derived fields, added only when engine analysis is present
-
-```yaml
-played_move:
-evaluation_before:
-evaluation_after:
-top_candidates:
-principal_variations:
-engine_provenance:
-```
-
-### Key rule
-
-Canonical state, deterministic derived state, engine-derived state, and model interpretation must not be mixed into one unlabeled blob.
-
-### Tests
-
-- FEN ↔ ASCII board consistency;
-- piece-map consistency;
-- material calculation;
-- side-to-move correctness;
-- stable serialization;
-- missing-engine-data behavior.
-
-### Exit criteria
-
-Any selected position can be rendered into a deterministic, inspectable context packet whose board representation matches the canonical FEN exactly.
-
----
-
-## Phase 3 — Deterministic chess-feature extraction
-
-### Goal
-
-Reduce spatial/bookkeeping burden on the reasoning model without pretending high-level chess judgment is deterministic.
-
-### Good early candidates
-
-- legal moves;
-- legal checks;
-- legal captures;
-- attackers by square;
-- defenders by square;
-- pinned pieces where deterministically definable;
-- hanging/undefended pieces where a precise rule is defined;
-- material balance;
-- open/semi-open files where a precise definition is used;
-- passed pawns where a precise definition is used.
-
-### Keep interpretive concepts out initially
-
-Examples:
-
-- dangerous initiative;
-- weak king;
-- superior activity;
-- good attacking chances;
-- strategically urgent break.
-
-Those may later be model-derived explanations grounded in deterministic facts and engine evidence.
-
-### Exit criteria
-
-The system can expose important low-level board relationships without asking the LLM to reconstruct them manually and without claiming subjective strategic interpretation as deterministic fact.
-
----
-
-## Phase 4 — Engine analysis abstraction
-
-### Goal
-
-Make engine evidence a replaceable provider rather than embedding Stockfish semantics throughout the domain.
-
-### Candidate interface
+That principle is now implemented:
 
 ```text
-ChessAnalysisProvider
+M15 deterministic evaluation presentation
++ M6/M7 learner evidence
+-> M16 deterministic grounded mentor feedback
+-> M19 content-addressed model request
+-> optional M24 provider execution
+-> M19 model-authored language
+-> optional M20 bounded evaluation
 ```
 
-Possible adapters:
+The LLM is downstream of qualified evidence rather than a substitute for the chess
+substrate.
 
-```text
-StockfishAnalysisProvider
-LichessAnnotationProvider
-PrecomputedAnalysisProvider
-```
+Future provider work must preserve these boundaries:
 
-### Normalized output
-
-```yaml
-position_id:
-evaluation:
-best_move:
-top_candidates:
-principal_variations:
-depth:
-nodes:
-engine_name:
-engine_version:
-configuration:
-source:
-```
-
-### Principles
-
-- Record engine provenance.
-- Allow incomplete provenance and label it honestly.
-- Never treat engine output as player reasoning.
-- Avoid making one engine implementation the domain model.
-
-### Exit criteria
-
-The rest of the code can consume normalized chess-analysis evidence without knowing which provider produced it.
+- no vendor becomes objective chess authority;
+- no generated prose becomes raw participant evidence;
+- evaluator acceptance remains bounded judgment;
+- production secrets/transport/privacy/retry policy remain explicit external
+  decisions.
 
 ---
 
-## Phase 5 — Diagnostic position selection
+# 8. Evaluation infrastructure status
 
-### Goal
+The original plan called for evaluation of chess correctness, evidence sufficiency,
+personalization, overclaiming, contradiction handling, pedagogical linkage, and
+transfer.
 
-Choose positions for learning value, not merely centipawn loss.
+The repository now has strong **mechanical/hermetic** evaluation infrastructure:
 
-### Candidate selection dimensions
+- M20 bounded model-output evaluation policy;
+- M22 cross-layer fidelity matrix;
+- M24 provider/evaluator execution conformance;
+- M27 persisted execution verification;
+- M31 synthetic privacy/retry preflight;
+- M32 exact machine-consumer fidelity;
+- M33 deterministic feedback provenance tracing;
+- M34 recovery-history reconciliation.
 
-- major tactical error;
-- tactical opportunity;
-- defensive resource;
-- strategic plan choice;
-- quiet improvement;
-- prophylactic decision;
-- ambiguous candidate choice;
-- successful/control decision;
-- recurrence test;
-- contradiction test;
-- transfer test.
+What remains deliberately unproven is **empirical product/pedagogical efficacy**:
 
-### Important rule
+- whether users find the tutoring valuable;
+- whether explanations are consistently understandable and useful in practice;
+- whether interventions cause improvement;
+- whether improvement transfers to new positions/games;
+- whether the target segment and workflow are correct.
 
-The selector should be capable of choosing **correct decisions** as controls.
-
-### Initial implementation approach
-
-Start deterministic/rule-based where possible. Keep model-assisted selection explicitly derived and inspectable if later introduced.
-
-### Exit criteria
-
-Given a game set, the selector can produce a bounded, provenance-rich candidate set containing both potentially instructive errors and relevant successful controls.
+Mechanical qualification must not be used as a substitute for those claims.
 
 ---
 
-## Phase 6 — Player Decision Evidence capture
+# 9. Candidate future roadmap after M34
 
-### Goal
+The M32–M34 handoff recommends three immediate directions. They are preserved here
+as **candidates, not an approved work-package queue**.
 
-Store what the player reports thinking before engine feedback.
+## Candidate A — Operator exposure for M32/M33
 
-### Candidate concepts
+**Zone:** REPOSITORY_ONLY
+
+### Problem
+
+M32 delivery bundles and M33 deterministic traces are currently Python-level
+surfaces. Applications wanting these artifacts should not need ad-hoc internal
+Python wiring.
+
+### Candidate scope
+
+- expose an explicit participant-review/operator action for M32 bundle retrieval;
+- expose an explicit action for M33 deterministic trace retrieval;
+- preserve participant scoping and current content-disclosure rules;
+- keep model prose/evaluator rationale separate from deterministic evidence;
+- add negative tests for cross-participant/source/authority drift.
+
+### Non-goals
+
+- authentication;
+- production frontend design;
+- model/provider calls;
+- new chess or learner authority.
+
+### Candidate exit criterion
+
+A consumer can retrieve qualified M32/M33 artifacts through an explicit supported
+repository operator surface without hand-built Python integration.
+
+---
+
+## Candidate B — Cross-surface consumer regression contract
+
+**Zone:** HERMETIC_VALIDATION
+
+### Problem
+
+M30, M32, and M33 are individually qualified, but a future frontend/integration
+would benefit from one repository-owned end-to-end consumer fixture contract.
+
+### Candidate scope
+
+Exercise representative M22 evidence regimes through:
 
 ```text
-PlayerDecisionEvidence
-RawPlayerResponse
-ReasoningPrompt
-ExposureState
+persisted reviewed coaching
+-> M30 participant package
+-> M32 delivery bundle
+-> M33 deterministic feedback trace
 ```
 
-### Preserve multiple evidence stages
+Include negative/rejection cases for:
 
-```text
-minimal response
-standardized probe response
-post-engine reflection
-original-game recollection
-```
+- score-perspective inversion;
+- bound loss;
+- mate numericization;
+- partial/unavailable state collapse;
+- source swapping;
+- participant mismatch;
+- authority promotion;
+- deterministic-feedback component omission/reordering;
+- rehashed semantic drift.
 
-Never silently merge them.
+### Non-goals
 
-### Candidate structured fields
+- browser/device correctness;
+- visual design;
+- production accessibility approval;
+- semantic proof of arbitrary model prose.
 
-```yaml
-raw_response:
-chosen_move:
-reported_candidates:
-expected_reply:
-expected_continuation:
-stated_objective:
-uncertainty:
-confidence:
-```
+### Candidate exit criterion
+
+A stable repository-owned fixture contract demonstrates that representative
+qualified evidence semantics survive the full local consumer chain.
+
+---
+
+## Candidate C — External adoption and human-QA plan
+
+**Zone:** EXTERNAL_AUTHORITY
+
+### Problem
+
+The repository has enough local contracts that production adoption decisions can no
+longer be hidden behind more hermetic schemas.
+
+### Planning scope
+
+Define what evidence/approval would be required for:
+
+- a real frontend consuming M30/M32/M33;
+- browser/device visual QA;
+- screen-reader and accessibility conformance;
+- interaction/usability testing;
+- correct consent/disclosure sequencing;
+- localization policy;
+- production model/evaluator provider selection;
+- privacy/security review and secret handling;
+- data transmission/retention policy;
+- timeout/retry/backoff/rate-limit decisions;
+- cost/latency budgets and observability;
+- external-side-effect idempotency and recovery policy;
+- hosted authentication/authorization and multi-user persistence.
 
 ### Critical rule
 
-Raw response is authoritative. Structured extraction is `ANALYST CODING` unless the player directly filled the structured fields.
+Do not simulate external approvals inside repository tests. This candidate may create
+planning/checklist artifacts, but the actual approvals remain external.
 
-### Exit criteria
+### Candidate exit criterion
 
-The repository can freeze, checksum, retrieve, and compare player reasoning evidence without rewriting the raw participant response.
-
----
-
-## Phase 7 — Reasoning Discrepancy representation
-
-### Goal
-
-Create the first evidence-backed bridge between objective chess state and reported player reasoning.
-
-### Candidate definition
-
-> A traceable mismatch between the player's reported pre-engine reasoning and an objectively relevant demand or consequence of the position.
-
-### Candidate categories
-
-- critical feature not reported;
-- strong candidate not generated;
-- opponent resource not anticipated;
-- continuation calculated incorrectly;
-- resulting position evaluated incorrectly;
-- strategic target recognized but no executable move generated;
-- correct move with incomplete rationale;
-- correct reasoning / no discrepancy;
-- unclear;
-- emergent/other.
-
-### Rules
-
-- Multiple categories may apply.
-- `unclear` is valid.
-- A discrepancy belongs first to a **position**, not to the player globally.
-- Every discrepancy must cite the player evidence and chess evidence used to derive it.
-
-### Exit criteria
-
-A reviewer can inspect any discrepancy and reconstruct exactly which board/engine facts and player statements support it.
+The repository can state exactly which production claims require which external
+witness or human approval, without pretending hermetic tests satisfy them.
 
 ---
 
-## Phase 8 — Hypothesis and contradiction ledger
+# 10. Longer-term product questions
 
-### Goal
+After the immediate M34 follow-up candidates, the more consequential product
+questions are not primarily schema questions.
 
-Replace static weakness labels with evidence-backed, revisable participant-specific hypotheses.
+### 10.1 Production learning experience
 
-### Candidate concept
+What is the smallest real user flow that demonstrates the product thesis?
 
-```text
-LearnerHypothesis
-```
-
-### Candidate structure
-
-```yaml
-hypothesis_id:
-statement:
-status:
-supporting_evidence:
-contradictory_evidence:
-contexts:
-competing_explanations:
-evidence_strength:
-first_observed:
-last_tested:
-revision_history:
-```
-
-### Candidate lifecycle
+A candidate experience remains:
 
 ```text
-Observed
-→ Candidate
-→ Supported
-→ Training Eligible
-→ Improving / Not Improving
-→ Competency Candidate
+import games
+-> select instructive position
+-> capture reasoning before reveal
+-> compare reasoning with objective evidence
+-> explain participant-specific discrepancy
+-> connect to recurring evidence when justified
+-> choose targeted practice
+-> later measure transfer
 ```
 
-Alternative paths:
+### 10.2 Target segment
 
-```text
-Candidate → Contradicted → Retired
-Candidate → Insufficient
-Supported → Weakened
-```
+The current product-definition hypothesis favors regular online players around
+1400–1800 who already use engine analysis. That remains a discovery assumption, not
+a ratified product boundary.
 
-### Required behaviors
+### 10.3 Intervention value
 
-- actively attach contradictory evidence;
-- allow hypotheses to weaken;
-- allow retirement;
-- preserve history;
-- never overwrite old evidence because a later interpretation changes.
+The repository has bounded intervention and outcome contracts, but not empirical
+proof that its intervention choices improve players. Product work should eventually
+measure value rather than continue inferring it from software qualification.
 
-### Exit criteria
+### 10.4 Hosted product architecture
 
-The system can answer:
+Only after product/user needs justify it should the repository freeze choices for:
 
-> Why does Chess Mentor currently believe this about the player?
+- frontend framework;
+- hosted API shape;
+- authentication/authorization;
+- database/retention architecture;
+- provider vendor(s);
+- observability/deployment stack.
 
-with inspectable support, contradiction, context, and uncertainty.
+Do not choose these merely because the evidence layer is mature.
 
 ---
 
-## Phase 9 — Evidence-aware tutoring session workflow
-
-### Goal
-
-Create a controlled interaction sequence rather than a free-form chatbot.
-
-### Candidate session state machine
-
-```text
-SELECT POSITION
-→ PRESENT POSITION
-→ CAPTURE MINIMAL RESPONSE
-→ OPTIONAL STANDARDIZED PROBE
-→ FREEZE PLAYER EVIDENCE
-→ REVEAL CHESS EVIDENCE
-→ COMPARE
-→ EXPLAIN
-→ UPDATE EVIDENCE
-```
-
-Later extensions may add:
-
-```text
-PRACTICE
-→ TEST
-→ UPDATE LEARNER HYPOTHESIS
-```
-
-### Key constraints
-
-- Engine answer cannot leak before player evidence is frozen where the session intends pre-engine reasoning capture.
-- Tutoring explanation cannot silently mutate earlier evidence.
-- Information sequencing is part of correctness.
-
-### Exit criteria
-
-A complete local session can be replayed from stored evidence and state transitions.
-
----
-
-## Phase 10 — Training intervention registry
-
-### Goal
-
-Make pedagogy inspectable and testable instead of letting the LLM invent every exercise ad hoc.
-
-### Candidate concept
-
-```text
-TrainingIntervention
-```
-
-Possible early families:
-
-- candidate-generation drill;
-- opponent-resource verification;
-- calculation-tree exercise;
-- final-position evaluation;
-- quiet-move comparison;
-- plan-generation exercise;
-- prophylaxis exercise;
-- defensive-resource search.
-
-### Candidate structure
-
-```yaml
-intervention_id:
-targets:
-eligibility_requirements:
-exercise_definition:
-progression:
-success_observation:
-transfer_test:
-```
-
-### Critical boundary
-
-```text
-supported diagnosis ≠ effective intervention
-```
-
-Intervention effectiveness requires separate evidence.
-
-### Exit criteria
-
-A training recommendation can be traced to an eligible hypothesis and a defined intervention rather than generated as unsupported advice.
-
----
-
-## Phase 11 — Transfer and mastery evidence
-
-### Goal
-
-Measure whether learning persists beyond the exercise itself.
-
-### Evidence ladder
-
-```text
-Exercise success
-→ Near transfer
-→ Far transfer
-→ Real-game transfer
-→ Competency candidate
-```
-
-### Principles
-
-- Solving drills is not mastery.
-- Rating improvement is useful but too noisy to be the only signal.
-- Fresh positions matter.
-- Real-game recurrence matters.
-
-### Exit criteria
-
-The system can distinguish training performance from transfer and can revise the learner hypothesis accordingly.
-
----
-
-## Phase 12 — Longitudinal learner state
-
-### Goal
-
-Make Chess Mentor persistent across weeks/months of play.
-
-### Candidate event stream
-
-```text
-GameImported
-PositionSelected
-PlayerReasoningCaptured
-ReasoningDiscrepancyObserved
-HypothesisCreated
-ContradictionObserved
-InterventionAssigned
-ExerciseCompleted
-TransferTestCompleted
-HypothesisRevised
-CompetencyObserved
-```
-
-### Recommended architectural bias
-
-Prefer an append-oriented/evidence-ledger model over mutable numeric weakness scores.
-
-Derive current learner state from history where practical.
-
-### Exit criteria
-
-The system can reconstruct how a learner hypothesis changed over time and why its current state exists.
-
----
-
-# 5. Product surfaces
-
-## 5.1 CLI first
-
-Build the domain and workflow through a CLI before a polished UI.
-
-Possible eventual commands:
-
-```bash
-cme import games.pgn
-cme games inspect
-cme position packet <position-id>
-cme analyze <position-id>
-cme positions select
-cme session start
-cme hypotheses list
-cme hypothesis show <id>
-cme evidence show <id>
-```
-
-The exact CLI should emerge from implemented capabilities rather than be frozen now.
-
-## 5.2 Local web UI later
-
-Candidate views:
-
-```text
-Dashboard
-├── Recent games
-├── Current learning focus
-├── Candidate hypotheses
-├── Evidence
-├── Training
-└── Progress
-```
-
-Position/session view:
-
-```text
-Board
-↓
-Player response
-↓
-Diagnostic probing when appropriate
-↓
-Reveal
-↓
-Explanation
-↓
-Practice / next step
-```
-
-Do not build this until the session and evidence contracts are stable.
-
----
-
-# 6. LLM integration strategy
-
-## Do not start with the LLM tutor
-
-The LLM should receive well-structured evidence rather than be asked to invent the substrate.
-
-Preferred context sections:
-
-```text
-OBJECTIVE_CHESS_EVIDENCE
-PLAYER_REPORTED_EVIDENCE
-ANALYST_DERIVED_EVIDENCE
-SUPPORTED_LEARNER_HYPOTHESES
-CONTRADICTORY_EVIDENCE
-UNRESOLVED_COMPETING_EXPLANATIONS
-CLAIM_CEILING
-```
-
-Potential LLM responsibilities later:
-
-- human-readable chess explanation;
-- Socratic dialogue;
-- candidate learner hypotheses;
-- comparison of competing explanations;
-- lesson adaptation;
-- explanation of evidence and uncertainty.
-
-Responsibilities that should remain deterministic/provider-owned where possible:
-
-- legality;
-- FEN parsing;
-- board rendering;
-- material;
-- engine evaluation;
-- source identity;
-- provenance;
-- immutable raw responses.
-
----
-
-# 7. Evaluation infrastructure
-
-Eventually build evaluation harnesses for:
-
-## Chess correctness
-
-- Is the explanation consistent with objective position/engine evidence?
-
-## Evidence sufficiency
-
-- Does the conclusion follow from the cited evidence?
-
-## Personalization
-
-- Could substantially the same diagnosis be given generically to many players at this rating?
-
-## Overclaiming
-
-- Has a local discrepancy been promoted into a stable learner trait without recurrence?
-
-## Contradiction handling
-
-- Were successful/control cases searched and incorporated?
-
-## Pedagogical linkage
-
-- Does the recommended intervention target the supported discrepancy?
-
-## Transfer
-
-- Does later fresh evidence show improvement beyond the training exercise?
-
----
-
-# 8. Candidate future repository structure
-
-This is a direction map, **not an instruction to create all directories immediately**.
-
-```text
-src/chess_mentor_engine/
-├── chess/
-│   ├── games/
-│   ├── positions/
-│   ├── notation/
-│   └── context/
-├── analysis/
-│   ├── engines/
-│   ├── features/
-│   └── position_selection/
-├── evidence/
-│   ├── chess/
-│   ├── player/
-│   └── provenance/
-├── learning/
-│   ├── discrepancies/
-│   ├── hypotheses/
-│   ├── recurrence/
-│   └── learner_state/
-├── pedagogy/
-│   ├── interventions/
-│   ├── exercises/
-│   ├── transfer/
-│   └── mastery/
-├── tutoring/
-│   ├── sessions/
-│   ├── dialogue/
-│   └── explanations/
-└── evaluation/
-    ├── chess/
-    ├── diagnosis/
-    └── pedagogy/
-```
-
-Create modules only when the corresponding phase earns them.
-
----
-
-# 9. Recommended implementation sequence
-
-The preferred sequence is:
-
-```text
-0. Repository/authority reconciliation
-1. Canonical Game + Position substrate
-2. Position Context Packet
-3. Deterministic chess-feature extraction
-4. Engine-analysis abstraction
-5. Diagnostic position selection
-6. Player Decision Evidence capture
-7. Reasoning Discrepancy representation
-8. Hypothesis + contradiction ledger
-9. Tutor session state machine
-10. Training intervention registry
-11. Transfer/mastery evidence
-12. Longitudinal learner state
-13. CLI hardening
-14. Local web UX
-15. Broader provider/LLM integration
-```
-
-Do not parallelize later conceptual layers before the upstream evidence contracts are stable unless a bounded spike is explicitly labeled experimental.
-
----
-
-# 10. Phase-gate discipline
-
-For every phase, require:
-
-1. **Problem statement** — What failure or product need does this solve?
-2. **Evidence basis** — Which research finding or product requirement justifies it?
-3. **Contract** — Inputs, outputs, provenance, and authority boundaries.
-4. **Minimal implementation** — Smallest code proving the contract.
-5. **Tests** — Deterministic tests and relevant fixtures.
-6. **Counterexample handling** — What inputs or evidence should *not* produce the expected result?
-7. **Documentation** — What is implemented versus still candidate.
-8. **Exit criterion** — What must be true before the next phase is authorized?
-
-Avoid using "implemented" to mean "concept described in docs."
-
----
-
-# 11. Decisions to defer deliberately
+# 11. Decisions still deliberately deferred
 
 Do **not** freeze these prematurely:
 
-- final persistent database technology;
-- production LLM provider;
-- production engine provider;
+- final production database technology;
+- production LLM/evaluator vendor;
+- production secrets/transport architecture;
+- automatic retry/backoff/rate-limit policy;
 - final learner taxonomy;
-- numeric learner scores;
-- final mastery thresholds;
+- universal numeric learner scores;
+- universal mastery thresholds;
 - final intervention library;
-- web framework;
+- production web framework;
 - cloud deployment architecture;
-- multiplayer/coaching features;
+- multiplayer/coaching/social features;
 - cross-player analytics;
 - rating prediction;
-- social/gamification features.
+- gamification strategy.
 
-The repository should first prove the evidence and tutoring contracts.
+Some of these may become appropriate in a future milestone, but they must be earned
+by a concrete product/operational requirement.
 
 ---
 
-# 12. Error-prevention checklist
+# 12. Phase-gate discipline for future packages
 
-Use this section when starting new implementation work.
+Before implementing any new package, require:
 
-## Do not confuse
+1. **Live-main reconciliation** — What is actually true in the repository now?
+2. **Problem statement** — What failure or product need does this solve?
+3. **Zone classification** — `REPOSITORY_ONLY`, `HERMETIC_VALIDATION`, or
+   `EXTERNAL_AUTHORITY`.
+4. **Evidence basis** — Which product/technical need justifies the work?
+5. **Authority contract** — Inputs, outputs, provenance, claim ceiling, and what the
+   package must not authorize.
+6. **Minimal implementation** — Smallest change that proves the contract.
+7. **Positive qualification** — Native tests/fixtures for supported behavior.
+8. **Negative/rejection qualification** — Tamper, mismatch, incomplete, or
+   forbidden-authority cases.
+9. **Documentation** — Current status and runbook/contract updates where relevant.
+10. **Exact-head qualification** — Do not merge a candidate that differs from the
+    candidate that passed the gate.
+11. **Exit criterion** — What must be true before another package is authorized?
+
+Avoid using “implemented” to mean “described in a planning document.”
+
+---
+
+# 13. Error-prevention checklist
+
+Do not confuse:
 
 ```text
 engine evaluation
@@ -953,12 +589,6 @@ player reasoning
 player self-report
 with
 objective chess truth
-```
-
-```text
-analyst coding
-with
-raw participant evidence
 ```
 
 ```text
@@ -974,185 +604,149 @@ causal cognitive explanation
 ```
 
 ```text
-supported diagnosis
+supported learner hypothesis
 with
-effective training intervention
+automatic training eligibility
 ```
 
 ```text
-exercise success
+selected intervention
 with
-transfer/mastery
+effective intervention
 ```
 
 ```text
-research concept
+exercise completion
 with
-production domain object
+successful performance or transfer
 ```
 
 ```text
-candidate architecture
+M16 deterministic grounding
 with
-ratified architecture
+M19 model prose
 ```
 
 ```text
-model eloquence
+M20 evaluator acceptance
 with
-evidence quality
+objective truth
+```
+
+```text
+M27 mechanical verification
+with
+semantic correctness
+```
+
+```text
+M30 participant scoping
+with
+authentication
+```
+
+```text
+M32 consumer fidelity
+with
+production UI quality
+```
+
+```text
+M33 traceability
+with
+pedagogical truth
+```
+
+```text
+M34 resume eligibility
+with
+retry authorization or execution
+```
+
+```text
+planning recommendation
+with
+approved work package
 ```
 
 ---
 
-# 13. Repository documentation discipline
+# 14. Repository documentation discipline
 
-Each important concept should eventually have one authoritative home.
-
-Suggested hierarchy:
+Each active document has one primary responsibility:
 
 ```text
-docs/product/
-    product definition, principles, roadmap
+README.md
+    product overview, installation, operator entry points, navigation
 
-docs/domain/
-    ratified domain concepts and invariants
+CONTEXT.md
+    contributor reasoning model and invariants
 
-docs/architecture/
-    implemented architecture and boundaries
+docs/product/repository-build-status.md
+    canonical moving implementation + qualification authority
 
-docs/research/
-    experiments, hypotheses, findings, claim ceilings
+STATUS.md
+    latest completed milestone handoff
+
+docs/architecture/architecture.md
+    current high-level implemented architecture / authority map
+
+docs/product/chess-mentor-engine-repository-build-plan.md
+    planning history + future candidate roadmap
 
 docs/decisions/
-    ratified ADRs
+    ratified historical decisions
+
+docs/runbooks/
+    feature/milestone operating and qualification history
 ```
 
-Research should be allowed to propose concepts before domain/architecture documents ratify them.
+Historical ADRs and milestone runbooks should remain historical. Do not rewrite them
+just to make old documents speak as if M34 already existed.
 
-A useful progression is:
+When active documents disagree about present implementation state, resolve the drift
+against `repository-build-status.md`.
+
+---
+
+# 15. Current recommendation
+
+Do **not** restart the old M1-first roadmap. M1–M34 are already qualified.
+
+The correct next action for a future milestone is:
 
 ```text
-Research finding
-→ Candidate product implication
-→ Implementation experiment
-→ Ratified domain/architecture decision
-→ Production implementation
+live main audit
+-> reconcile current status + handoff
+-> identify the true bottleneck
+-> classify candidate work by authority zone
+-> approve a bounded package queue
+-> implement one package at a time
+-> qualify exact candidate heads
+-> update moving status + final handoff
 ```
 
-Do not skip from research idea directly to canonical architecture because the idea sounds good.
+The M32–M34 handoff currently points first toward operator exposure for M32/M33,
+then a cross-surface consumer regression contract, while external adoption/human QA
+remains a separate authority track.
 
----
-
-# 14. Near-term build milestone
-
-## Milestone M1 — Trustworthy Chess Evidence Substrate
-
-Recommended initial production milestone:
-
-> Given one or more PGN games, Chess Mentor Engine can deterministically ingest them, reconstruct canonical positions, generate accurate Position Context Packets, attach normalized engine evidence with provenance, and expose all of it through tests and a minimal developer-facing interface.
-
-M1 deliberately excludes:
-
-- player psychology;
-- learner diagnosis;
-- tutoring recommendations;
-- interventions;
-- persistent learner model;
-- polished GUI.
-
-### M1 acceptance criteria
-
-- canonical PGN ingestion works on representative fixtures;
-- duplicate/malformed inputs are handled explicitly;
-- positions have stable identity;
-- FEN/board/piece-map/material representations agree;
-- engine provider is abstracted;
-- engine provenance is recorded;
-- Position Context Packets serialize deterministically;
-- research fixtures from earlier pilots can be represented without manual repair;
-- tests and lint pass;
-- documentation distinguishes deterministic, engine-derived, and interpretive data.
-
-This is the best first implementation target because every later personalized-tutoring capability depends on trustworthy chess evidence.
-
----
-
-# 15. M2 candidate milestone — Player Evidence and Discrepancy
-
-Only after M1 is qualified:
-
-> Capture pre-engine player reasoning as immutable evidence and support traceable position-level comparison against objective chess evidence.
-
-Candidate M2 scope:
-
-- player response capture;
-- evidence timing/exposure metadata;
-- raw versus analyst-coded separation;
-- position-level Reasoning Discrepancy;
-- correct/no-discrepancy controls;
-- replayable provenance.
-
-Do not include recurring learner hypotheses until M2 position-level evidence is trustworthy.
-
----
-
-# 16. M3 candidate milestone — Evidence-Backed Learner Hypotheses
-
-Only after M2 is qualified:
-
-> Accumulate position-level discrepancies and controls into revisable participant-specific hypotheses with support, contradiction, contexts, competing explanations, and explicit evidence strength.
-
-This is where Chess Mentor Engine begins to become genuinely persistent and personalized.
-
----
-
-# 17. M4 candidate milestone — Tutor Loop
-
-Only after M3 is qualified:
-
-> Use supported learner hypotheses to select diagnostic interactions and bounded training interventions, then gather new evidence that can strengthen, weaken, or retire the hypothesis.
-
-This is the first milestone where a user-facing tutor experience should become a major implementation focus.
-
----
-
-# 18. Current recommendation
-
-Begin implementation with **M1: Trustworthy Chess Evidence Substrate**.
-
-The first coding work should be deliberately boring and deterministic:
-
-```text
-PGN
-→ CanonicalGame
-→ CanonicalPosition
-→ PositionContextPacket
-→ EngineEvidence
-```
-
-Once that path is reliable, the repository can safely move toward the distinctive part of the product:
-
-```text
-PlayerDecisionEvidence
-→ ReasoningDiscrepancy
-→ LearnerHypothesis
-→ Intervention
-→ Transfer
-```
-
-The repository should earn personalization through evidence rather than beginning with a personalized-sounding LLM.
+Those are recommendations, not automatic instructions.
 
 ---
 
 ## Durable principles
 
-> It is not enough to know which move was wrong; the repository must preserve the position and evidence that made it wrong.
+> It is not enough to know which move was wrong; the repository must preserve the
+> position and evidence that made it wrong.
 
-> It is not engine evidence and is not player self-report alone; useful diagnosis depends on preserving both without confusing their authority.
+> It is not engine evidence and is not player self-report alone; useful diagnosis
+> depends on preserving both without confusing their authority.
 
-> A weakness label is not the starting point; it is the possible downstream result of repeated, contradictory-tested evidence.
+> A weakness label is not the starting point; it is the possible downstream result
+> of repeated, contradiction-tested evidence.
 
-> The LLM should explain and reason over evidence, not manufacture the evidence substrate.
+> The LLM should explain and reason over evidence, not manufacture the evidence
+> substrate.
 
-> Build the evidence system first. Let the tutor emerge from it.
+> Mechanical fidelity is necessary, but product value and pedagogical efficacy still
+> require evidence outside the repository's hermetic qualification boundary.

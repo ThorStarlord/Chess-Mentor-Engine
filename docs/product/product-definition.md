@@ -1,5 +1,13 @@
 # Product definition
 
+> **Implementation status authority:** [`repository-build-status.md`](repository-build-status.md)  
+> **Future planning:** [`chess-mentor-engine-repository-build-plan.md`](chess-mentor-engine-repository-build-plan.md)  
+> **Latest completed milestone handoff:** [`../../STATUS.md`](../../STATUS.md)
+
+This document defines the product hypothesis and open product questions. It is not a
+moving implementation-status document and does not promote candidate product ideas
+into qualified repository capabilities.
+
 ## Problem
 
 Chess software is very good at determining whether a move is objectively good or bad. It is much weaker at building a persistent explanation of:

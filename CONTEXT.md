@@ -1,8 +1,20 @@
 # Chess Mentor Engine context
 
+> **Current implementation authority:**
+> [`docs/product/repository-build-status.md`](docs/product/repository-build-status.md)
+>  
+> **Latest completed milestone handoff:** [`STATUS.md`](STATUS.md)  
+> **Repository overview:** [`README.md`](README.md)  
+> **Architecture map:**
+> [`docs/architecture/architecture.md`](docs/architecture/architecture.md)
+
 ## Product and authority
 
-Chess Mentor Engine is a persistent chess-learning system intended to convert objective chess evidence into individualized teaching decisions without collapsing chess truth, participant self-report, learner inference, tutoring, model-authored language, model-output evaluation, review presentation, execution mechanics, and pedagogy into one authority layer.
+Chess Mentor Engine is a persistent chess-learning system intended to convert
+objective chess evidence into individualized teaching decisions without collapsing
+chess truth, participant self-report, learner inference, tutoring, deterministic
+feedback, model-authored language, model-output evaluation, review mechanics, and
+pedagogy into one authority layer.
 
 The central questions remain distinct:
 
@@ -12,75 +24,208 @@ What did the player actually notice, consider, and expect?
 What participant-specific explanation is currently supported strongly enough to affect teaching?
 What did deterministic grounding say versus what a model rendered?
 What execution/review mechanics were verified versus what still requires human/external authority?
+What later evidence supports practice success, transfer, or longitudinal change?
 ```
 
-The learner-model questions remain bounded product hypotheses, not claims that the system has established causal cognitive mechanisms.
+Learner-model conclusions remain bounded product hypotheses, not claims that the
+system has established causal cognitive mechanisms.
 
-Use [current build status](docs/product/repository-build-status.md) as the moving implementation/qualification authority, [STATUS.md](STATUS.md) as the completed M29–M31 milestone handoff, and [the M29–M31 runbook](docs/runbooks/m29-m31-milestone-runbook.md) for restart and qualification commands.
+## Current implementation boundary
 
-## Current implementation
+The repository is qualified through **M34 — Hermetic Reviewed-Coaching Recovery
+Reconciliation**. The latest completed milestone is M32–M34.
 
-The bounded stack is qualified through M31:
+Use `docs/product/repository-build-status.md` for the moving implementation boundary
+and exact promotion evidence. Use `STATUS.md` for the completed M32–M34 handoff and
+`docs/runbooks/m32-m34-milestone-runbook.md` for restart and qualification commands.
 
-- **M1–M4:** canonical PGN/game/position provenance, deterministic chess context/features, normalized UCI evidence, objective played-decision comparison, and bounded diagnostic selection.
-- **M5–M7:** frozen participant decision evidence, position-local discrepancy facts/assessments, participant-specific descriptive learner hypotheses, contradiction/challenge evidence, recurrence policies, and append-only lifecycle.
-- **M8–M11:** controlled evidence-aware tutoring, explicit intervention applicability/selection, bounded practice/transfer outcome evidence, and append-only longitudinal learner state.
-- **M12–M14:** local evidence/artifact inspection, replay-verified persistent tutor transitions, and bounded engine-backed analysis.
-- **M15:** deterministic evaluation presentation with explicit White and decision-mover perspectives, bounds, symbolic mate, evidence quality, PVs, engine provenance, and exact references.
-- **M16:** deterministic grounded mentor feedback over exact M15/M6 and optional complete active-current M7 evidence. M16 remains the deterministic factual grounding ceiling for mentor language.
-- **M17:** opt-in `cme analyze --with-presentation` bridge over exact in-memory M14 records through M15.
-- **M18:** `cme diagnose`, which analyzes an explicit played-ply window and applies an explicit versioned M4 selection policy to produce an auditable candidate/control batch.
-- **M19:** provider-neutral model-language rendering over an exact content-addressed M16 grounding request. Accepted prose remains request-bound rather than semantically proven.
-- **M20:** bounded model-output evaluation over exact M16/M19 sources with seven frozen dimensions and `truth_status = not_established_by_m20_evaluation`.
-- **M21–M23:** explicit participant candidate selection + separate capture consent, exact M18-to-M5/M8 orchestration, and installed `cme-candidate-tutor` persistence/replay bridge.
-- **M22:** hermetic cross-layer fidelity qualification across exact, bounded, mate, partial, unavailable, compatible, incompatible, and failed evidence regimes.
-- **M24:** provider/evaluator execution conformance with detached immutable requests, explicit endpoint identity, deterministic execution provenance, and fail-closed failure classification. No vendor or automatic retry policy is selected.
-- **M25:** content-addressed authority-separated coach-review read model plus local `cme-coach-review` inspection.
-- **M26:** persistent reviewed-coaching operator from an exact replay-verified `compared` M8 checkpoint through M16, optional M19/M20 via M24-compatible application adapters, M25 assembly, and atomic append-only persistence.
-- **M27:** privacy-bounded execution ledger and mechanical fidelity verification for persisted M26 runs.
-- **M28:** deterministic static semantic HTML reference surface over a strict M25 read model; not a production UI.
-- **M29:** installed `cme-persisted-coach-review-reference` bridge that starts from a persisted M26 run or M25 review, requires M27 verification, and renders the persisted M25 payload through M28 without a hand-built bundle.
-- **M30:** installed `cme-participant-review` list/show/export tooling plus content-addressed participant review package manifests. Summary navigation excludes source payloads/model prose/evaluator rationale/participant responses/HTML unless exact content is explicitly requested.
-- **M31:** hermetic synthetic-canary privacy and manual-retry-history preflight around M24/M26/M27. It accepts only `CME_TEST_CANARY_*` markers, preserves `automatic_retry=false`, validates but never executes retry histories, and stores only summary-safe evidence.
+### Capability sequence
 
-Recent promotion sequence:
+- **M1–M4:** canonical PGN/game/position provenance, deterministic chess
+  context/features, normalized UCI evidence, objective played-decision comparison,
+  and bounded diagnostic selection.
+- **M5–M7:** frozen participant decision evidence, position-local discrepancy facts
+  and assessments, participant-specific learner hypotheses, contradiction/challenge
+  evidence, recurrence policies, and append-only hypothesis lifecycle.
+- **M8–M11:** controlled evidence-aware tutoring, explicit intervention
+  applicability/selection, bounded practice/transfer evidence, and append-only
+  longitudinal learner state.
+- **M12–M18:** local evidence/artifact inspection, replay-verified persistent tutor
+  transitions, engine-backed analysis, deterministic evaluation presentation,
+  grounded mentor feedback, analysis-to-presentation bridging, and diagnostic move
+  analysis queues.
+- **M19–M22:** provider-neutral model-language rendering, bounded model-output
+  evaluation, participant-authorized candidate-to-tutor launch, and hermetic
+  cross-layer fidelity qualification.
+- **M23–M27:** installed diagnostic-to-persistent-tutor bridging, provider/evaluator
+  execution conformance, authority-separated coach review, persistent reviewed
+  coaching, and a mechanically verified execution ledger.
+- **M28–M31:** deterministic local review rendering, persisted-review bridging,
+  participant-scoped package/navigation/export, and hermetic synthetic-canary/manual
+  retry-history preflight.
+- **M32:** persisted review delivery fidelity for exact machine consumers.
+- **M33:** deterministic M16 mentor-feedback traceability to exact M15/M6/optional M7
+  sources.
+- **M34:** hermetic reconciliation of supplied synthetic multi-attempt M24 histories
+  against an already-persisted mechanically verified M26 target.
+
+## Current operational path
 
 ```text
-M26 Persistent Reviewed-Coaching Operator                MERGED - PR #61
-M27 Reviewed-Coaching Execution Ledger                  MERGED - PR #62
-M28 Local Coach-Review Reference Surface                MERGED - PR #63
-M29 Persisted Review -> Reference Surface Bridge        MERGED - PR #65
-M30 Participant-Scoped Review Package & Navigation      MERGED - PR #66
-M31 Execution-Envelope Privacy & Retry Preflight        MERGED - PR #67
+PGN / canonical position
+-> deterministic chess context
+-> provenance-bound engine evidence
+-> objective played-decision comparison / bounded diagnostic selection
+-> M15 deterministic evaluation presentation
+-> M18 diagnostic candidate batch
+-> explicit participant candidate selection + separate capture consent
+-> M23 cme-candidate-tutor
+-> M21 authorization / launch
+-> exact M5 PlayerDecisionContext
+-> persisted replay-verifiable M8 state=selected
+-> M13 tutor capture / freeze / reveal / compare workflow
+-> position-local M6 discrepancy + optional bounded M7 context
+-> replay-verified persisted M8 state=compared
+-> M26 reviewed-coaching operator
+   -> M16 deterministic grounded feedback
+   -> optional M19 request / M24 provider execution / M19 coaching
+   -> optional M20 request / M24 evaluator execution / M20 bounded evaluation
+   -> M25 authority-separated coach-review read model
+   -> atomic append-only M26 run lineage
+-> M27 mechanical reviewed-coaching execution ledger
+-> M29 persisted review -> M28 deterministic reference surface
+-> M30 participant-scoped review package / navigation / export
+-> M32 machine-readable persisted review delivery bundle
+-> M33 deterministic M16 mentor-feedback trace
+-> optional M31 synthetic-canary/manual-retry preflight
+-> optional M34 hermetic multi-attempt recovery reconciliation
+-> explicit M9 training applicability / selection
+-> M10 outcome / transfer evidence
+-> append-only M11 longitudinal learner state
 ```
 
-M31 qualified at exact head `9a82f72af93215756818b991bd3d922144cf6ca2` in CI run `34546266117`: 774 native tests passed with 8 intentional external-engine skips, Ruff passed, and the independent Stockfish job passed. It merged as `6bd84881204e543f4cfe8906aa7cc15e894fc794`.
+Not every application invokes every optional downstream layer. Every arrow remains an
+authority boundary.
 
 ## Separation of responsibilities
 
-**Objective chess authority:** deterministic chess tooling owns canonical board state, legal actions, exact source provenance, and qualified low-level features. Engine providers supply versioned evaluation/PV evidence with explicit partial/bounded/failure states. M4/M15 preserve mate, terminal, inversion, bound, and compatibility semantics instead of manufacturing universal move-quality labels.
+### Objective chess authority
 
-**Diagnostic-selection authority:** M4 owns explicit versioned selection policy and deterministic candidate/control batching. M18 orchestrates that contract over a game window. Neither M18 nor M23 silently chooses a candidate for the participant.
+`chess/`, M3 engine evidence, M4 comparison/selection, and M15 presentation own
+canonical board state, legal actions, exact source provenance, qualified low-level
+features, normalized engine judgments, and score/perspective semantics. Mate,
+bounds, partial results, unavailable states, terminal states, and compatibility
+states are preserved rather than coerced into fake precision.
 
-**Participant-authorization authority:** M21 records candidate selection and capture consent as distinct participant decisions. M23 operationalizes and persists that exact contract; it does not infer consent or learner state.
+Objective chess authority does not establish player cognition, learner traits, or
+pedagogical effectiveness.
 
-**Participant-evidence authority:** raw/frozen player responses and exposure state remain distinct from engine evidence. Diagnostic rationale shown before capture can contaminate the M5/M8 pre-reveal measurement boundary. Software qualification does not prove what a future UI displayed to a participant.
+### Diagnostic-selection authority
 
-**Presentation authority:** M15 projects exact M3/M4 evidence without changing its semantics. M25 organizes already-qualified layers into a read model. M28 renders that read model. M29/M30 bridge, navigate, and export those exact artifacts. None may reinterpret objective evidence or turn model prose into facts.
+M4 owns explicit versioned selection policy and deterministic candidate/control
+batching. M18 orchestrates that policy over a selected game interval. Neither M18
+nor M23 silently selects a candidate for the participant.
 
-**Learning-inference authority:** M6/M7 describe bounded position-local discrepancies and participant-specific recurring hypotheses. Recurrence is not a causal cognitive mechanism, permanent trait, or automatic training eligibility.
+### Participant-authorization authority
 
-**Feedback-composition authority:** M16 turns already-qualified M15/M6 and optional complete active-current M7 evidence into deterministic session-local feedback. It does not invoke a model and remains the factual grounding ceiling.
+M21 records candidate selection and capture consent as distinct participant
+decisions. M23 operationalizes and persists that exact contract. Candidate selection
+is never evidence-capture consent.
 
-**Model-language authority:** M19 may ask a provider to render prose from the exact M16 request. Provenance establishes which request reached which model run; it does not establish semantic correctness, safety, or pedagogical effectiveness.
+### Participant-evidence authority
 
-**Execution-conformance authority:** M24 classifies one adapter invocation, enforces detached requests/endpoint identity, and always records `automatic_retry=false`. M31 may validate synthetic-canary leakage and an already-supplied manual retry history. Neither chooses a production vendor, executes retries, approves secrets handling, or establishes semantic truth.
+M5 raw/frozen player responses and exposure state remain distinct from engine
+analysis. Diagnostic rationale revealed before capture may contaminate the pre-reveal
+measurement boundary; repository qualification does not prove what a future user
+interface displayed at a given moment.
 
-**Model-output-evaluation authority:** M20 records bounded pass/fail/unclear judgments under its frozen policy. M20 acceptance is not objective chess truth. M25/M28/M30 must preserve that distinction.
+### Learning-inference authority
 
-**Persistence/review authority:** M26 atomically persists reviewed-coaching outputs without advancing M8. M27 verifies exact persisted mechanics. M29 resolves persisted review chains. M30 provides participant-scoped navigation/export. Participant scoping is an integrity boundary, not hosted authentication.
+M6 describes position-local discrepancies. M7 represents bounded
+participant-specific recurring hypotheses with support, contradiction, challenge,
+provenance, and lifecycle. Recurrence is not a causal cognitive mechanism, permanent
+trait, or automatic training eligibility decision.
 
-**Pedagogy/outcome authority:** M9 selects only through explicit versioned applicability rules. M10 measures bounded outcome/transfer evidence under a predeclared protocol. Practice completion, successful performance, transfer, causality, and mastery remain different claims.
+### Tutor-state authority
+
+M8 owns controlled capture/freeze/reveal/comparison/explanation transitions. M13
+persists and replay-verifies those transitions. Completing or comparing an M8
+session does not automatically mutate M7/M11 or select M9 training.
+
+### Training/outcome authority
+
+M9 selects interventions only through explicit applicability rules. M10 records
+predeclared bounded outcome/transfer evidence. Practice completion, successful
+performance, near transfer, far transfer, real-game transfer, causality, and mastery
+remain separate claims. M11 derives longitudinal learner state from exact current
+hypothesis revisions and eligible evidence.
+
+### Deterministic feedback authority
+
+M16 composes deterministic session-local mentor feedback from exact M15/M6 and
+optional complete active-current M7 evidence. It does not invoke a model and remains
+the deterministic factual grounding ceiling.
+
+### Model-language authority
+
+M19 may ask an application-supplied provider to render prose from the exact M16
+request. Provenance establishes which request reached which model run; it does not
+establish semantic correctness, safety, or pedagogical effectiveness.
+
+### Model-output evaluation authority
+
+M20 records bounded `pass` / `fail` / `unclear` judgments under a frozen evaluation
+policy. M20 acceptance is not objective chess truth and does not turn evaluator
+rationale into deterministic evidence.
+
+### Execution-conformance authority
+
+M24 classifies one application-owned provider/evaluator adapter invocation, binds
+endpoint/request identity, and records deterministic execution provenance.
+Production vendor selection, automatic retry/backoff policy, credentials, privacy
+approval, cost controls, and latency SLOs remain external decisions.
+
+M31 can validate synthetic canaries and already-supplied manual retry histories. It
+never executes a retry and accepts only test canary material.
+
+### Persistence/review authority
+
+M25 assembles an authority-separated coach-review read model. M26 atomically persists
+reviewed-coaching outputs without advancing M8. M27 mechanically verifies the exact
+persisted execution chain. M28 deterministically renders M25. M29 resolves persisted
+review chains. M30 provides participant-scoped navigation/export.
+
+Participant scoping is an integrity boundary, not hosted authentication.
+
+### Consumer-delivery authority
+
+M32 builds `m32.persisted-review-delivery-fidelity.v1` from one exact
+participant-scoped M30 package. It preserves content order, explicit authority
+labels, score perspective, symbolic mate, bounds, partial/unavailable semantics,
+comparison state, child-analysis state, and exact source fingerprints.
+
+M32 proves repository-local consumer fidelity, not browser/device correctness,
+accessibility, usability, or production frontend quality.
+
+### Deterministic trace authority
+
+M33 builds `m33.deterministic-mentor-feedback-trace.v1` over exact persisted M16
+feedback. Every substantive deterministic component is represented by stable
+identity, ordinal, content hash, source authority, source pointer, and source fields.
+M19/M20 remain separate presence/fingerprint metadata and cannot become deterministic
+source authority.
+
+M33 establishes traceability, not semantic truth or pedagogical correctness.
+
+### Recovery-reconciliation authority
+
+M34 builds `m34.reviewed-coaching-recovery-reconciliation.v1` from supplied synthetic
+M24 multi-attempt histories and one already-persisted mechanically verified M26
+target. It may classify the history as `complete` or `resume_eligible`; retryable
+partial failures use full-M26 restart scope.
+
+M34 never executes or authorizes retry and does not establish external-side-effect
+idempotency or production recovery correctness.
 
 ## Contracts contributors must preserve
 
@@ -91,9 +236,10 @@ supported recurrence != automatic training eligibility
 selected intervention != effective intervention
 practice completion != successful performance != transfer != mastery
 engine analysis != evaluation presentation != grounded feedback != model coaching
+M16 deterministic grounding != M19 model prose
 request provenance != semantic correctness of model prose
 M20 evaluator acceptance != objective chess truth
-participant selection != capture consent
+participant candidate selection != capture consent
 M23 operator/persistence != M6/M7/M9 authority
 M24 execution conformance != vendor approval or retry authority
 M25 read model != production UI or new evidence authority
@@ -102,6 +248,9 @@ M28 static reference surface != production UI/accessibility/usability approval
 M29 persisted bridge != new review/evidence authority
 M30 participant navigation != authentication or privacy approval
 M31 retry-history validation != retry execution or production retry policy
+M32 machine-consumer fidelity != production UI quality or model truth
+M33 deterministic traceability != model/evaluator authority
+M34 resume eligibility != retry authorization, execution, or side-effect idempotency
 ```
 
 ## CLI and API boundaries
@@ -124,35 +273,24 @@ cme-persisted-coach-review-reference
 cme-participant-review
 ```
 
-`cme position packet` remains deterministic and engine-free. `cme analyze` and `cme diagnose` require an explicit external UCI executable or PATH name. M18 also requires an explicit JSON M4 `SelectionPolicy`.
+`cme position packet` is deterministic and engine-free. `cme analyze` and
+`cme diagnose` require an explicitly supplied UCI executable or PATH name. M18 also
+requires an explicit versioned JSON selection policy.
 
-M29 consumes an existing local artifact DB plus an exact participant-scoped M26 run or M25 review and writes a new M28 HTML file after M27 verification.
-
-M30 lists/shows/exports participant-scoped review artifacts. Summary navigation is intentionally content-minimal; exact payloads require `--include-content` and export directories are non-overwriting.
-
-M31 remains a Python API. Its principal surface is:
-
-```python
-from chess_mentor_engine.execution_envelope_preflight import (
-    build_execution_envelope_preflight,
-)
-```
-
-M31 accepts only synthetic canaries. Never pass production credentials to it.
-
-M13's `cme tutor explain` remains an explicit-input explanation transition. M26 does not silently replace that command with M16/M19/M20 generation or advance M8 state.
+M31–M34 are Python API / hermetic qualification surfaces. M32–M34 introduced no new
+production CLI commands.
 
 ## Development and qualification
 
-Focused current milestone suites:
+Focused latest-milestone suites:
 
 ```bash
-python -m pytest tests/test_m29_persisted_review_reference_bridge.py -rs
-python -m pytest tests/test_m30_participant_review_package_navigation.py -rs
-python -m pytest tests/test_m31_execution_envelope_preflight.py -rs
+python -m pytest tests/test_m32_persisted_review_delivery_fidelity.py -rs
+python -m pytest tests/test_m33_deterministic_mentor_feedback_trace.py -rs
+python -m pytest tests/test_m34_reviewed_coaching_recovery_reconciliation.py -rs
 ```
 
-The repository merge gate is:
+Full repository merge gate:
 
 ```bash
 python -m pytest -rs
@@ -162,13 +300,52 @@ STOCKFISH_EXECUTABLE=/path/to/stockfish \
   python -m pytest tests/integration/test_stockfish_uci.py -rs
 ```
 
-A skipped Stockfish suite is not a successful independent-engine witness. Pull-request CI remains the merge authority. No standalone static Python type checker is configured.
+A skipped Stockfish suite is not an independent-engine pass. Pull-request CI remains
+the merge authority. No standalone static Python type checker is configured.
 
-See the consolidated [M29–M31 milestone runbook](docs/runbooks/m29-m31-milestone-runbook.md).
+## Documentation discipline
+
+The active documentation hierarchy is intentional:
+
+```text
+README.md
+  product overview / usage / navigation
+
+CONTEXT.md
+  contributor reasoning model and invariants
+
+docs/product/repository-build-status.md
+  canonical moving implementation + qualification status
+
+STATUS.md
+  latest completed milestone handoff
+
+docs/architecture/architecture.md
+  current high-level implemented architecture
+
+docs/product/chess-mentor-engine-repository-build-plan.md
+  planning history + future candidates, never an approved queue by itself
+
+docs/decisions/ and docs/runbooks/
+  historical decisions, contracts, qualification, and operating detail
+```
+
+Do not rewrite historical ADRs/runbooks merely because later milestones exist.
+Instead, keep active navigation/current-state documents aligned and point to the
+historical artifact when detailed provenance is needed.
 
 ## Current claim ceiling and stop boundary
 
-The repository can preserve longitudinal evidence history, expose qualified local analysis/tutor surfaces, create diagnostic queues, persist an explicitly authorized diagnostic candidate into M5/M8, compose deterministic grounded feedback, execute application-owned provider/evaluator adapters through a neutral conformance seam, record bounded model-output evaluation, persist and mechanically verify reviewed coaching, deterministically render persisted review state, navigate/export participant-scoped review packages, and validate hermetic synthetic-canary/manual-retry histories. It still does **not** establish:
+The repository can preserve longitudinal evidence history, expose qualified local
+analysis/tutor surfaces, create diagnostic queues, persist an explicitly authorized
+diagnostic candidate into M5/M8, compose deterministic grounded feedback, execute
+application-owned provider/evaluator adapters through a neutral conformance seam,
+record bounded model-output evaluation, persist and mechanically verify reviewed
+coaching, deterministically render and deliver persisted review state, navigate and
+export participant-scoped review packages, trace deterministic feedback to exact
+sources, and reconcile synthetic retry histories against persisted targets.
+
+It still does **not** establish:
 
 - causal cognitive diagnosis or permanent learner traits;
 - intervention-caused improvement, automatic mastery, or universal thresholds;
@@ -176,10 +353,16 @@ The repository can preserve longitudinal evidence history, expose qualified loca
 - automatic M7/M11 mutation from tutoring, analysis, or model coaching;
 - semantic correctness, safety, or pedagogical optimality of arbitrary model prose;
 - semantic completeness/correctness of an arbitrary evaluator;
-- a production LLM/evaluator provider, credential/transport/retry architecture, or provider-quality claim;
+- a production LLM/evaluator provider, credential/transport/retry architecture, or
+  provider-quality claim;
+- external-side-effect idempotency or production recovery correctness;
 - production privacy/security approval or live secret-management correctness;
 - correct participant disclosure/consent behavior in an external UI;
-- production UI usability, accessibility, localization, browser/device compatibility, or visual correctness;
-- hosted authentication/authorization, multi-user production persistence, observability, deployment readiness, or empirical tutoring efficacy.
+- production UI usability, accessibility, localization, browser/device
+  compatibility, or visual correctness;
+- hosted authentication/authorization, multi-user production persistence,
+  observability, deployment readiness, or empirical tutoring efficacy.
 
-The completed M29–M31 queue ends here. Future work should begin with a fresh live-main audit and a new bounded package queue rather than treating the handoff recommendations as pre-approved implementation authority.
+The completed M32–M34 queue ends here. Future work starts with a fresh live-`main`
+audit and an explicitly approved bounded package queue; handoff recommendations are
+not self-authorizing implementation instructions.

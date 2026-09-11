@@ -2,105 +2,120 @@
 
 Chess Mentor Engine is a persistent chess-learning system that keeps objective
 chess evidence, participant evidence, learner inference, tutoring, model-authored
-language, model-output evaluation, and pedagogy in separate provenance-bearing
-layers.
+language, model-output evaluation, review mechanics, and pedagogy in separate
+provenance-bearing layers.
+
+> **Current implementation authority:**
+> [`docs/product/repository-build-status.md`](docs/product/repository-build-status.md)
+>  
+> **Latest completed milestone handoff:** [`STATUS.md`](STATUS.md)  
+> **Contributor orientation:** [`CONTEXT.md`](CONTEXT.md)  
+> **Architecture map:**
+> [`docs/architecture/architecture.md`](docs/architecture/architecture.md)
+
+**Current implementation boundary:** M34 — Hermetic Reviewed-Coaching Recovery
+Reconciliation. M1–M34 are qualified; M32–M34 are the latest completed milestone.
 
 Repository description: Persistent AI chess tutor that learns how you think,
 diagnoses recurring mistakes, and turns game evidence into personalized training.
 
-## Current product surface
+## Product thesis
 
-The current bounded product path is:
+Chess software is already strong at answering whether a move is objectively good
+or bad. Chess Mentor Engine is aimed at the harder longitudinal problem:
+
+```text
+What is objectively happening on the board?
+What did this player actually notice, consider, and expect?
+What recurring explanation is currently supported strongly enough to affect teaching?
+What should the player practice next?
+Did that learning transfer into later play?
+```
+
+The repository therefore treats evidence, inference, model language, evaluator
+judgment, and pedagogy as different authorities. A convincing model explanation is
+not promoted into chess truth, and repeated errors are not automatically promoted
+into permanent cognitive traits.
+
+## Current bounded product path
+
+The qualified repository path now reaches from deterministic chess evidence through
+persistent reviewed coaching, participant review delivery, provenance tracing, and
+hermetic recovery planning:
 
 ```text
 PGN / canonical position
 -> deterministic chess context
 -> provenance-bound UCI engine analysis
--> objective played-move comparison
--> deterministic diagnostic candidate/control selection
--> deterministic evaluation presentation
--> explicit participant candidate selection + capture consent
--> frozen participant decision evidence
--> position-local reasoning discrepancy
--> participant-specific learner hypothesis
--> controlled persistent tutoring
--> deterministic grounded session-local mentor feedback
--> provenance-bound model language rendering
--> explicit bounded model-output evaluation
--> explicit training selection
--> bounded outcome / transfer evidence
--> append-only longitudinal learner state
+-> objective played-move comparison / bounded diagnostic selection
+-> M15 deterministic evaluation presentation
+-> M18 diagnostic candidate batch
+-> explicit participant candidate selection + separate capture consent
+-> M23 cme-candidate-tutor
+-> M21 authorization / launch
+-> exact M5 PlayerDecisionContext
+-> persisted replay-verifiable M8 state=selected
+-> M13 tutor capture / freeze / reveal / compare workflow
+-> position-local M6 discrepancy + optional bounded M7 context
+-> replay-verified persisted M8 state=compared
+-> M26 reviewed-coaching operator
+   -> M16 deterministic grounded feedback
+   -> optional M19 request / M24 provider execution / M19 coaching
+   -> optional M20 request / M24 evaluator execution / M20 bounded evaluation
+   -> M25 authority-separated coach-review read model
+   -> atomic append-only M26 run lineage
+-> M27 mechanical reviewed-coaching execution ledger
+-> M29 persisted review -> M28 deterministic reference surface
+-> M30 participant-scoped review package / navigation / export
+-> M32 machine-readable persisted review delivery bundle
+-> M33 deterministic M16 mentor-feedback trace
+-> optional M31 synthetic-canary/manual-retry preflight
+-> optional M34 hermetic multi-attempt recovery reconciliation
+-> explicit M9 training applicability / selection
+-> M10 outcome / transfer evidence
+-> append-only M11 longitudinal learner state
 ```
 
-M22 adds a hermetic cross-layer fidelity qualification over the objective-analysis,
-presentation, deterministic-feedback, model-language, and evaluator path; it is not
-a new runtime authority layer.
+Not every application must invoke every optional downstream layer. Every arrow is
+still an authority boundary.
 
-Each arrow remains an authority boundary. Qualified software behavior is not proof
-of a causal cognitive diagnosis, permanent learner trait, effective intervention,
-mastery, arbitrary model/evaluator correctness, or empirical tutoring value.
+## Capability map
 
-Use [current build status](docs/product/repository-build-status.md) as the moving
-implementation authority, [STATUS.md](STATUS.md) as the completed M20–M22 milestone
-handoff, and [CONTEXT.md](CONTEXT.md) for contributor orientation.
-
-## Implemented milestones
-
-| Surface | What is available |
+| Milestones | Qualified capability |
 | --- | --- |
-| M1-M4 | Canonical game/position evidence, deterministic chess features, normalized engine evidence, played-decision comparison, and bounded diagnostic selection. |
-| M5-M7 | Frozen participant evidence, reasoning discrepancies, and append-only participant-specific hypothesis ledgers with challenge/contradiction evidence. |
-| M8-M10 | Evidence-aware tutoring, explicit intervention selection, and separate practice/near/far/real-game outcome evidence. |
-| M11 | Append-only longitudinal learner state bound to exact current M7 revisions and optional same-revision M10 evidence. |
-| M12 | Read-only local `cme` evidence CLI for PGN inspection, position packets, and verified artifact inspection. |
-| M13 | Persistent replay-verified `cme tutor ...` workflow over the qualified M8 state machine. |
-| M14 | Engine-backed `cme analyze` workflow over qualified M3/M4 contracts, with optional immutable participant-scoped package archival. |
-| M15 | Deterministic evaluation presentation with explicit perspective, mate/bound/partial semantics, PVs, engine identity, and exact evidence references. |
-| M16 | Deterministic grounded mentor-feedback composition over exact M15/M6 and optional complete active-current M7 evidence. |
-| M17 | Qualified opt-in `cme analyze --with-presentation` bridge over exact in-memory M14/M3/M4 records (PR #49). |
-| M18 | Qualified `cme diagnose` workflow for bounded engine analysis plus explicit versioned M4 candidate/control selection (PR #50). |
-| M19 | Provider-neutral model-language rendering bound to exact recomputed M16 grounding and explicit model provenance (PR #51). |
-| M20 | Content-addressed model-coaching evaluation contract with seven frozen dimensions, evaluator provenance, pass/fail/unclear semantics, and explicit truth-status ceiling (PR #53). |
-| M21 | Participant-authorized exact M18 candidate -> M5/M8 tutor-start orchestration with separate selection and capture consent (PR #54). |
-| M22 | Hermetic eight-regime end-to-end evaluation-fidelity matrix across M3/M4/M15/M16/M19/M20, including rehashed semantic-drift rejection (PR #55). |
+| M1–M4 | Canonical games/positions, deterministic chess context/features, normalized engine evidence, played-decision comparison, and explicit diagnostic selection. |
+| M5–M7 | Frozen participant evidence, position-local reasoning discrepancy, participant-specific learner hypotheses, recurrence, challenge, and contradiction evidence. |
+| M8–M11 | Evidence-aware tutor state, explicit intervention selection, bounded practice/transfer outcome evidence, and append-only longitudinal learner state. |
+| M12–M18 | Evidence/artifact CLI, persistent tutor CLI, engine-backed analysis, deterministic presentation/feedback, analysis-presentation bridge, and diagnostic queue. |
+| M19–M22 | Provenance-bound model coaching, bounded model-output evaluation, participant-authorized candidate launch, and hermetic cross-layer fidelity qualification. |
+| M23–M27 | Diagnostic-to-persistent-tutor operator, provider/evaluator execution conformance, coach-review read model, persistent reviewed coaching, and mechanical execution ledger. |
+| M28–M31 | Deterministic local review surface, persisted-review bridge, participant-scoped navigation/export, and hermetic privacy/manual-retry preflight. |
+| M32–M34 | Machine-consumer review-delivery fidelity, deterministic mentor-feedback traceability, and hermetic reviewed-coaching recovery reconciliation. |
 
-The UCI provider remains version `0.2`: Black-root score bounds are normalized into
-White evaluation ordering, invalid MultiPV ranks fail closed, mate remains symbolic,
-and engine provenance is preserved.
+See the moving
+[`repository-build-status.md`](docs/product/repository-build-status.md) for exact PR,
+qualification, and current-boundary details.
 
-## M20–M22 milestone handoff
+## Core authority rules
 
-The completed milestone is summarized in [STATUS.md](STATUS.md). No new CLI command
-was introduced by M20–M22: M20 and M21 add Python APIs, while M22 adds qualification
-fixtures/tests and a runbook.
+The implementation is built around these separations:
 
-Focused milestone qualification:
-
-```bash
-python -m pytest tests/test_m20_model_coaching_evaluation.py
-python -m pytest tests/test_m21_diagnostic_candidate_tutor_orchestration.py
-python -m pytest tests/test_m22_end_to_end_evaluation_fidelity.py
-```
-
-The preceding CLI surfaces remain:
-
-```bash
-cme analyze games.pgn \
-  --game-index 0 \
-  --ply-index 12 \
-  --engine /path/to/stockfish \
-  --depth 14 \
-  --multipv 3 \
-  --with-presentation
-
-cme diagnose games.pgn \
-  --game-index 0 \
-  --start-ply 0 \
-  --end-ply 30 \
-  --policy ./selection-policy.json \
-  --engine /path/to/stockfish \
-  --depth 14 \
-  --multipv 3
+```text
+objective chess truth != participant self-report != learner inference
+local discrepancy != recurrence != causal learner trait
+supported recurrence != automatic training eligibility
+selected intervention != effective intervention
+practice completion != successful performance != transfer != mastery
+engine analysis != evaluation presentation != deterministic mentor feedback
+M16 deterministic grounding != M19 model-authored language
+request provenance != semantic correctness of model prose
+M20 evaluator acceptance != objective chess truth
+participant candidate selection != capture consent
+M27 mechanically_verified != semantic truth or pedagogical quality
+M30 participant scoping != authentication
+M32 consumer fidelity != production UI correctness
+M33 deterministic traceability != model or pedagogical truth
+M34 resume eligibility != retry authorization or retry execution
 ```
 
 ## Install
@@ -115,11 +130,38 @@ cme --help
 ```
 
 Stockfish or another UCI engine is an explicitly supplied external executable; no
-engine binary is bundled.
+engine binary is bundled with the package.
 
-## CLI
+## Installed operator commands
 
-### Inspect games and deterministic position context
+The package currently installs:
+
+```text
+cme
+cme-candidate-tutor
+cme-coach-review
+cme-reviewed-coaching
+cme-reviewed-coaching-ledger
+cme-coach-review-reference
+cme-persisted-coach-review-reference
+cme-participant-review
+```
+
+The principal `cme` command exposes:
+
+```text
+cme games inspect
+cme position packet
+cme analyze
+cme diagnose
+cme artifacts list/show/verify
+cme tutor ...
+```
+
+M31–M34 are primarily Python API / hermetic validation surfaces. M32–M34 did not
+introduce new production CLI commands.
+
+### Inspect deterministic game and position evidence
 
 ```bash
 cme games inspect games.pgn
@@ -127,8 +169,7 @@ cme games inspect games.pgn --full
 cme position packet games.pgn --game-index 0 --ply-index 12
 ```
 
-`position packet` remains engine-free. See the
-[M12 runbook](docs/runbooks/m12-local-evidence-cli.md).
+`position packet` remains engine-free.
 
 ### Run bounded engine analysis
 
@@ -139,38 +180,16 @@ cme analyze games.pgn \
   --engine /path/to/stockfish \
   --depth 14 \
   --multipv 3 \
-  --timeout-ms 10000
-```
-
-M14 runs the exact canonical root through the qualified M3 UCI provider and emits
-the native M4 played-decision comparison. If a complete root MultiPV omits the
-played move, the exact canonical child is reanalyzed under the same request/provider
-configuration. Partial, bounded, mate, terminal, incompatible, and failure states
-are preserved rather than coerced into fake centipawn precision.
-
-M17 can project those exact in-memory records through M15 in the same request:
-
-```bash
-cme analyze games.pgn \
-  --game-index 0 \
-  --ply-index 12 \
-  --engine /path/to/stockfish \
-  --depth 14 \
-  --multipv 3 \
+  --timeout-ms 10000 \
   --with-presentation
 ```
 
-Optional archival requires an **existing** local artifact database and an explicit
-participant scope. Even with `--with-presentation`, the archive stores only
-`m14.analysis-package.v1`; projection is built before archival.
+M14/M17 run the canonical position through the qualified M3/M4 engine evidence
+contracts and optionally project the exact in-memory records through M15. Partial,
+bounded, mate, terminal, incompatible, and failed states remain explicit rather
+than being coerced into fake centipawn precision.
 
-See the [M14 runbook](docs/runbooks/m14-engine-analysis-cli.md) and
-[M17 runbook](docs/runbooks/m17-analysis-presentation-bridge.md).
-
-### Build a diagnostic move-analysis queue
-
-M18 analyzes a selected game over an explicit inclusive played-ply range and applies
-an explicit versioned M4 `SelectionPolicy`:
+### Build a diagnostic analysis queue
 
 ```bash
 cme diagnose games.pgn \
@@ -183,12 +202,10 @@ cme diagnose games.pgn \
   --multipv 3
 ```
 
-The output contains both the complete auditable source pool and the native
-deterministic `DiagnosticCandidateBatch`, including controls, exclusions, quotas,
-policy/source fingerprints, and shortfalls. The CLI does not embed universal
-`inaccuracy`, `mistake`, or `blunder` thresholds.
-
-See the [M18 runbook](docs/runbooks/m18-diagnostic-analysis-queue.md).
+The M18 output retains the complete auditable source pool plus the deterministic
+candidate/control batch, exclusions, quotas, policy/source fingerprints, and
+shortfalls. The repository does not define universal `inaccuracy`, `mistake`, or
+`blunder` thresholds.
 
 ### Inspect verified local artifacts
 
@@ -198,11 +215,10 @@ cme artifacts show --db ./mentor.sqlite3 --participant P01 --kind KIND ARTIFACT_
 cme artifacts verify --db ./mentor.sqlite3 --participant P01
 ```
 
-Participant scoping is not authentication. Protect the plaintext database.
+Participant scoping is an integrity boundary, not authentication. Protect the local
+plaintext database.
 
 ### Run persistent tutor checkpoints
-
-M13 exposes controlled append-only commands over M8:
 
 ```text
 cme tutor start
@@ -218,235 +234,171 @@ cme tutor explain
 cme tutor complete
 ```
 
-Every mutation loads and replay-verifies an exact prior checkpoint, applies one
-native transition, then writes a successor checkpoint. `cme tutor explain` records
-explicitly authored text and provenance; it is not an automatic M16/M19 model call.
+Every mutation replay-verifies the exact prior checkpoint, applies one native M8
+transition, and writes an append-only successor checkpoint.
 
-See the [M13 runbook](docs/runbooks/m13-persistent-tutor-cli.md).
+### Reviewed-coaching and review surfaces
 
-## Python APIs
+Use the installed dedicated commands for the post-M23 operator path:
 
-Important package boundaries include:
+```text
+cme-candidate-tutor
+cme-coach-review
+cme-reviewed-coaching
+cme-reviewed-coaching-ledger
+cme-coach-review-reference
+cme-persisted-coach-review-reference
+cme-participant-review
+```
 
-- `chess_mentor_engine.analysis` — normalized M3 engine evidence;
+The reviewed-coaching commands do not select a production model/evaluator provider
+for the application. Network execution occurs only through explicitly supplied
+M24-compatible application adapters.
+
+See the milestone runbooks under [`docs/runbooks/`](docs/runbooks/) for exact
+operator arguments and artifact contracts.
+
+## Important Python boundaries
+
+Principal package/domain surfaces include:
+
+- `chess_mentor_engine.chess` — canonical chess state, provenance, context, and
+  deterministic chess features;
+- `chess_mentor_engine.analysis` — normalized provenance-bound M3 engine evidence;
 - `chess_mentor_engine.selection` — M4 comparison and diagnostic selection;
-- `chess_mentor_engine.presentation` — M15 deterministic evaluation projection;
-- `chess_mentor_engine.feedback` — M16 deterministic grounded mentor feedback;
-- `chess_mentor_engine.coaching` — M19 model-language and M20 model-output-evaluation boundaries;
 - `chess_mentor_engine.evidence` — participant evidence;
-- `chess_mentor_engine.learning` — M6 reasoning discrepancy and M7 hypothesis records;
-- `chess_mentor_engine.tutoring` — M8 state machine plus M21 candidate-to-session orchestration;
+- `chess_mentor_engine.learning` — M6 discrepancy and M7 learner hypotheses;
+- `chess_mentor_engine.tutoring` — M8 state machine and M21 orchestration;
 - `chess_mentor_engine.training` — M9 intervention registry/selection;
 - `chess_mentor_engine.evaluation` — M10 outcome and transfer evidence;
 - `chess_mentor_engine.longitudinal` — M11 learner state;
-- `chess_mentor_engine.storage` — local immutable artifacts and verified replay.
+- `chess_mentor_engine.presentation` — M15 deterministic evaluation projection;
+- `chess_mentor_engine.feedback` — M16 deterministic grounded mentor feedback;
+- `chess_mentor_engine.coaching` — M19 model language and M20 evaluation contracts;
+- `chess_mentor_engine.storage` — immutable local artifacts and verified replay;
+- `chess_mentor_engine.review_delivery` — M32 exact machine-consumer review bundle;
+- `chess_mentor_engine.mentor_feedback_trace` — M33 deterministic M16 provenance
+  trace;
+- `chess_mentor_engine.execution_recovery_reconciliation` — M34 hermetic recovery
+  reconciliation plan.
 
-### Project engine evidence for display
+M16 remains the deterministic factual grounding ceiling. M19 may render model prose
+from that grounding, but request binding does not establish semantic correctness.
+M20 records bounded evaluator judgments without converting them into objective truth.
 
-```python
-from chess_mentor_engine.presentation import build_evaluation_presentation
+## Latest milestone: M32–M34
 
-view = build_evaluation_presentation(
-    root_analysis=root_analysis,
-    comparison=decision_comparison,
-    played_analysis=played_child_analysis,
-)
-```
+### M32 — Persisted Review Delivery Fidelity
 
-M15 consumes already-qualified M3/M4 records; it does not run an engine or define
-move-quality labels. See the
-[M15 runbook](docs/runbooks/m15-evaluation-presentation.md).
+`m32.persisted-review-delivery-fidelity.v1` projects one exact participant-scoped
+M30 package into a stable machine-consumer contract. It preserves explicit authority
+labels, source ordering/fingerprints, White-versus-decision-mover perspective,
+symbolic mate, bounds, partial/unavailable states, comparison state, and
+child-analysis status.
 
-### Compose deterministic grounded mentor feedback
+### M33 — Deterministic Mentor-Feedback Trace
 
-```python
-from chess_mentor_engine.feedback import compose_grounded_mentor_feedback
+`m33.deterministic-mentor-feedback-trace.v1` binds every substantive deterministic
+M16 feedback component to stable identity, ordinal, content hash, source authority,
+source pointer, and source fields. M19/M20 remain separate presence/fingerprint
+metadata and cannot become deterministic source authority.
 
-feedback = compose_grounded_mentor_feedback(
-    session=compared_tutor_session,
-    root_analysis=root_analysis,
-    decision_comparison=decision_comparison,
-    played_analysis=played_child_analysis,
-    created_at="2026-09-10T10:13:00-03:00",
-)
-```
+### M34 — Reviewed-Coaching Recovery Reconciliation
 
-M16 recomputes the qualified M15 projection, verifies exact M3/M4 binding into the
-M6 tutor context/reveal, preserves every M6 assertion, optionally preserves every
-attached active-current M7 revision, and keeps non-exact evidence non-exact. M16 is
-template-driven and remains the deterministic factual grounding ceiling.
+`m34.reviewed-coaching-recovery-reconciliation.v1` reconciles supplied synthetic M24
+multi-attempt histories against one already-persisted, mechanically verified M26
+target. It may classify a history as `complete` or `resume_eligible`, but it never
+executes or authorizes a retry and does not establish external-side-effect
+idempotency.
 
-See the [M16 runbook](docs/runbooks/m16-grounded-mentor-feedback.md).
-
-### Bind model-authored mentor language to exact grounding
-
-M19 is provider-neutral:
-
-```python
-from chess_mentor_engine.coaching import (
-    ModelCoachingGeneration,
-    build_model_coaching_request,
-    record_model_coaching_response,
-)
-
-request = build_model_coaching_request(
-    session=compared_tutor_session,
-    root_analysis=root_analysis,
-    decision_comparison=decision_comparison,
-    played_analysis=played_child_analysis,
-    created_at="2026-09-10T10:13:00-03:00",
-)
-```
-
-The request contains the complete recomputed `m16.grounded-mentor-feedback.v1`
-record plus a content-addressed M19 instruction ceiling. Accepted M19 records say
-`request_bound_not_semantically_verified`: provenance proves which grounding reached
-which model run, not that arbitrary model prose is factually correct or
-pedagogically effective.
-
-See the
-[M19 runbook](docs/runbooks/m19-provenance-bound-model-coaching.md).
-
-### Evaluate model-authored coaching under the bounded M20 policy
-
-```python
-from chess_mentor_engine.coaching import (
-    build_model_coaching_evaluation_request,
-    bind_model_coaching_evaluation,
-    run_model_coaching_evaluation,
-)
-
-evaluation_request = build_model_coaching_evaluation_request(
-    coaching=coaching,
-    model_coaching_request=model_request,
-    session=compared_tutor_session,
-    root_analysis=root_analysis,
-    decision_comparison=decision_comparison,
-    played_analysis=played_child_analysis,
-    created_at="2026-09-10T10:15:00-03:00",
-)
-```
-
-M20 requires exactly one `pass`, `fail`, or `unclear` judgment for each of seven
-frozen dimensions. An accepted M20 result means only acceptance under that evaluator
-policy; every result retains:
-
-```text
-truth_status = not_established_by_m20_evaluation
-claim_scope = bounded_model_output_quality_assessment
-```
-
-M20 does not choose or endorse a production evaluator. See the
-[M20 runbook](docs/runbooks/m20-model-coaching-evaluation.md).
-
-### Start an explicitly authorized diagnostic candidate as a tutor session
-
-```python
-from chess_mentor_engine.tutoring import (
-    record_candidate_tutor_authorization,
-    start_candidate_tutor_session,
-)
-
-authorization = record_candidate_tutor_authorization(
-    participant_id="P01",
-    candidate=candidate,
-    batch=batch,
-    selection_decision="selected",
-    capture_consent="granted",
-    recorded_at="2026-09-10T10:00:00-03:00",
-)
-
-context, session, launch = start_candidate_tutor_session(
-    authorization=authorization,
-    candidate=candidate,
-    batch=batch,
-    game=canonical_game,
-    position=canonical_root_position,
-    capture_protocol=capture_protocol,
-    created_at="2026-09-10T10:01:00-03:00",
-)
-```
-
-M21 verifies exact M18 candidate/batch/source provenance, derives the canonical
-position context internally, and creates only M5 decision context plus an initial M8
-session in `selected` state. It does not create M6/M7 inference, select M9 training,
-or generate mentor language.
-
-See the
-[M21 runbook](docs/runbooks/m21-diagnostic-candidate-tutor-orchestration.md).
+See [`STATUS.md`](STATUS.md) and the
+[M32–M34 milestone runbook](docs/runbooks/m32-m34-milestone-runbook.md).
 
 ## Validation
 
-Focused current product-surface qualification:
+Focused latest-milestone qualification:
 
 ```bash
-python -m pytest tests/test_m14_engine_analysis_cli.py
-python -m pytest tests/test_m15_evaluation_presentation.py
-python -m pytest tests/test_m16_grounded_mentor_feedback.py
-python -m pytest tests/test_m17_analysis_presentation_bridge.py
-python -m pytest tests/test_m18_diagnostic_analysis_queue.py
-python -m pytest tests/test_m19_provenance_bound_model_coaching.py
-python -m pytest tests/test_m20_model_coaching_evaluation.py
-python -m pytest tests/test_m21_diagnostic_candidate_tutor_orchestration.py
-python -m pytest tests/test_m22_end_to_end_evaluation_fidelity.py
+python -m pytest tests/test_m32_persisted_review_delivery_fidelity.py -rs
+python -m pytest tests/test_m33_deterministic_mentor_feedback_trace.py -rs
+python -m pytest tests/test_m34_reviewed_coaching_recovery_reconciliation.py -rs
 ```
 
-Full pull-request merge gate:
+Full repository merge gate:
 
 ```bash
 python -m pytest -rs
 python -m ruff check .
 python -m compileall -q src tests
-python -m pytest tests/integration/test_stockfish_uci.py -rs
+STOCKFISH_EXECUTABLE=/path/to/stockfish \
+  python -m pytest tests/integration/test_stockfish_uci.py -rs
 ```
 
-The Stockfish test requires `STOCKFISH_EXECUTABLE`. Skipped integration tests are
-not an independent engine pass. No standalone Python static type checker is
-configured.
+Pull-request CI is the merge authority. The Stockfish witness requires an actual
+external executable; a skipped integration suite is not an independent-engine pass.
+No standalone Python static type checker is configured.
 
-M22's cross-layer qualification and exact matrix are documented in the
-[M22 runbook](docs/runbooks/m22-end-to-end-evaluation-fidelity-matrix.md).
+## Documentation authority
 
-## Claim ceiling
+Active documentation has deliberately different jobs:
 
-The repository can connect objective chess evidence, frozen player evidence,
-bounded learner hypotheses, tutoring state, diagnostic selection, participant-
-authorized candidate launch, deterministic grounded feedback, model-request
-provenance, bounded evaluator judgments, training/outcome evidence, and longitudinal
-history. It still does **not** establish:
+| Document | Responsibility |
+| --- | --- |
+| `README.md` | Product overview, installation, operational entry points, and navigation. |
+| `CONTEXT.md` | Contributor reasoning model, invariants, and current cross-layer boundaries. |
+| `docs/product/repository-build-status.md` | **Canonical moving implementation and qualification status.** |
+| `STATUS.md` | Completed latest-milestone handoff; historical once a later milestone replaces it. |
+| `docs/architecture/architecture.md` | Current high-level implemented architecture and authority map. |
+| `docs/product/chess-mentor-engine-repository-build-plan.md` | Planning history plus future candidate directions; not an approved work queue. |
+| `docs/decisions/` | Ratified historical architectural decisions. |
+| `docs/runbooks/` | Milestone/operator qualification and restart procedures. |
 
-- causal cognitive mechanisms or permanent learner traits;
-- intervention-caused improvement or automatic mastery;
-- universal chess-evaluation or move-quality thresholds;
-- semantic correctness, safety, or pedagogical optimality of arbitrary model prose;
-- completeness or semantic correctness of an arbitrary M20 evaluator;
+When narrative documents disagree about what is currently implemented, use
+`docs/product/repository-build-status.md` as the status authority and then reconcile
+the stale document rather than silently choosing a second source of truth.
+
+## Current claim ceiling
+
+The repository has qualified deterministic chess/evidence contracts, persistent
+bounded tutor state, an operational diagnostic-to-persistent-tutor bridge,
+provider-neutral execution conformance, authority-separated review, atomic
+persistent reviewed coaching, privacy-bounded mechanical execution verification,
+deterministic persisted review rendering/navigation, a machine-readable consumer
+fidelity contract, deterministic mentor-feedback provenance tracing, and hermetic
+reviewed-coaching recovery reconciliation.
+
+It still does **not** establish:
+
+- causal cognitive diagnosis or permanent learner traits;
+- optimal/effective intervention selection, intervention-caused improvement, or
+  automatic mastery;
+- universal engine-evaluation or move-quality thresholds;
 - automatic M6 diagnosis generation from engine output;
-- automatic M7/M11 mutation from analysis, tutoring, or model coaching;
-- a production LLM/evaluator provider or production provider infrastructure;
-- correct end-user consent/disclosure behavior in an external UI;
-- a web UI, authenticated hosted service, or production multi-user persistence;
+- automatic M7/M11 mutation from tutor, analysis, or model-coaching calls;
+- semantic correctness, safety, or pedagogical quality of arbitrary model prose;
+- semantic completeness/correctness of an arbitrary M20 evaluator;
+- a production LLM/evaluator vendor, credential flow, transport policy, automatic
+  retry/backoff policy, latency/cost budget, or secrets architecture;
+- external-side-effect idempotency or production recovery correctness;
+- production privacy/security approval;
+- correct disclosure/consent behavior in an external end-user UI;
+- production UI usability, accessibility, localization, visual correctness, or
+  browser/device compatibility;
+- hosted authentication/authorization, multi-user production persistence,
+  observability, or deployment readiness;
 - empirical tutoring efficacy.
 
-M16 remains the deterministic factual grounding ceiling. M19 adds provenance-bound
-model-language integration. M20 adds a bounded evaluator contract without promoting
-the evaluator to objective truth. M21 adds participant-authorized orchestration,
-not inference. M22 qualifies covered cross-layer fidelity invariants, not production
-or pedagogical quality.
+## What comes next
 
-## Documentation map
+M32–M34 are complete. Future implementation must begin with a fresh audit of live
+`main` and a newly approved bounded work-package queue. The current handoff suggests,
+but does not pre-authorize:
 
-- [Milestone handoff](STATUS.md) — completed M20–M22 package summary, qualification evidence, remaining gates, and next priorities.
-- [Current build status](docs/product/repository-build-status.md) — moving milestone and qualification authority.
-- [CONTEXT.md](CONTEXT.md) — contributor orientation and authority boundaries.
-- [M13 persistent tutor CLI](docs/runbooks/m13-persistent-tutor-cli.md) — replay-verified tutor workflow.
-- [M14 engine analysis CLI](docs/runbooks/m14-engine-analysis-cli.md) — objective engine-backed analysis package.
-- [M15 evaluation presentation](docs/runbooks/m15-evaluation-presentation.md) — deterministic display projection.
-- [M16 grounded mentor feedback](docs/runbooks/m16-grounded-mentor-feedback.md) — deterministic evidence-bound feedback.
-- [M17 analysis presentation bridge](docs/runbooks/m17-analysis-presentation-bridge.md) — opt-in analysis projection.
-- [M18 diagnostic analysis queue](docs/runbooks/m18-diagnostic-analysis-queue.md) — bounded deterministic diagnostic batching.
-- [M19 provenance-bound model coaching](docs/runbooks/m19-provenance-bound-model-coaching.md) — provider-neutral model-language boundary.
-- [M20 model coaching evaluation](docs/runbooks/m20-model-coaching-evaluation.md) — bounded evaluator-facing qualification contract.
-- [M21 candidate-to-tutor orchestration](docs/runbooks/m21-diagnostic-candidate-tutor-orchestration.md) — participant-authorized M18 -> M5/M8 bridge.
-- [M22 end-to-end evaluation fidelity](docs/runbooks/m22-end-to-end-evaluation-fidelity-matrix.md) — hermetic cross-layer fidelity matrix.
-- [Decision records](docs/decisions/README.md) — normative bounded contracts.
-- [Product build plan](docs/product/chess-mentor-engine-repository-build-plan.md) — planning history and broader direction.
+1. operator exposure for M32 delivery and M33 trace artifacts;
+2. a hermetic cross-surface consumer regression contract across M30/M32/M33;
+3. an explicit external-adoption and human-QA plan for frontend/provider/privacy/
+   security/retry decisions.
+
+See
+[`docs/product/chess-mentor-engine-repository-build-plan.md`](docs/product/chess-mentor-engine-repository-build-plan.md)
+for the planning view.
