@@ -1,4 +1,4 @@
-"""CLI surface for the V1 local tutor vertical slice.
+"""CLI adapter for the V1 local tutor vertical slice.
 
 The command composes M18 -> M45 -> M23/M8 -> M46 without acquiring any authority
 owned by those contracts. Existing ``cme tutor`` transitions remain M8 execution
@@ -31,7 +31,11 @@ from chess_mentor_engine.local_tutor import (
     _resolve_hypothesis_id,
     build_local_tutor_workflow,
 )
-from chess_mentor_engine.storage import ArtifactRef, LocalArtifactStore, load_tutor_session
+from chess_mentor_engine.storage import (
+    ArtifactRef,
+    LocalArtifactStore,
+    load_tutor_session,
+)
 from chess_mentor_engine.storage.codec import decode_record
 from chess_mentor_engine.storage.tutor import SESSION_KIND
 from chess_mentor_engine.tutoring import (
@@ -142,7 +146,10 @@ def _preview(args: argparse.Namespace, queue, batch, view, plans):
         if plan.hypothesis_id == resolved_hypothesis_id
         and plan.selected_candidate is not None
         and plan.selected_candidate.position.game_id == snapshot.active_item.game_id
-        and plan.selected_candidate.position.position_id == snapshot.active_item.position_id
+        and (
+            plan.selected_candidate.position.position_id
+            == snapshot.active_item.position_id
+        )
     )
     if len(matching_transfers) > 1:
         raise LocalTutorCliError(
@@ -163,7 +170,10 @@ def _load_session(
     store = LocalArtifactStore(path)
     matches = tuple(
         ref
-        for ref in store.list_refs(participant_id=participant_id, kind=SESSION_KIND)
+        for ref in store.list_refs(
+            participant_id=participant_id,
+            kind=SESSION_KIND,
+        )
         if ref.artifact_id == artifact_id
     )
     if not matches:
@@ -180,7 +190,11 @@ def _load_session(
 def _cmd_local_tutor_start(args: argparse.Namespace) -> dict[str, Any]:
     queue, batch, view, plans = _load_inputs(args)
     preview, queue_policy, adaptive_policy = _preview(
-        args, queue, batch, view, plans
+        args,
+        queue,
+        batch,
+        view,
+        plans,
     )
     selected_candidate_id = preview.active_item.diagnostic_candidate_ref.ref_id
     bridge_args = argparse.Namespace(
@@ -291,57 +305,13 @@ def _add_common_arguments(parser: argparse.ArgumentParser) -> None:
     )
     parser.add_argument(
         "--hypothesis-id",
-        help="Required only when exact M44/M45 context does not identify one hypothesis.",
+        help=(
+            "Required only when exact M44/M45 context does not identify one "
+            "hypothesis."
+        ),
     )
     parser.add_argument(
         "--created-at",
         required=True,
         help="Timezone-aware timestamp for deterministic M45/M46 composition.",
     )
-
-
-def add_local_tutor_command(surfaces: argparse._SubParsersAction) -> None:
-    local = surfaces.add_parser(
-        "local-tutor",
-        help="Exercise the V1 M18/M45/M8/M46 learner-tutor workflow locally.",
-    )
-    commands = local.add_subparsers(dest="local_tutor_command", required=True)
-
-    start = commands.add_parser(
-        "start",
-        help=(
-            "Rank the exact M18 batch with M45, explicitly authorize the rank-one "
-            "review through M23, persist M8, and emit the first M46 proposal."
-        ),
-    )
-    start.add_argument("pgn", help="Exact PGN used to produce the M18 queue.")
-    _add_common_arguments(start)
-    start.add_argument("--db", required=True)
-    start.add_argument("--protocol-json", required=True)
-    start.add_argument("--prompts-json", required=True)
-    start.add_argument(
-        "--selection-decision",
-        required=True,
-        choices=("selected", "declined"),
-        help="Explicit authorization for the M45 rank-one review proposal.",
-    )
-    start.add_argument(
-        "--capture-consent",
-        required=True,
-        choices=("granted", "declined"),
-    )
-    start.add_argument("--recorded-at", required=True)
-    start.add_argument("--create-db", action="store_true")
-    start.set_defaults(handler=_cmd_local_tutor_start)
-
-    next_action = commands.add_parser(
-        "next",
-        help="Replay an exact persisted M8 checkpoint and emit the current M46 proposal.",
-    )
-    _add_common_arguments(next_action)
-    next_action.add_argument("--db", required=True)
-    next_action.add_argument(
-        "session_artifact_id",
-        help="Exact persisted M8 session artifact ID from start or cme tutor.",
-    )
-    next_action.set_defaults(handler=_cmd_local_tutor_next)
