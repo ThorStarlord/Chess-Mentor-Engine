@@ -38,14 +38,14 @@ def _batch(*, same_game: bool = False):
         minimum_controls=0,
         maximum_per_game=None,
     )
-    game_ids = ("shared", "shared", "shared") if same_game else (
-        "game-challenge",
-        "game-cp",
-        "game-transfer",
+    game_ids = (
+        ("shared", "shared", "shared")
+        if same_game
+        else ("game-challenge", "game-cp", "game-transfer")
     )
     challenge = _comparison(0, game_id=game_ids[0])
-    cp = _comparison(0, game_id=game_ids[1])
-    transfer = _comparison(0, game_id=game_ids[2])
+    cp = _comparison(1 if same_game else 0, game_id=game_ids[1])
+    transfer = _comparison(2 if same_game else 0, game_id=game_ids[2])
     pool = (
         _apply(
             challenge,
@@ -355,9 +355,15 @@ def test_m45_policy_scope_and_queue_are_tamper_detectable_and_replay_stable():
         learner_progress_view=view,
         policy=policy,
     )
+    first_item = first.items[0]
+    tampered_item = replace(first_item, reasons=("tampered queue reason",))
+    tampered_queue = replace(
+        first,
+        items=(tampered_item, *first.items[1:]),
+    )
     with pytest.raises(ValueError, match="queue mismatch"):
         validate_mentor_queue(
-            replace(first, shortfall=1),
+            tampered_queue,
             diagnostic_batch=batch,
             batch_scope=scope,
             learner_progress_view=view,
