@@ -16,6 +16,15 @@ from .assertions import (
     validate_knowledge_assertion,
 )
 from .fingerprints import concept_fingerprint, ontology_fingerprint
+from .learner_projection import (
+    HYPOTHESIS_KNOWLEDGE_PROJECTION_SCHEMA_VERSION,
+    HypothesisKnowledgeConceptSummary,
+    HypothesisKnowledgeOccurrence,
+    HypothesisKnowledgeProjection,
+    HypothesisKnowledgeUnitProjection,
+    build_hypothesis_knowledge_projection,
+    validate_hypothesis_knowledge_projection,
+)
 from .model import (
     AuthorityClass,
     ChessConcept,
@@ -57,6 +66,11 @@ __all__ = [
     "DEFAULT_ONTOLOGY_RESOURCES",
     "DetectionSupport",
     "ExternalMapping",
+    "HYPOTHESIS_KNOWLEDGE_PROJECTION_SCHEMA_VERSION",
+    "HypothesisKnowledgeConceptSummary",
+    "HypothesisKnowledgeOccurrence",
+    "HypothesisKnowledgeProjection",
+    "HypothesisKnowledgeUnitProjection",
     "KNOWLEDGE_ASSERTION_BUNDLE_SCHEMA_VERSION",
     "KNOWLEDGE_ASSERTION_SCHEMA_VERSION",
     "KNOWLEDGE_COACHING_CONTEXT_SCHEMA_VERSION",
@@ -80,12 +94,14 @@ __all__ = [
     "PedagogyMetadata",
     "bind_knowledge_context_to_model_request",
     "build_assertion_bundle",
+    "build_hypothesis_knowledge_projection",
     "build_knowledge_augmented_provider_payload",
     "build_knowledge_assertion",
     "build_knowledge_coaching_context",
     "concept_fingerprint",
     "ontology_fingerprint",
     "validate_assertion_bundle",
+    "validate_hypothesis_knowledge_projection",
     "validate_knowledge_assertion",
     "validate_knowledge_coaching_context",
     "validate_knowledge_model_binding",
