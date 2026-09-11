@@ -228,7 +228,9 @@ class NextSessionPlan:
         if not self.candidates:
             raise ValueError("M40 plan requires at least one action candidate")
         if self.candidates[0] != self.selected_candidate:
-            raise ValueError("M40 selected candidate must be first in ranked candidates")
+            raise ValueError(
+                "M40 selected candidate must be first in ranked candidates"
+            )
         keys = tuple(
             (item.hypothesis_id, item.hypothesis_revision_ref.revision_id)
             for item in self.candidates
@@ -322,7 +324,9 @@ def _synthesis_ref(
     )
 
 
-def _outcome_statuses(entry: LearnerHypothesisReadEntry) -> tuple[tuple[str, str], ...]:
+def _outcome_statuses(
+    entry: LearnerHypothesisReadEntry,
+) -> tuple[tuple[str, str], ...]:
     return tuple((item.evidence_kind, item.status) for item in entry.outcome_dimensions)
 
 
@@ -339,7 +343,10 @@ def _selected_intervention_ids(
     entry: LearnerHypothesisReadEntry,
 ) -> tuple[str, ...]:
     return tuple(
-        sorted(item.intervention_id for item in entry.intervention.selected_interventions)
+        sorted(
+            item.intervention_id
+            for item in entry.intervention.selected_interventions
+        )
     )
 
 
@@ -358,7 +365,9 @@ def _validate_synthesis_for_entry(
     if entry.m7_status != synthesis.hypothesis_assessment_status:
         raise ValueError("M40 synthesis/M36 M7 status mismatch")
     if entry.m7_assessment_ref is None:
-        raise ValueError("M40 synthesis supplied for hypothesis without M7C assessment")
+        raise ValueError(
+            "M40 synthesis supplied for hypothesis without M7C assessment"
+        )
     if (
         synthesis.hypothesis_assessment_ref.ref_id != entry.m7_assessment_ref.ref_id
         or synthesis.hypothesis_assessment_ref.fingerprint
@@ -379,10 +388,14 @@ def _action_for_entry(
 
     if status is None:
         action: NextSessionAction = "COLLECT_NEW_EVIDENCE"
-        reasons.append("No current M7C assessment is present for this active hypothesis.")
+        reasons.append(
+            "No current M7C assessment is present for this active hypothesis."
+        )
         blocking.append("Current recurrence status is unavailable.")
     elif synthesis is None:
-        raise ValueError("M40 requires M39 synthesis for every assessed active hypothesis")
+        raise ValueError(
+            "M40 requires M39 synthesis for every assessed active hypothesis"
+        )
     elif status == "contradicted":
         action = "PRESENT_CONTROL"
         reasons.append(
@@ -410,10 +423,7 @@ def _action_for_entry(
             + synthesis.evidence_counts.successful_counterexample_unit_count
             + synthesis.evidence_counts.context_exception_unit_count
         )
-        if (
-            policy.challenge_supported_without_counterevidence
-            and challenge_count == 0
-        ):
+        if policy.challenge_supported_without_counterevidence and challenge_count == 0:
             action = "CHALLENGE_HYPOTHESIS"
             reasons.append(
                 "The hypothesis is supported by M7C but the current assessment has "
@@ -447,7 +457,9 @@ def _action_for_entry(
                 "Current M9 selection decisions are mixed; M40 will not reconcile "
                 "or override M9 selection authority."
             )
-            blocking.append("M9 selection state requires an explicit upstream resolution.")
+            blocking.append(
+                "M9 selection state requires an explicit upstream resolution."
+            )
         else:
             practice = _outcome_status(entry, "practice")
             near = _outcome_status(entry, "near_transfer")
@@ -547,7 +559,9 @@ def build_next_session_plan(
             )
             used_revision_ids.add(revision_id)
         elif synthesis is not None:
-            raise ValueError("M40 cannot bind synthesis to hypothesis without M7C status")
+            raise ValueError(
+                "M40 cannot bind synthesis to hypothesis without M7C status"
+            )
         candidates.append(
             _action_for_entry(entry=entry, synthesis=synthesis, policy=policy)
         )
