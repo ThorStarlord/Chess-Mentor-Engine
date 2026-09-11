@@ -122,7 +122,10 @@ class OntologyRegistry:
         matches: list[tuple[ChessConcept, ExternalMapping]] = []
         for concept in self.concepts:
             for mapping in concept.external_mappings:
-                if mapping.namespace == namespace and mapping.external_id == external_id:
+                if (
+                    mapping.namespace == namespace
+                    and mapping.external_id == external_id
+                ):
                     matches.append((concept, mapping))
         return tuple(matches)
 
@@ -212,7 +215,11 @@ def _parse_concept(raw: object, index: int) -> ChessConcept:
             for mapping_index, item in enumerate(payload.get("external_mappings", []))
         )
         pedagogy_raw = payload.get("pedagogy")
-        pedagogy = None if pedagogy_raw is None else _parse_pedagogy(pedagogy_raw, index)
+        pedagogy = (
+            None
+            if pedagogy_raw is None
+            else _parse_pedagogy(pedagogy_raw, index)
+        )
         if type(payload.get("deprecated", False)) is not bool:
             raise OntologyLoadError(f"concepts[{index}].deprecated must be boolean")
         return ChessConcept(
