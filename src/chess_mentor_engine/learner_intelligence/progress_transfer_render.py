@@ -117,7 +117,9 @@ class LearnerProgressTransferReferenceSurface:
         if self.schema_version != LEARNER_PROGRESS_TRANSFER_SURFACE_SCHEMA_VERSION:
             raise ValueError("unsupported M44 transfer reference-surface schema")
         if self.claim_scope != "local_reference_presentation_only":
-            raise ValueError("M44 transfer surface cannot claim production UI authority")
+            raise ValueError(
+                "M44 transfer surface cannot claim production UI authority"
+            )
         keys = tuple(
             (item.kind, item.ref_id, item.fingerprint)
             for item in self.transfer_plan_refs
@@ -129,7 +131,9 @@ class LearnerProgressTransferReferenceSurface:
         return {
             "schema_version": self.schema_version,
             "view_ref": self.view_ref.to_dict(),
-            "transfer_plan_refs": [item.to_dict() for item in self.transfer_plan_refs],
+            "transfer_plan_refs": [
+                item.to_dict() for item in self.transfer_plan_refs
+            ],
             "html": self.html,
             "claim_scope": self.claim_scope,
         }
@@ -145,7 +149,9 @@ class LearnerProgressTransferReferenceSurface:
 def _transfer_plan_html(plan: TransferRetestPlan, statement: str) -> str:
     if plan.selected_candidate is None:
         candidate_html = (
-            '<p class="muted">No eligible transfer position is currently planned.</p>'
+            '<p class="muted">'
+            "No eligible transfer position is currently planned."
+            "</p>"
             + _list_html(
                 plan.blocking_uncertainty,
                 empty="No blocking uncertainty recorded.",
@@ -154,7 +160,10 @@ def _transfer_plan_html(plan: TransferRetestPlan, statement: str) -> str:
     else:
         candidate = plan.selected_candidate
         held = _list_html(candidate.held_constant, empty="Nothing recorded.")
-        varied = _list_html(candidate.varied_dimensions, empty="Nothing recorded.")
+        varied = _list_html(
+            candidate.varied_dimensions,
+            empty="Nothing recorded.",
+        )
         concepts = _list_html(
             candidate.concept_ids,
             empty="No ontology concept IDs supplied for this candidate.",
@@ -196,7 +205,9 @@ def render_learner_progress_transfer_html(
     """Render the exact M44 view plus optional exact M42 planning information."""
     _validate_transfer_sources(view, transfer_plans)
     base = render_learner_progress_html(view)
-    statements = {item.hypothesis_id: item.statement for item in view.hypotheses}
+    statements = {
+        item.hypothesis_id: item.statement for item in view.hypotheses
+    }
     if transfer_plans:
         cards = "".join(
             _transfer_plan_html(plan, statements[plan.hypothesis_id])
@@ -212,9 +223,9 @@ def render_learner_progress_transfer_html(
         f"{cards}"
         "</section>"
     )
-    if "</main>" not in base:
-        raise ValueError("M44 base reference HTML is missing main boundary")
-    return base.replace("</main>", f"{block}</main>", 1)
+    if "<footer>" not in base:
+        raise ValueError("M44 base reference HTML is missing footer boundary")
+    return base.replace("<footer>", f"{block}<footer>", 1)
 
 
 def build_learner_progress_transfer_reference_surface(
