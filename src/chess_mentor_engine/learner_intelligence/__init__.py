@@ -57,21 +57,23 @@ from .next_session import (
     validate_next_session_plan,
     validate_next_session_policy,
 )
-from .progress_view import (
-    LEARNER_PROGRESS_SURFACE_SCHEMA_VERSION,
+from .progress_model import (
     LEARNER_PROGRESS_VIEW_SCHEMA_VERSION,
     LearnerProgressHypothesis,
-    LearnerProgressReferenceSurface,
     LearnerProgressView,
     ProgressAcquisitionCandidate,
     ProgressConcept,
     ProgressEvidenceUnit,
     ProgressInterventionCandidate,
-    build_learner_progress_reference_surface,
     build_learner_progress_view,
+    validate_learner_progress_view,
+)
+from .progress_render import (
+    LEARNER_PROGRESS_SURFACE_SCHEMA_VERSION,
+    LearnerProgressReferenceSurface,
+    build_learner_progress_reference_surface,
     render_learner_progress_html,
     validate_learner_progress_reference_surface,
-    validate_learner_progress_view,
 )
 
 __all__ = [
