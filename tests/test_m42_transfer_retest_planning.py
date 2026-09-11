@@ -3,8 +3,8 @@ from __future__ import annotations
 from dataclasses import replace
 
 import pytest
-from test_m40_next_session_planner import _entry, _read_model, _synthesis
 from test_m9_qualification import _intervention
+from test_m40_next_session_planner import _entry, _read_model, _synthesis
 
 from chess_mentor_engine.chess_knowledge import OntologyRegistry
 from chess_mentor_engine.evaluation import OutcomePosition, OutcomeReference
