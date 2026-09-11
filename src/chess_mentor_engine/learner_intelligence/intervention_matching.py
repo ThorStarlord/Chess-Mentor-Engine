@@ -9,6 +9,7 @@ from typing import Any, Literal, TypeAlias
 
 from chess_mentor_engine.chess import canonical_json
 from chess_mentor_engine.chess_knowledge import OntologyRegistry
+from chess_mentor_engine.learning import HypothesisRevisionRef
 from chess_mentor_engine.training import (
     InterventionRegistry,
     TrainingContentProvenance,
@@ -154,7 +155,12 @@ class InterventionSemanticProfile:
         positive = set(self.target_concept_ids) | set(self.reinforce_concept_ids)
         if positive & set(self.contraindicated_concept_ids):
             raise ValueError("M41 semantic profile has conflicting concept roles")
-        if not positive and not self.contraindicated_concept_ids and not self.training_modes:
+        has_no_signal = (
+            not positive
+            and not self.contraindicated_concept_ids
+            and not self.training_modes
+        )
+        if has_no_signal:
             raise ValueError("M41 semantic profile must describe at least one signal")
 
     def identity_payload(self) -> dict[str, Any]:
@@ -280,7 +286,9 @@ class InterventionCandidate:
     def to_dict(self) -> dict[str, Any]:
         return {
             "intervention_ref": self.intervention_ref.to_dict(),
-            "profile_ref": None if self.profile_ref is None else self.profile_ref.to_dict(),
+            "profile_ref": (
+                None if self.profile_ref is None else self.profile_ref.to_dict()
+            ),
             "status": self.status,
             "target_concept_matches": list(self.target_concept_matches),
             "reinforcement_matches": list(self.reinforcement_matches),
@@ -297,7 +305,7 @@ class InterventionCandidateSet:
     fingerprint: str
     participant_id: str
     hypothesis_id: str
-    hypothesis_revision_ref: Any
+    hypothesis_revision_ref: HypothesisRevisionRef
     next_session_plan_ref: EvidenceSynthesisReference
     proposal_ref: EvidenceSynthesisReference
     synthesis_ref: EvidenceSynthesisReference
@@ -334,7 +342,10 @@ class InterventionCandidateSet:
             ("matching_gaps", self.matching_gaps),
         ):
             _unique(name, values)
-        keys = tuple(item.intervention_ref.intervention_key for item in self.ranked_candidates)
+        keys = tuple(
+            item.intervention_ref.intervention_key
+            for item in self.ranked_candidates
+        )
         if len(set(keys)) != len(keys):
             raise ValueError("M41 candidate interventions must be unique")
         if self.selection_authority != "not_exercised":
@@ -471,7 +482,11 @@ def validate_intervention_matching_policy(policy: InterventionMatchingPolicy) ->
 
 
 def _plan_ref(plan: NextSessionPlan) -> EvidenceSynthesisReference:
-    return EvidenceSynthesisReference("next_session_plan", plan.plan_id, plan.fingerprint)
+    return EvidenceSynthesisReference(
+        "next_session_plan",
+        plan.plan_id,
+        plan.fingerprint,
+    )
 
 
 def _proposal_ref(proposal: NextSessionActionCandidate) -> EvidenceSynthesisReference:
@@ -485,7 +500,9 @@ def _proposal_ref(proposal: NextSessionActionCandidate) -> EvidenceSynthesisRefe
     )
 
 
-def _synthesis_ref(synthesis: HypothesisEvidenceSynthesis) -> EvidenceSynthesisReference:
+def _synthesis_ref(
+    synthesis: HypothesisEvidenceSynthesis,
+) -> EvidenceSynthesisReference:
     return EvidenceSynthesisReference(
         "hypothesis_evidence_synthesis",
         synthesis.synthesis_id,
@@ -639,7 +656,9 @@ def _validate_inputs(
         seen.add(intervention_id)
         intervention = intervention_by_id.get(intervention_id)
         if intervention is None:
-            raise ValueError("M41 semantic profile references unregistered intervention")
+            raise ValueError(
+                "M41 semantic profile references unregistered intervention"
+            )
         if _intervention_ref(intervention) != profile.intervention_ref:
             raise ValueError("M41 semantic profile/intervention identity drift")
         validate_intervention_semantic_profile(
