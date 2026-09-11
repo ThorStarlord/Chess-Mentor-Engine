@@ -15,6 +15,7 @@ from typing import Any, Literal, TypeAlias
 from chess_mentor_engine.chess import canonical_json
 from chess_mentor_engine.chess_knowledge import OntologyRegistry
 from chess_mentor_engine.evaluation import OutcomePosition
+from chess_mentor_engine.learning import HypothesisRevisionRef
 from chess_mentor_engine.training import (
     InterventionSelectionDecision,
     TrainingInterventionDefinition,
@@ -35,7 +36,11 @@ TransferSemanticRelation: TypeAlias = Literal[
     "unknown",
 ]
 TransferSurfaceVariation: TypeAlias = Literal["same", "near", "different"]
-TransferCandidateFreshness: TypeAlias = Literal["fresh", "previously_exposed", "unknown"]
+TransferCandidateFreshness: TypeAlias = Literal[
+    "fresh",
+    "previously_exposed",
+    "unknown",
+]
 TransferPlanningStatus: TypeAlias = Literal["planned", "no_eligible_candidate"]
 
 _SUPPORTED_ACTIONS = {
@@ -207,7 +212,11 @@ class TransferPositionCandidate:
         _nonempty("rationale", self.rationale)
         if self.schema_version != TRANSFER_POSITION_CANDIDATE_SCHEMA_VERSION:
             raise ValueError("unsupported M42 candidate schema")
-        if self.semantic_relation not in {"same_target", "related_target", "unknown"}:
+        if self.semantic_relation not in {
+            "same_target",
+            "related_target",
+            "unknown",
+        }:
             raise ValueError("unknown M42 semantic relation")
         if self.surface_variation not in {"same", "near", "different"}:
             raise ValueError("unknown M42 surface variation")
@@ -223,7 +232,9 @@ class TransferPositionCandidate:
             raise ValueError("M42 candidate must state what is held constant")
         if not self.varied_dimensions:
             raise ValueError("M42 candidate must state what varies")
-        ref_keys = tuple((item.kind, item.ref_id, item.fingerprint) for item in self.source_refs)
+        ref_keys = tuple(
+            (item.kind, item.ref_id, item.fingerprint) for item in self.source_refs
+        )
         if len(set(ref_keys)) != len(ref_keys):
             raise ValueError("M42 candidate source refs must be unique")
         if not self.source_refs:
@@ -266,7 +277,7 @@ class TransferRetestPlan:
     fingerprint: str
     participant_id: str
     hypothesis_id: str
-    hypothesis_revision_ref: Any
+    hypothesis_revision_ref: HypothesisRevisionRef
     next_session_plan_ref: EvidenceSynthesisReference
     proposal_ref: EvidenceSynthesisReference
     selection_ref: EvidenceSynthesisReference
@@ -305,23 +316,39 @@ class TransferRetestPlan:
         _unique("blocking_uncertainty", self.blocking_uncertainty)
         if not self.exercise_ids:
             raise ValueError("M42 plan requires exact intervention exercises")
-        candidate_ids = tuple(item.candidate_id for item in self.eligible_candidates)
+        candidate_ids = tuple(
+            item.candidate_id for item in self.eligible_candidates
+        )
         if len(set(candidate_ids)) != len(candidate_ids):
             raise ValueError("M42 eligible candidates must be unique")
         if self.planning_status == "planned":
-            if not self.eligible_candidates or self.selected_candidate != self.eligible_candidates[0]:
-                raise ValueError("M42 planned result must select leading candidate")
+            if (
+                not self.eligible_candidates
+                or self.selected_candidate != self.eligible_candidates[0]
+            ):
+                raise ValueError(
+                    "M42 planned result must select leading candidate"
+                )
         elif self.planning_status == "no_eligible_candidate":
             if self.eligible_candidates or self.selected_candidate is not None:
-                raise ValueError("M42 no-candidate result cannot select a position")
+                raise ValueError(
+                    "M42 no-candidate result cannot select a position"
+                )
             if not self.blocking_uncertainty:
-                raise ValueError("M42 no-candidate result must explain the gap")
+                raise ValueError(
+                    "M42 no-candidate result must explain the gap"
+                )
         else:
             raise ValueError("unknown M42 planning status")
         if self.plan_authority != "planning_only":
             raise ValueError("M42 cannot grant M10 outcome authority")
-        if self.outcome_effect != "not_established" or self.mastery != "not_established":
-            raise ValueError("M42 cannot establish transfer outcome or mastery")
+        if (
+            self.outcome_effect != "not_established"
+            or self.mastery != "not_established"
+        ):
+            raise ValueError(
+                "M42 cannot establish transfer outcome or mastery"
+            )
 
     def identity_payload(self) -> dict[str, Any]:
         return {
@@ -338,8 +365,14 @@ class TransferRetestPlan:
             "target_concept_ids": list(self.target_concept_ids),
             "exercise_ids": list(self.exercise_ids),
             "policy_ref": self.policy_ref.to_dict(),
-            "eligible_candidates": [item.to_dict() for item in self.eligible_candidates],
-            "selected_candidate": None if self.selected_candidate is None else self.selected_candidate.to_dict(),
+            "eligible_candidates": [
+                item.to_dict() for item in self.eligible_candidates
+            ],
+            "selected_candidate": (
+                None
+                if self.selected_candidate is None
+                else self.selected_candidate.to_dict()
+            ),
             "planning_status": self.planning_status,
             "blocking_uncertainty": list(self.blocking_uncertainty),
             "created_at": self.created_at,
@@ -434,10 +467,13 @@ def define_transfer_position_candidate(
     )
 
 
-def validate_transfer_position_candidate(candidate: TransferPositionCandidate) -> None:
+def validate_transfer_position_candidate(
+    candidate: TransferPositionCandidate,
+) -> None:
     if _digest(candidate.identity_payload()) != candidate.fingerprint:
         raise ValueError("M42 transfer candidate fingerprint mismatch")
-    if candidate.candidate_id != f"transfer_position_candidate_{candidate.fingerprint[:20]}":
+    expected_id = f"transfer_position_candidate_{candidate.fingerprint[:20]}"
+    if candidate.candidate_id != expected_id:
         raise ValueError("M42 transfer candidate identity mismatch")
 
 
@@ -463,13 +499,33 @@ def _eligible(
     )
 
 
-def _rank_key(candidate: TransferPositionCandidate, transfer_kind: TransferKind) -> tuple[int, int, str, str]:
-    relation_rank = {"same_target": 2, "related_target": 1, "unknown": 0}[candidate.semantic_relation]
+def _rank_key(
+    candidate: TransferPositionCandidate,
+    transfer_kind: TransferKind,
+) -> tuple[int, int, str, str]:
+    relation_rank = {
+        "same_target": 2,
+        "related_target": 1,
+        "unknown": 0,
+    }[candidate.semantic_relation]
     if transfer_kind == "near":
-        variation_rank = {"near": 2, "different": 1, "same": 0}[candidate.surface_variation]
+        variation_rank = {
+            "near": 2,
+            "different": 1,
+            "same": 0,
+        }[candidate.surface_variation]
     else:
-        variation_rank = {"different": 2, "near": 1, "same": 0}[candidate.surface_variation]
-    return (-relation_rank, -variation_rank, candidate.position.game_id, candidate.position.position_id)
+        variation_rank = {
+            "different": 2,
+            "near": 1,
+            "same": 0,
+        }[candidate.surface_variation]
+    return (
+        -relation_rank,
+        -variation_rank,
+        candidate.position.game_id,
+        candidate.position.position_id,
+    )
 
 
 def build_transfer_retest_plan(
@@ -499,7 +555,10 @@ def build_transfer_retest_plan(
         raise ValueError("M42 M9/M40 participant mismatch")
     if selection.hypothesis_revision_ref != proposal.hypothesis_revision_ref:
         raise ValueError("M42 M9/M40 hypothesis revision mismatch")
-    if selection.decision != "selected" or selection.selected_intervention_ref is None:
+    if (
+        selection.decision != "selected"
+        or selection.selected_intervention_ref is None
+    ):
         raise ValueError("M42 requires an exact selected M9 intervention")
     exact_intervention_ref = _intervention_ref(intervention)
     if selection.selected_intervention_ref != exact_intervention_ref:
@@ -534,8 +593,13 @@ def build_transfer_retest_plan(
         )
     )
     selected = None if not eligible else eligible[0]
-    blocking = () if selected is not None else (
-        "No fresh eligible position satisfies the bounded transfer-policy constraints.",
+    blocking = (
+        ()
+        if selected is not None
+        else (
+            "No fresh eligible position satisfies the bounded "
+            "transfer-policy constraints.",
+        )
     )
     planning_status: TransferPlanningStatus = (
         "planned" if selected is not None else "no_eligible_candidate"
@@ -556,7 +620,9 @@ def build_transfer_retest_plan(
         "exercise_ids": list(exercise_ids),
         "policy_ref": policy.ref.to_dict(),
         "eligible_candidates": [item.to_dict() for item in eligible],
-        "selected_candidate": None if selected is None else selected.to_dict(),
+        "selected_candidate": (
+            None if selected is None else selected.to_dict()
+        ),
         "planning_status": planning_status,
         "blocking_uncertainty": list(blocking),
         "created_at": created_at,
