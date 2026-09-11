@@ -1,0 +1,846 @@
+{
+  "schema_version": "chess-knowledge-ontology.v1",
+  "content_version": "1.1.0",
+  "concepts": [
+    {
+      "id": "group.rule_facts",
+      "kind": "concept_group",
+      "preferred_name": "Rule Facts",
+      "definition": "Grouping node for facts established directly from chess rules and legal state.",
+      "detection_support": "none",
+      "default_assertion_authority": "heuristic_assessment"
+    },
+    {
+      "id": "rule.check",
+      "kind": "rule_fact",
+      "preferred_name": "Check",
+      "definition": "The side's king is attacked in the current legal position.",
+      "detection_support": "deterministic",
+      "default_assertion_authority": "rule_derived",
+      "parent_ids": ["group.rule_facts"]
+    },
+    {
+      "id": "rule.checkmate",
+      "kind": "rule_fact",
+      "preferred_name": "Checkmate",
+      "definition": "The side to move is in check and has no legal move that removes the check.",
+      "detection_support": "deterministic",
+      "default_assertion_authority": "rule_derived",
+      "parent_ids": ["group.rule_facts"],
+      "relationships": [{"kind": "requires", "target_id": "rule.check"}]
+    },
+    {
+      "id": "group.position_features",
+      "kind": "concept_group",
+      "preferred_name": "Position Features",
+      "definition": "Grouping node for observable or mechanically derivable structural properties of a position.",
+      "detection_support": "none",
+      "default_assertion_authority": "heuristic_assessment"
+    },
+    {
+      "id": "group.pawn_structure_features",
+      "kind": "concept_group",
+      "preferred_name": "Pawn Structure Features",
+      "definition": "Observable properties of pawn placement and relationships.",
+      "detection_support": "none",
+      "default_assertion_authority": "heuristic_assessment",
+      "parent_ids": ["group.position_features"]
+    },
+    {
+      "id": "group.piece_features",
+      "kind": "concept_group",
+      "preferred_name": "Piece and Line Features",
+      "definition": "Observable properties of pieces, files, and piece combinations.",
+      "detection_support": "none",
+      "default_assertion_authority": "heuristic_assessment",
+      "parent_ids": ["group.position_features"]
+    },
+    {
+      "id": "position.bishop_pair",
+      "kind": "position_feature",
+      "preferred_name": "Bishop Pair",
+      "definition": "One side currently has at least two bishops on the board.",
+      "detection_support": "deterministic",
+      "default_assertion_authority": "deterministic_position_fact",
+      "parent_ids": ["group.piece_features"]
+    },
+    {
+      "id": "position.open_file",
+      "kind": "position_feature",
+      "preferred_name": "Open File",
+      "definition": "A file contains no pawns of either color.",
+      "detection_support": "deterministic",
+      "default_assertion_authority": "deterministic_position_fact",
+      "parent_ids": ["group.piece_features"]
+    },
+    {
+      "id": "position.semi_open_file",
+      "kind": "position_feature",
+      "preferred_name": "Semi-Open File",
+      "definition": "For a specified side, a file contains no friendly pawn and at least one opposing pawn.",
+      "detection_support": "deterministic",
+      "default_assertion_authority": "deterministic_position_fact",
+      "parent_ids": ["group.piece_features"]
+    },
+    {
+      "id": "position.isolated_pawn",
+      "kind": "position_feature",
+      "preferred_name": "Isolated Pawn",
+      "definition": "A pawn has no friendly pawn on either adjacent file.",
+      "detection_support": "deterministic",
+      "default_assertion_authority": "deterministic_position_fact",
+      "parent_ids": ["group.pawn_structure_features"]
+    },
+    {
+      "id": "position.doubled_pawns",
+      "kind": "position_feature",
+      "preferred_name": "Doubled Pawns",
+      "definition": "A side has at least two pawns on the same file.",
+      "detection_support": "deterministic",
+      "default_assertion_authority": "deterministic_position_fact",
+      "parent_ids": ["group.pawn_structure_features"]
+    },
+    {
+      "id": "position.passed_pawn",
+      "kind": "position_feature",
+      "preferred_name": "Passed Pawn",
+      "definition": "A pawn has no opposing pawn ahead of it on its own file or either adjacent file.",
+      "detection_support": "deterministic",
+      "default_assertion_authority": "deterministic_position_fact",
+      "parent_ids": ["group.pawn_structure_features"]
+    },
+    {
+      "id": "position.pawn_island",
+      "kind": "position_feature",
+      "preferred_name": "Pawn Island",
+      "definition": "A maximal group of friendly pawn-occupied files connected without an empty friendly-pawn file between them.",
+      "detection_support": "deterministic",
+      "default_assertion_authority": "deterministic_position_fact",
+      "parent_ids": ["group.pawn_structure_features"]
+    },
+    {
+      "id": "position.backward_pawn_candidate",
+      "kind": "position_feature",
+      "preferred_name": "Backward Pawn Candidate",
+      "definition": "A pawn is structurally behind neighboring friendly pawns and may be difficult to advance safely; full backward-pawn judgment requires context.",
+      "detection_support": "heuristic",
+      "default_assertion_authority": "heuristic_assessment",
+      "parent_ids": ["group.pawn_structure_features"]
+    },
+    {
+      "id": "group.strategic_principles",
+      "kind": "concept_group",
+      "preferred_name": "Strategic Principles",
+      "definition": "Grouping node for conditional chess heuristics and long-horizon strategic guidance.",
+      "detection_support": "none",
+      "default_assertion_authority": "heuristic_assessment"
+    },
+    {
+      "id": "group.opening_principles",
+      "kind": "concept_group",
+      "preferred_name": "Opening Principles",
+      "definition": "Strategic heuristics primarily relevant during development from the initial position.",
+      "detection_support": "none",
+      "default_assertion_authority": "heuristic_assessment",
+      "parent_ids": ["group.strategic_principles"]
+    },
+    {
+      "id": "group.piece_principles",
+      "kind": "concept_group",
+      "preferred_name": "Piece Placement Principles",
+      "definition": "Strategic heuristics about effective piece placement and coordination.",
+      "detection_support": "none",
+      "default_assertion_authority": "heuristic_assessment",
+      "parent_ids": ["group.strategic_principles"]
+    },
+    {
+      "id": "group.pawn_principles",
+      "kind": "concept_group",
+      "preferred_name": "Pawn Structure Principles",
+      "definition": "Strategic heuristics about pawn structure, pawn breaks, and long-term pawn targets.",
+      "detection_support": "none",
+      "default_assertion_authority": "heuristic_assessment",
+      "parent_ids": ["group.strategic_principles"]
+    },
+    {
+      "id": "group.universal_strategy",
+      "kind": "concept_group",
+      "preferred_name": "Universal Strategic Heuristics",
+      "definition": "Cross-phase heuristics for exchanges, space, weaknesses, prophylaxis, and piece improvement.",
+      "detection_support": "none",
+      "default_assertion_authority": "heuristic_assessment",
+      "parent_ids": ["group.strategic_principles"]
+    },
+    {
+      "id": "group.endgame_principles",
+      "kind": "concept_group",
+      "preferred_name": "Endgame Principles",
+      "definition": "Strategic and calculational heuristics primarily relevant to simplified positions.",
+      "detection_support": "none",
+      "default_assertion_authority": "heuristic_assessment",
+      "parent_ids": ["group.strategic_principles"]
+    },
+    {
+      "id": "principle.opening.center_control",
+      "kind": "strategic_principle",
+      "preferred_name": "Opening Center Control",
+      "definition": "During development, central influence generally improves piece mobility and constrains the opponent, subject to tactical and concrete exceptions.",
+      "detection_support": "heuristic",
+      "default_assertion_authority": "heuristic_assessment",
+      "parent_ids": ["group.opening_principles"],
+      "relationships": [{"kind": "supports", "target_id": "principle.pawn.pawn_break"}],
+      "pedagogy": {
+        "recognition_questions": ["Which side controls or can challenge the central squares, and what does that control enable?"],
+        "common_misconceptions": ["Center control always requires occupying the center with pawns."],
+        "training_modes": ["opening_explanation", "central_break_comparison"],
+        "learner_band": "foundational_to_intermediate"
+      }
+    },
+    {
+      "id": "principle.opening.rapid_development",
+      "kind": "strategic_principle",
+      "preferred_name": "Rapid Development",
+      "definition": "Bring undeveloped pieces into useful play efficiently before beginning unnecessary operations with already active pieces.",
+      "detection_support": "heuristic",
+      "default_assertion_authority": "heuristic_assessment",
+      "parent_ids": ["group.opening_principles"]
+    },
+    {
+      "id": "principle.opening.tempo_economy",
+      "kind": "strategic_principle",
+      "preferred_name": "Opening Tempo Economy",
+      "definition": "Avoid spending opening tempi on moves that do not meet a concrete need, while allowing tactical, material, and king-safety exceptions.",
+      "detection_support": "heuristic",
+      "default_assertion_authority": "heuristic_assessment",
+      "parent_ids": ["group.opening_principles"],
+      "relationships": [{"kind": "supports", "target_id": "principle.opening.rapid_development"}]
+    },
+    {
+      "id": "principle.opening.king_safety",
+      "kind": "strategic_principle",
+      "preferred_name": "Early King Safety",
+      "definition": "Reduce avoidable king exposure during development, commonly through timely castling when the concrete position permits it.",
+      "detection_support": "heuristic",
+      "default_assertion_authority": "heuristic_assessment",
+      "parent_ids": ["group.opening_principles"],
+      "relationships": [{"kind": "commonly_conflicts_with", "target_id": "principle.king.endgame_activation"}]
+    },
+    {
+      "id": "principle.opening.pawn_move_restraint",
+      "kind": "strategic_principle",
+      "preferred_name": "Opening Pawn Move Restraint",
+      "definition": "Prefer pawn moves that support development, central control, or concrete needs rather than accumulating unnecessary pawn tempi and weaknesses.",
+      "detection_support": "heuristic",
+      "default_assertion_authority": "heuristic_assessment",
+      "parent_ids": ["group.opening_principles"],
+      "relationships": [{"kind": "commonly_conflicts_with", "target_id": "principle.pawn.pawn_break"}]
+    },
+    {
+      "id": "principle.opening.avoid_premature_queen",
+      "kind": "strategic_principle",
+      "preferred_name": "Avoid Premature Queen Development",
+      "definition": "Avoid exposing the queen to repeated developing attacks before other pieces are active unless a concrete tactical or material reason justifies it.",
+      "detection_support": "heuristic",
+      "default_assertion_authority": "heuristic_assessment",
+      "parent_ids": ["group.opening_principles"]
+    },
+    {
+      "id": "principle.opening.connect_rooks",
+      "kind": "strategic_principle",
+      "preferred_name": "Connect the Rooks",
+      "definition": "Completing development often improves rook coordination by clearing unnecessary pieces between the rooks and resolving king placement.",
+      "detection_support": "heuristic",
+      "default_assertion_authority": "heuristic_assessment",
+      "parent_ids": ["group.opening_principles"]
+    },
+    {
+      "id": "principle.knight.outpost",
+      "kind": "strategic_principle",
+      "preferred_name": "Knight Outpost",
+      "definition": "Knights are often strong on protected advanced squares that opposing pawns cannot readily challenge.",
+      "detection_support": "heuristic",
+      "default_assertion_authority": "heuristic_assessment",
+      "parent_ids": ["group.piece_principles"]
+    },
+    {
+      "id": "principle.knight.centralization",
+      "kind": "strategic_principle",
+      "preferred_name": "Knight Centralization",
+      "definition": "Knights generally gain mobility and influence nearer the center and usually lose options on the rim, subject to concrete role and structure.",
+      "detection_support": "heuristic",
+      "default_assertion_authority": "heuristic_assessment",
+      "parent_ids": ["group.piece_principles"]
+    },
+    {
+      "id": "principle.knight.closed_positions",
+      "kind": "strategic_principle",
+      "preferred_name": "Knights in Closed Positions",
+      "definition": "Knights often gain relative value when pawn locks restrict long-range pieces because knights can jump over blocked lines.",
+      "detection_support": "heuristic",
+      "default_assertion_authority": "heuristic_assessment",
+      "parent_ids": ["group.piece_principles"]
+    },
+    {
+      "id": "principle.bishop.pair",
+      "kind": "strategic_principle",
+      "preferred_name": "Value of the Bishop Pair",
+      "definition": "Two bishops can provide durable long-range coverage, especially as positions open, but their value remains position-dependent.",
+      "detection_support": "heuristic",
+      "default_assertion_authority": "heuristic_assessment",
+      "parent_ids": ["group.piece_principles"]
+    },
+    {
+      "id": "principle.bishop.good_bad",
+      "kind": "strategic_principle",
+      "preferred_name": "Good and Bad Bishops",
+      "definition": "A bishop restricted by its own pawn structure may be strategically poor, while activity outside or beyond that chain can mitigate the label.",
+      "detection_support": "heuristic",
+      "default_assertion_authority": "heuristic_assessment",
+      "parent_ids": ["group.piece_principles"]
+    },
+    {
+      "id": "principle.bishop.open_diagonals",
+      "kind": "strategic_principle",
+      "preferred_name": "Bishops Prefer Open Diagonals",
+      "definition": "Bishops generally become more active when long diagonals are unobstructed and relevant targets lie on their color complex.",
+      "detection_support": "heuristic",
+      "default_assertion_authority": "heuristic_assessment",
+      "parent_ids": ["group.piece_principles"]
+    },
+    {
+      "id": "principle.bishop.opposite_colored",
+      "kind": "strategic_principle",
+      "preferred_name": "Opposite-Colored Bishop Dynamics",
+      "definition": "Opposite-colored bishops can strengthen attacking chances with major pieces in middlegames while often increasing drawing resources in simplified endgames.",
+      "detection_support": "heuristic",
+      "default_assertion_authority": "heuristic_assessment",
+      "parent_ids": ["group.piece_principles"]
+    },
+    {
+      "id": "principle.rook.open_file",
+      "kind": "strategic_principle",
+      "preferred_name": "Rooks on Open or Semi-Open Files",
+      "definition": "Rooks are often effective on files where friendly pawns do not obstruct them and targets or penetration squares can be reached.",
+      "detection_support": "heuristic",
+      "default_assertion_authority": "heuristic_assessment",
+      "parent_ids": ["group.piece_principles"],
+      "relationships": [{"kind": "supports", "target_id": "plan.double_on_open_file"}]
+    },
+    {
+      "id": "principle.rook.seventh_rank",
+      "kind": "strategic_principle",
+      "preferred_name": "Rook Penetration on the Seventh Rank",
+      "definition": "A rook on the opponent's second rank can attack pawns laterally and restrict the opposing king when the concrete position permits entry.",
+      "detection_support": "heuristic",
+      "default_assertion_authority": "heuristic_assessment",
+      "parent_ids": ["group.piece_principles"],
+      "relationships": [{"kind": "supports", "target_id": "plan.penetrate_seventh_rank"}]
+    },
+    {
+      "id": "principle.rook.behind_passed_pawn",
+      "kind": "strategic_principle",
+      "preferred_name": "Rook Behind a Passed Pawn",
+      "definition": "Rooks often function well behind passed pawns, either supporting friendly advance or checking and restraining an opposing passer from behind.",
+      "detection_support": "heuristic",
+      "default_assertion_authority": "heuristic_assessment",
+      "parent_ids": ["group.piece_principles"]
+    },
+    {
+      "id": "principle.rook.doubling",
+      "kind": "strategic_principle",
+      "preferred_name": "Doubling Rooks",
+      "definition": "Coordinating two rooks on a useful file or rank can increase pressure and penetration potential when tactical conditions allow it.",
+      "detection_support": "heuristic",
+      "default_assertion_authority": "heuristic_assessment",
+      "parent_ids": ["group.piece_principles"],
+      "relationships": [{"kind": "supports", "target_id": "plan.double_on_open_file"}]
+    },
+    {
+      "id": "principle.king.endgame_activation",
+      "kind": "strategic_principle",
+      "preferred_name": "King Activation in the Endgame",
+      "definition": "As mating danger and major-piece firepower diminish, the king often becomes an important active piece and should approach relevant central or pawn targets.",
+      "detection_support": "heuristic",
+      "default_assertion_authority": "heuristic_assessment",
+      "parent_ids": ["group.piece_principles", "group.endgame_principles"],
+      "relationships": [
+        {"kind": "commonly_conflicts_with", "target_id": "principle.opening.king_safety"},
+        {"kind": "supports", "target_id": "plan.activate_king"}
+      ]
+    },
+    {
+      "id": "principle.pawn.fewer_islands",
+      "kind": "strategic_principle",
+      "preferred_name": "Fewer Pawn Islands",
+      "definition": "All else equal, fewer separated pawn groups usually create fewer independently defendable structural targets.",
+      "detection_support": "heuristic",
+      "default_assertion_authority": "heuristic_assessment",
+      "parent_ids": ["group.pawn_principles"]
+    },
+    {
+      "id": "principle.pawn.isolated_dynamic_static",
+      "kind": "strategic_principle",
+      "preferred_name": "Isolated Pawn Dynamic and Static Tradeoff",
+      "definition": "An isolated pawn may provide space and active lines in dynamic positions while becoming a long-term target after simplification.",
+      "detection_support": "heuristic",
+      "default_assertion_authority": "heuristic_assessment",
+      "parent_ids": ["group.pawn_principles"]
+    },
+    {
+      "id": "principle.pawn.backward_pawn",
+      "kind": "strategic_principle",
+      "preferred_name": "Backward Pawn Pressure",
+      "definition": "A pawn that cannot safely advance and lacks neighboring pawn support may become a durable target and may concede the square in front of it.",
+      "detection_support": "heuristic",
+      "default_assertion_authority": "heuristic_assessment",
+      "parent_ids": ["group.pawn_principles"]
+    },
+    {
+      "id": "principle.pawn.doubled_pawns",
+      "kind": "strategic_principle",
+      "preferred_name": "Doubled Pawn Tradeoff",
+      "definition": "Doubled pawns can be inflexible or weak, but their structural cost can be offset by open files, central control, or piece activity.",
+      "detection_support": "heuristic",
+      "default_assertion_authority": "heuristic_assessment",
+      "parent_ids": ["group.pawn_principles"]
+    },
+    {
+      "id": "principle.pawn.passed_pawn",
+      "kind": "strategic_principle",
+      "preferred_name": "Passed Pawn Potential",
+      "definition": "A passed pawn can become an important promotion threat and may force opposing pieces or king resources into restraint duties.",
+      "detection_support": "heuristic",
+      "default_assertion_authority": "heuristic_assessment",
+      "parent_ids": ["group.pawn_principles"],
+      "relationships": [{"kind": "supports", "target_id": "plan.support_passed_pawn"}]
+    },
+    {
+      "id": "principle.pawn.pawn_break",
+      "kind": "strategic_principle",
+      "preferred_name": "Pawn Break",
+      "definition": "A pawn advance that challenges the opposing pawn structure can open lines, create targets, or change space and center relationships.",
+      "detection_support": "heuristic",
+      "default_assertion_authority": "heuristic_assessment",
+      "parent_ids": ["group.pawn_principles"],
+      "relationships": [{"kind": "supports", "target_id": "plan.create_pawn_break"}]
+    },
+    {
+      "id": "principle.pawn.attack_chain_base",
+      "kind": "strategic_principle",
+      "preferred_name": "Attack the Base of a Pawn Chain",
+      "definition": "Pressure against the supporting base of a fixed pawn chain can be more effective than attacking its protected head, depending on access and tactical details.",
+      "detection_support": "heuristic",
+      "default_assertion_authority": "heuristic_assessment",
+      "parent_ids": ["group.pawn_principles"]
+    },
+    {
+      "id": "principle.trade.ahead_trade_pieces",
+      "kind": "strategic_principle",
+      "preferred_name": "When Ahead, Prefer Piece Exchanges",
+      "definition": "When materially ahead, exchanging active opposing pieces often reduces counterplay, but tactical and positional exceptions can make a specific trade undesirable.",
+      "detection_support": "heuristic",
+      "default_assertion_authority": "heuristic_assessment",
+      "parent_ids": ["group.universal_strategy"],
+      "relationships": [
+        {"kind": "commonly_conflicts_with", "target_id": "principle.space.preserve_piece_pressure"},
+        {"kind": "supports", "target_id": "plan.trade_into_endgame"}
+      ]
+    },
+    {
+      "id": "principle.trade.behind_keep_pieces",
+      "kind": "strategic_principle",
+      "preferred_name": "When Behind, Preserve Active Pieces",
+      "definition": "When materially behind, retaining active pieces can preserve tactical and perpetual-check resources, while pawn exchanges may reduce the opponent's winning material.",
+      "detection_support": "heuristic",
+      "default_assertion_authority": "heuristic_assessment",
+      "parent_ids": ["group.universal_strategy"]
+    },
+    {
+      "id": "principle.space.cramped_exchange_pieces",
+      "kind": "strategic_principle",
+      "preferred_name": "Exchange Pieces When Cramped",
+      "definition": "The side with less space can often reduce congestion and defensive burden by exchanging pieces when the resulting position is favorable.",
+      "detection_support": "heuristic",
+      "default_assertion_authority": "heuristic_assessment",
+      "parent_ids": ["group.universal_strategy"],
+      "relationships": [{"kind": "commonly_conflicts_with", "target_id": "principle.space.preserve_piece_pressure"}]
+    },
+    {
+      "id": "principle.space.preserve_piece_pressure",
+      "kind": "strategic_principle",
+      "preferred_name": "Preserve Piece Pressure with a Space Advantage",
+      "definition": "The side with more usable space can often preserve more pieces to maintain the opponent's congestion and restrictions.",
+      "detection_support": "heuristic",
+      "default_assertion_authority": "heuristic_assessment",
+      "parent_ids": ["group.universal_strategy"],
+      "relationships": [
+        {"kind": "commonly_conflicts_with", "target_id": "principle.trade.ahead_trade_pieces"},
+        {"kind": "commonly_conflicts_with", "target_id": "principle.space.cramped_exchange_pieces"}
+      ]
+    },
+    {
+      "id": "principle.two_weaknesses",
+      "kind": "strategic_principle",
+      "preferred_name": "Principle of Two Weaknesses",
+      "definition": "Against a stable defense, creating and alternating pressure between separated weaknesses can overload defensive resources more effectively than attacking one target indefinitely.",
+      "detection_support": "heuristic",
+      "default_assertion_authority": "heuristic_assessment",
+      "parent_ids": ["group.universal_strategy"],
+      "relationships": [{"kind": "supports", "target_id": "plan.create_second_weakness"}]
+    },
+    {
+      "id": "principle.prophylaxis",
+      "kind": "strategic_principle",
+      "preferred_name": "Prophylaxis",
+      "definition": "Anticipate and restrict the opponent's useful plans or counterplay before or while improving one's own position.",
+      "detection_support": "heuristic",
+      "default_assertion_authority": "heuristic_assessment",
+      "parent_ids": ["group.universal_strategy"],
+      "relationships": [
+        {"kind": "supports", "target_id": "plan.prophylaxis"},
+        {"kind": "supports", "target_id": "plan.restrict_counterplay"}
+      ]
+    },
+    {
+      "id": "principle.fix_weakness",
+      "kind": "strategic_principle",
+      "preferred_name": "Fix a Weakness Before Attacking It",
+      "definition": "A target is often easier to attack after its ability to advance, exchange, or transform itself has been restricted.",
+      "detection_support": "heuristic",
+      "default_assertion_authority": "heuristic_assessment",
+      "parent_ids": ["group.universal_strategy"]
+    },
+    {
+      "id": "principle.improve_worst_piece",
+      "kind": "strategic_principle",
+      "preferred_name": "Improve the Worst-Placed Piece",
+      "definition": "In quiet positions, improving the least effective piece is a useful candidate-plan heuristic when no forcing priority dominates.",
+      "detection_support": "heuristic",
+      "default_assertion_authority": "heuristic_assessment",
+      "parent_ids": ["group.universal_strategy"],
+      "relationships": [{"kind": "supports", "target_id": "plan.improve_worst_piece"}]
+    },
+    {
+      "id": "principle.endgame.opposition",
+      "kind": "strategic_principle",
+      "preferred_name": "King Opposition",
+      "definition": "In king-and-pawn endings, relative king placement can force the opponent to yield access to key squares; exact opposition value depends on move order and geometry.",
+      "detection_support": "heuristic",
+      "default_assertion_authority": "heuristic_assessment",
+      "parent_ids": ["group.endgame_principles"]
+    },
+    {
+      "id": "principle.endgame.rule_of_square",
+      "kind": "strategic_principle",
+      "preferred_name": "Rule of the Square",
+      "definition": "A geometric shortcut estimates whether an unassisted king can catch a passed pawn, subject to side-to-move and tactical exceptions.",
+      "detection_support": "heuristic",
+      "default_assertion_authority": "heuristic_assessment",
+      "parent_ids": ["group.endgame_principles"]
+    },
+    {
+      "id": "principle.endgame.outside_passed_pawn",
+      "kind": "strategic_principle",
+      "preferred_name": "Outside Passed Pawn",
+      "definition": "A remote passed pawn can divert the opposing king or pieces away from other pawn targets and entry routes.",
+      "detection_support": "heuristic",
+      "default_assertion_authority": "heuristic_assessment",
+      "parent_ids": ["group.endgame_principles"]
+    },
+    {
+      "id": "principle.endgame.cut_off_king",
+      "kind": "strategic_principle",
+      "preferred_name": "Cut Off the King",
+      "definition": "A rook or other long-range piece can restrict the opposing king from entering critical files, ranks, or zones.",
+      "detection_support": "heuristic",
+      "default_assertion_authority": "heuristic_assessment",
+      "parent_ids": ["group.endgame_principles"]
+    },
+    {
+      "id": "principle.endgame.do_not_hurry",
+      "kind": "strategic_principle",
+      "preferred_name": "Do Not Hurry",
+      "definition": "In stable winning endgames, improving piece placement before committing to irreversible pawn advances can preserve winning resources and reduce counterplay.",
+      "detection_support": "heuristic",
+      "default_assertion_authority": "heuristic_assessment",
+      "parent_ids": ["group.endgame_principles"]
+    },
+    {
+      "id": "group.evaluation_factors",
+      "kind": "concept_group",
+      "preferred_name": "Positional Evaluation Factors",
+      "definition": "Qualitative dimensions used to structure positional assessment without claiming arithmetic decomposition of an engine score.",
+      "detection_support": "none",
+      "default_assertion_authority": "heuristic_assessment"
+    },
+    {
+      "id": "evaluation.material",
+      "kind": "evaluation_factor",
+      "preferred_name": "Material Balance Factor",
+      "definition": "The material relationship between the sides as one input to positional assessment.",
+      "detection_support": "heuristic",
+      "default_assertion_authority": "heuristic_assessment",
+      "parent_ids": ["group.evaluation_factors"]
+    },
+    {
+      "id": "evaluation.king_safety",
+      "kind": "evaluation_factor",
+      "preferred_name": "King Safety Factor",
+      "definition": "The relative vulnerability, shelter, escape resources, and attacking pressure around each king.",
+      "detection_support": "heuristic",
+      "default_assertion_authority": "heuristic_assessment",
+      "parent_ids": ["group.evaluation_factors"]
+    },
+    {
+      "id": "evaluation.development",
+      "kind": "evaluation_factor",
+      "preferred_name": "Development Factor",
+      "definition": "The relative deployment and readiness of pieces, especially in the opening and early middlegame.",
+      "detection_support": "heuristic",
+      "default_assertion_authority": "heuristic_assessment",
+      "parent_ids": ["group.evaluation_factors"]
+    },
+    {
+      "id": "evaluation.piece_activity",
+      "kind": "evaluation_factor",
+      "preferred_name": "Piece Activity Factor",
+      "definition": "The extent to which pieces occupy useful squares, influence relevant targets, and participate effectively in play.",
+      "detection_support": "heuristic",
+      "default_assertion_authority": "heuristic_assessment",
+      "parent_ids": ["group.evaluation_factors"]
+    },
+    {
+      "id": "evaluation.piece_coordination",
+      "kind": "evaluation_factor",
+      "preferred_name": "Piece Coordination Factor",
+      "definition": "How effectively pieces support common objectives, defend one another, and avoid conflicting or redundant roles.",
+      "detection_support": "heuristic",
+      "default_assertion_authority": "heuristic_assessment",
+      "parent_ids": ["group.evaluation_factors"]
+    },
+    {
+      "id": "evaluation.mobility",
+      "kind": "evaluation_factor",
+      "preferred_name": "Mobility Factor",
+      "definition": "The quantity and quality of useful movement options available to pieces, interpreted in context rather than as raw legal-move count alone.",
+      "detection_support": "heuristic",
+      "default_assertion_authority": "heuristic_assessment",
+      "parent_ids": ["group.evaluation_factors"]
+    },
+    {
+      "id": "evaluation.space",
+      "kind": "evaluation_factor",
+      "preferred_name": "Space Factor",
+      "definition": "The relative amount of territory in which a side can maneuver safely and restrict opposing piece mobility.",
+      "detection_support": "heuristic",
+      "default_assertion_authority": "heuristic_assessment",
+      "parent_ids": ["group.evaluation_factors"]
+    },
+    {
+      "id": "evaluation.center_control",
+      "kind": "evaluation_factor",
+      "preferred_name": "Center Control Factor",
+      "definition": "The relative control, occupation, and challenge of strategically central squares and lines.",
+      "detection_support": "heuristic",
+      "default_assertion_authority": "heuristic_assessment",
+      "parent_ids": ["group.evaluation_factors"]
+    },
+    {
+      "id": "evaluation.pawn_structure",
+      "kind": "evaluation_factor",
+      "preferred_name": "Pawn Structure Factor",
+      "definition": "The long-term strengths, weaknesses, mobility, and target profile created by each side's pawns.",
+      "detection_support": "heuristic",
+      "default_assertion_authority": "heuristic_assessment",
+      "parent_ids": ["group.evaluation_factors"]
+    },
+    {
+      "id": "evaluation.weak_squares",
+      "kind": "evaluation_factor",
+      "preferred_name": "Weak Squares Factor",
+      "definition": "Important squares that are difficult for one side to contest with pawns or pieces and that can be exploited by the opponent.",
+      "detection_support": "heuristic",
+      "default_assertion_authority": "heuristic_assessment",
+      "parent_ids": ["group.evaluation_factors"]
+    },
+    {
+      "id": "evaluation.passed_pawns",
+      "kind": "evaluation_factor",
+      "preferred_name": "Passed Pawn Factor",
+      "definition": "The promotion potential, restraint burden, and activity effects created by passed pawns.",
+      "detection_support": "heuristic",
+      "default_assertion_authority": "heuristic_assessment",
+      "parent_ids": ["group.evaluation_factors"]
+    },
+    {
+      "id": "evaluation.initiative",
+      "kind": "evaluation_factor",
+      "preferred_name": "Initiative Factor",
+      "definition": "The degree to which one side can make threats or forcing improvements that compel the opponent to react.",
+      "detection_support": "heuristic",
+      "default_assertion_authority": "heuristic_assessment",
+      "parent_ids": ["group.evaluation_factors"]
+    },
+    {
+      "id": "evaluation.tactical_pressure",
+      "kind": "evaluation_factor",
+      "preferred_name": "Tactical Pressure Factor",
+      "definition": "The density and seriousness of immediate tactical threats, forcing moves, loose pieces, and king vulnerabilities.",
+      "detection_support": "heuristic",
+      "default_assertion_authority": "heuristic_assessment",
+      "parent_ids": ["group.evaluation_factors"]
+    },
+    {
+      "id": "group.plans",
+      "kind": "concept_group",
+      "preferred_name": "Strategic Plans",
+      "definition": "Candidate long-horizon objectives that connect position features and principles to move selection without themselves claiming a best move.",
+      "detection_support": "none",
+      "default_assertion_authority": "heuristic_assessment"
+    },
+    {
+      "id": "plan.attack_king",
+      "kind": "plan",
+      "preferred_name": "Attack the King",
+      "definition": "Organize pieces, pawn breaks, or forcing moves toward exploiting a concrete king-safety weakness.",
+      "detection_support": "heuristic",
+      "default_assertion_authority": "heuristic_assessment",
+      "parent_ids": ["group.plans"]
+    },
+    {
+      "id": "plan.improve_worst_piece",
+      "kind": "plan",
+      "preferred_name": "Improve the Worst Piece",
+      "definition": "Improve the placement or role of the side's least effective piece when no forcing priority dominates.",
+      "detection_support": "heuristic",
+      "default_assertion_authority": "heuristic_assessment",
+      "parent_ids": ["group.plans"]
+    },
+    {
+      "id": "plan.create_pawn_break",
+      "kind": "plan",
+      "preferred_name": "Create or Execute a Pawn Break",
+      "definition": "Use a pawn advance to challenge a structure, open lines, or transform the center or wing.",
+      "detection_support": "heuristic",
+      "default_assertion_authority": "heuristic_assessment",
+      "parent_ids": ["group.plans"]
+    },
+    {
+      "id": "plan.open_file",
+      "kind": "plan",
+      "preferred_name": "Open a File",
+      "definition": "Exchange or advance pawns so a rook or queen can gain useful line access on a file.",
+      "detection_support": "heuristic",
+      "default_assertion_authority": "heuristic_assessment",
+      "parent_ids": ["group.plans"]
+    },
+    {
+      "id": "plan.occupy_outpost",
+      "kind": "plan",
+      "preferred_name": "Occupy an Outpost",
+      "definition": "Establish a piece on a stable advanced square that the opponent cannot readily challenge with pawns.",
+      "detection_support": "heuristic",
+      "default_assertion_authority": "heuristic_assessment",
+      "parent_ids": ["group.plans"]
+    },
+    {
+      "id": "plan.exchange_key_defender",
+      "kind": "plan",
+      "preferred_name": "Exchange a Key Defender",
+      "definition": "Remove or exchange a piece whose defensive role is central to the opponent's position.",
+      "detection_support": "heuristic",
+      "default_assertion_authority": "heuristic_assessment",
+      "parent_ids": ["group.plans"]
+    },
+    {
+      "id": "plan.trade_into_endgame",
+      "kind": "plan",
+      "preferred_name": "Trade into a Favorable Endgame",
+      "definition": "Seek simplification when the resulting endgame preserves or improves the side's practical or objective prospects.",
+      "detection_support": "heuristic",
+      "default_assertion_authority": "heuristic_assessment",
+      "parent_ids": ["group.plans"]
+    },
+    {
+      "id": "plan.create_second_weakness",
+      "kind": "plan",
+      "preferred_name": "Create a Second Weakness",
+      "definition": "Create another separated target so the defense must divide resources across more than one front.",
+      "detection_support": "heuristic",
+      "default_assertion_authority": "heuristic_assessment",
+      "parent_ids": ["group.plans"]
+    },
+    {
+      "id": "plan.restrict_counterplay",
+      "kind": "plan",
+      "preferred_name": "Restrict Counterplay",
+      "definition": "Reduce the opponent's active resources before converting an advantage or executing a longer-term plan.",
+      "detection_support": "heuristic",
+      "default_assertion_authority": "heuristic_assessment",
+      "parent_ids": ["group.plans"]
+    },
+    {
+      "id": "plan.activate_king",
+      "kind": "plan",
+      "preferred_name": "Activate the King",
+      "definition": "Bring the king toward central, pawn, or entry-square duties when the simplified position makes active king play appropriate.",
+      "detection_support": "heuristic",
+      "default_assertion_authority": "heuristic_assessment",
+      "parent_ids": ["group.plans"]
+    },
+    {
+      "id": "plan.support_passed_pawn",
+      "kind": "plan",
+      "preferred_name": "Support a Passed Pawn",
+      "definition": "Coordinate king and pieces to advance or exploit a passed pawn while managing blockade and counterplay.",
+      "detection_support": "heuristic",
+      "default_assertion_authority": "heuristic_assessment",
+      "parent_ids": ["group.plans"]
+    },
+    {
+      "id": "plan.blockade_passed_pawn",
+      "kind": "plan",
+      "preferred_name": "Blockade a Passed Pawn",
+      "definition": "Restrain an opposing passed pawn by occupying or controlling its advance squares and reducing supporting activity.",
+      "detection_support": "heuristic",
+      "default_assertion_authority": "heuristic_assessment",
+      "parent_ids": ["group.plans"]
+    },
+    {
+      "id": "plan.penetrate_seventh_rank",
+      "kind": "plan",
+      "preferred_name": "Penetrate the Seventh Rank",
+      "definition": "Enter the opponent's second rank with a rook or queen to attack pawns, restrict the king, or coordinate threats.",
+      "detection_support": "heuristic",
+      "default_assertion_authority": "heuristic_assessment",
+      "parent_ids": ["group.plans"]
+    },
+    {
+      "id": "plan.double_on_open_file",
+      "kind": "plan",
+      "preferred_name": "Double on an Open File",
+      "definition": "Coordinate rooks on a useful open or semi-open file to increase pressure and penetration potential.",
+      "detection_support": "heuristic",
+      "default_assertion_authority": "heuristic_assessment",
+      "parent_ids": ["group.plans"]
+    },
+    {
+      "id": "plan.prophylaxis",
+      "kind": "plan",
+      "preferred_name": "Prophylactic Plan",
+      "definition": "Prevent or reduce a specific opposing plan before pursuing one's own next improvement.",
+      "detection_support": "heuristic",
+      "default_assertion_authority": "heuristic_assessment",
+      "parent_ids": ["group.plans"]
+    },
+    {
+      "id": "plan.increase_piece_coordination",
+      "kind": "plan",
+      "preferred_name": "Increase Piece Coordination",
+      "definition": "Improve how pieces support one another and combine toward shared defensive or offensive tasks.",
+      "detection_support": "heuristic",
+      "default_assertion_authority": "heuristic_assessment",
+      "parent_ids": ["group.plans"]
+    }
+  ]
+}

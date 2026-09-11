@@ -18,6 +18,10 @@ from .validation import OntologyValidationError, validate_ontology
 
 ONTOLOGY_SCHEMA_VERSION = "chess-knowledge-ontology.v1"
 DEFAULT_ONTOLOGY_RESOURCE = "data/ontology.v1.json"
+DEFAULT_ONTOLOGY_RESOURCES = (
+    DEFAULT_ONTOLOGY_RESOURCE,
+    "data/strategy.v1.json",
+)
 
 _TOP_LEVEL_KEYS = frozenset({"schema_version", "content_version", "concepts"})
 _CONCEPT_KEYS = frozenset(
@@ -68,10 +72,22 @@ class OntologyRegistry:
 
     @classmethod
     def load_default(cls) -> OntologyRegistry:
-        resource = files("chess_mentor_engine.chess_knowledge").joinpath(
-            DEFAULT_ONTOLOGY_RESOURCE
+        package = files("chess_mentor_engine.chess_knowledge")
+        documents: list[OntologyDocument] = []
+        for resource_name in DEFAULT_ONTOLOGY_RESOURCES:
+            resource = package.joinpath(resource_name)
+            registry = cls.from_json_text(resource.read_text(encoding="utf-8"))
+            documents.append(registry._document)
+        combined = OntologyDocument(
+            schema_version=ONTOLOGY_SCHEMA_VERSION,
+            content_version=documents[-1].content_version,
+            concepts=tuple(
+                concept
+                for document in documents
+                for concept in document.concepts
+            ),
         )
-        return cls.from_json_text(resource.read_text(encoding="utf-8"))
+        return cls(combined)
 
     @classmethod
     def from_json_text(cls, text: str) -> OntologyRegistry:

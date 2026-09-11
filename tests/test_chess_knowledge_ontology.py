@@ -38,12 +38,12 @@ def _document(*concepts):
     )
 
 
-def test_default_ontology_loads_with_stable_tactical_vocabulary() -> None:
+def test_default_ontology_loads_composed_vocabulary() -> None:
     registry = OntologyRegistry.load_default()
 
     assert registry.schema_version == "chess-knowledge-ontology.v1"
-    assert registry.content_version == "1.0.0"
-    assert len(registry.concepts) >= 35
+    assert registry.content_version == "1.1.0"
+    assert len(registry.concepts) >= 90
     assert registry.get("tactic.fork").preferred_name == "Fork"
     assert registry.find_name("Zwischenzug").concept_id == "tactic.intermezzo"
     assert registry.get("tactic.absolute_pin").detection_support == "deterministic"
@@ -51,10 +51,47 @@ def test_default_ontology_loads_with_stable_tactical_vocabulary() -> None:
         registry.get("tactic.absolute_pin").default_assertion_authority
         == "deterministic_position_fact"
     )
+    assert registry.get("position.isolated_pawn").kind == "position_feature"
+    assert registry.get("principle.prophylaxis").kind == "strategic_principle"
+    assert registry.get("evaluation.king_safety").kind == "evaluation_factor"
+    assert registry.get("plan.improve_worst_piece").kind == "plan"
     assert len(registry.fingerprint) == 64
     assert registry.fingerprint == OntologyRegistry.load_default().fingerprint
     assert registry.concept_fingerprint("tactic.fork") == registry.concept_fingerprint(
         "tactic.fork"
+    )
+
+
+def test_strategy_graph_keeps_fact_principle_evaluation_and_plan_distinct() -> None:
+    registry = OntologyRegistry.load_default()
+
+    isolated = registry.get("position.isolated_pawn")
+    principle = registry.get("principle.pawn.isolated_dynamic_static")
+    evaluation = registry.get("evaluation.pawn_structure")
+    plan = registry.get("plan.create_pawn_break")
+
+    assert isolated.kind == "position_feature"
+    assert isolated.default_assertion_authority == "deterministic_position_fact"
+    assert principle.kind == "strategic_principle"
+    assert principle.default_assertion_authority == "heuristic_assessment"
+    assert evaluation.kind == "evaluation_factor"
+    assert plan.kind == "plan"
+
+
+def test_strategy_graph_represents_conflicting_principles_explicitly() -> None:
+    registry = OntologyRegistry.load_default()
+    ahead = registry.get("principle.trade.ahead_trade_pieces")
+    space = registry.get("principle.space.preserve_piece_pressure")
+
+    assert any(
+        relation.kind == "commonly_conflicts_with"
+        and relation.target_id == space.concept_id
+        for relation in ahead.relationships
+    )
+    assert any(
+        relation.kind == "commonly_conflicts_with"
+        and relation.target_id == ahead.concept_id
+        for relation in space.relationships
     )
 
 
