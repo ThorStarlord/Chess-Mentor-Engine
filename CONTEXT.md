@@ -5,13 +5,13 @@
 > **Latest handoff:** [`STATUS.md`](STATUS.md)  
 > **Architecture:** [`docs/architecture/architecture.md`](docs/architecture/architecture.md)  
 > **Latest runbook:**
-> [`docs/runbooks/m36-m40-learner-intelligence.md`](docs/runbooks/m36-m40-learner-intelligence.md)
+> [`docs/runbooks/m41-m44-tutor-decision-loop.md`](docs/runbooks/m41-m44-tutor-decision-loop.md)
 
 ## Product and authority
 
-Chess Mentor Engine is intended to convert objective chess evidence into
-participant-specific teaching decisions without collapsing different kinds of truth
-into one layer.
+Chess Mentor Engine converts objective chess evidence into participant-specific
+learning support while keeping different kinds of truth in different authority
+layers.
 
 Keep these questions separate:
 
@@ -24,8 +24,11 @@ What intervention has M9 actually selected?
 What bounded practice/transfer evidence does M10 record?
 What does M11 currently project longitudinally?
 What chess concepts are present under K0-K7 authority?
-What can M36/M39 summarize without changing those sources?
+What can M36/M39 derive without changing those sources?
 What action may M40 propose without executing it?
+Which evidence may M43 suggest inspecting without reclassifying M7C?
+Which interventions may M41 suggest without exercising M9 selection?
+How may M44 present all of that without inventing new claims?
 ```
 
 ## Current implementation boundary
@@ -35,10 +38,14 @@ qualified work includes:
 
 - Chess Knowledge Ontology **K0–K7**;
 - **M36** deterministic learner-state read model;
-- **M39** hypothesis evidence synthesizer;
-- **M40** teaching-priority / next-session planner.
+- **M39** hypothesis evidence synthesis;
+- **M40** teaching-priority / next-session proposal;
+- **M43** contradiction/control evidence acquisition;
+- **M41** ontology-aware intervention matching;
+- **M44** learner-progress local reference surface.
 
-M35, M37, and M38 remain candidate labels and are not implicitly implemented.
+M35, M37, M38, and M42 remain unimplemented labels. Later-numbered qualified work
+does not imply those milestones exist.
 
 ## Current authority graph
 
@@ -77,9 +84,20 @@ M11 longitudinal learner state     |
                       |
                       v
                 M40 PROPOSAL
+                      |
+          +-----------+-----------+
+          |                       |
+          v                       v
+   M43 EVIDENCE              M41 TRAINING
+   CANDIDATES                CANDIDATES
+          |                       |
+          +-----------+-----------+
+                      |
+                      v
+                M44 REFERENCE VIEW
 ```
 
-Separately, the existing deterministic feedback/model/review path remains:
+Separately, the deterministic feedback/model/review path remains:
 
 ```text
 M15 presentation + M6/M7
@@ -97,79 +115,58 @@ The learner-intelligence path does not silently rewrite that model/review chain.
 
 ## Chess Knowledge Ontology mental model
 
-K0–K7 exists to provide stable chess semantics, not learner psychology.
+K0–K7 provides stable chess semantics, not learner psychology.
 
 ```text
 concept definition
-!=
-position/move assertion
-!=
-participant perception
-!=
-learner hypothesis
+!= position/move assertion
+!= participant perception
+!= learner hypothesis
 ```
 
 A tactic such as `tactic.fork` may be mechanically present while the participant
-understood it perfectly. Conversely, a learner discrepancy may concern search
-process rather than the surface motif. Do not infer one from the other.
+understood it perfectly. A learner discrepancy may also concern search process rather
+than the surface motif.
 
 K7 attaches typed chess context to already-classified M7C recurrence units and
 preserves M7C relations verbatim. It does not become recurrence authority.
 
-## M36 mental model
+### Product-pulled ontology rule
 
-M36 is the deterministic answer to:
+The ontology is now a shared dependency, not a destination. Do not create a generic
+K8 merely to increase vocabulary, relationships, detectors, or pedagogy metadata.
+
+Use this sequence:
+
+```text
+consumer needs semantic distinction X
+-> prove K0-K7 cannot represent X safely
+-> design the minimum ontology extension
+-> add rejection tests
+-> consume X in the requesting feature
+-> qualify ontology + consumer together
+```
+
+M41 and M44 both shipped without ontology schema/data changes. That is desirable: a
+mature substrate should often support product work without changing itself.
+
+## M36 / M39 / M40 mental model
+
+M36 answers:
 
 > What does current qualified repository evidence say about this participant now?
 
-It may combine exact current M7/M7C, M9, M10, M11, and optional K7 information.
-
-It must remain a **read model**:
-
-```text
-M36 output != new M7 evidence
-M36 output != M11 mutation
-M36 output != M9 selection
-M36 output != mastery
-```
-
-Construction intentionally rejects stale or non-current revisions and mismatched
-participant/source identities.
-
-## M39 mental model
-
-M39 is the deterministic answer to:
+M39 answers:
 
 > Why is this current learner hypothesis at its current M7C status, what challenges
 > it, and what evidence remains missing?
 
-It binds an exact current M36 entry to an exact current M7 revision and M7C
-assessment, plus the exact K7 projection when M36 references one.
-
-M39 preserves:
-
-- support and independent-support counts;
-- contradiction and successful-counterexample evidence;
-- context exceptions, unclear, and mixed units;
-- M7C status reasons and review records;
-- exact source games/positions/evidence links;
-- optional typed chess context;
-- explicit evidence gaps and bounded future-change conditions.
-
-It does not recalculate M7C.
-
-```text
-M39 synthesis != recurrence classification
-```
-
-## M40 mental model
-
 M40 asks:
 
-> Given current qualified evidence, which *kind* of learner-facing action should be
-> proposed next under this explicit policy?
+> Which *kind* of learner-facing action should be proposed next under an explicit
+> versioned policy?
 
-Its bounded action vocabulary is:
+Its action vocabulary is:
 
 ```text
 COLLECT_NEW_EVIDENCE
@@ -182,29 +179,96 @@ RUN_FAR_TRANSFER_TEST
 WAIT_FOR_REAL_GAME_EVIDENCE
 ```
 
-The default policy is intentionally contradiction-first:
+M36 is read-only, M39 does not recalculate recurrence, and M40 is proposal-only.
 
-- contradicted hypothesis -> present control/disconfirming evidence;
-- unclear hypothesis -> challenge;
-- insufficient/isolated/candidate recurrence -> collect evidence;
-- supported but one-sided -> challenge;
-- supported but unresolved alternatives remain -> challenge;
-- supported and sufficiently challenged, no M9 selection -> teach concept;
-- mixed M9 state -> collect/resolve upstream, do not override M9;
-- selected M9 intervention -> practice, then near transfer, then far transfer, then
-  real-game observation according to current M10/M11 evidence.
+## M43 mental model
 
-Across active hypotheses, explicit action priorities rank the candidates. That
-ranking is a transparent heuristic policy, not a learned score and not evidence of
-optimal pedagogy.
-
-Most importantly:
+M43 is a consumer of M40 evidence-oriented actions:
 
 ```text
-M40 decision_authority = proposal_only
+CHALLENGE_HYPOTHESIS
+PRESENT_CONTROL
+COLLECT_NEW_EVIDENCE
 ```
 
-M40 never performs the proposed action.
+It may:
+
+- preserve already-classified M7C contradiction/counterexample/context-exception
+  material for presentation;
+- inspect an explicitly supplied participant-local M7B candidate pool;
+- rank additional links as **potential** contradiction/counterexample/context/
+  evidence candidates;
+- prefer independent/new contexts under a transparent policy;
+- expose explicit gaps when nothing eligible is available.
+
+It may not convert a candidate into a new M7C relation.
+
+```text
+M43 candidate != M7C contradiction
+successful case != mastery
+ranked first != objectively best evidence
+```
+
+## M41 mental model
+
+M41 consumes an exact M40 `TEACH_CONCEPT` proposal and exact M39 concept context.
+It uses:
+
+- the exact K0–K7 ontology snapshot;
+- the exact M9 intervention registry;
+- explicit content-addressed semantic profiles for intervention versions;
+- a transparent matching policy.
+
+A semantic profile may state target/reinforced/contraindicated concepts and training
+modes. M41 deliberately does **not** parse M9 training prose to manufacture semantic
+mappings.
+
+Candidate states are:
+
+```text
+eligible_candidate
+possible_candidate
+insufficient_information
+ineligible
+```
+
+Multiple eligible candidates remain multiple candidates.
+
+```text
+M41 candidate != M9 applicability mapping
+M41 rank != M9 selection
+pedagogy prerequisite != learner deficiency/mastery
+```
+
+## M44 mental model
+
+M44 is presentation, not inference.
+
+It composes exact M36/M39/M40 state and optional exact M43/M41 artifacts into:
+
+```text
+m44.learner-progress-view.v1
+-> m44.learner-progress-reference-surface.v1
+```
+
+The view may expose:
+
+- M40 priority order;
+- current hypothesis/status and source evidence;
+- support, contradiction, counterexamples, context exceptions;
+- ontology concept names and instructional recognition questions;
+- M9/M10 training and transfer state;
+- M39 evidence gaps and change conditions;
+- M43 evidence candidates;
+- M41 intervention candidates;
+- M40 next-action reasons and blocking uncertainty.
+
+Missing optional M43/M41 information is rendered as unavailable/not supplied, not as
+negative evidence.
+
+The HTML renderer is static and escaped, validates the exact view first, and creates
+no learner or execution authority. It is a **local reference surface**, not a
+production browser/accessibility/usability claim.
 
 ## Authority owners contributors must preserve
 
@@ -226,14 +290,8 @@ recurrence status, support/challenge/contradiction evidence, and review policy.
 
 ### Training and outcomes
 
-M9 owns explicit intervention selection. M10 owns bounded outcome/transfer evidence.
-M11 derives append-only longitudinal learner state from exact qualified inputs.
-
-### Deterministic feedback/model language
-
-M16 is the deterministic mentor-grounding ceiling. M19 model language may render that
-context but does not inherit deterministic authority. M20 evaluator judgments remain
-bounded judgments.
+M9 owns explicit intervention applicability/selection. M10 owns bounded
+outcome/transfer evidence. M11 derives append-only longitudinal learner state.
 
 ### Chess semantics
 
@@ -241,10 +299,12 @@ K0–K7 own ontology identities, semantics, provenance-bound assertions, conserv
 detector outputs, and qualified sidecar/projection contracts. They do not own M7C,
 M9, or learner-state mutation.
 
-### Learner-intelligence projections
+### Learner intelligence and candidate preparation
 
-M36 reads current state. M39 explains current evidence. M40 proposes a next action.
-None of them silently inherit mutation or execution authority.
+M36 reads current state. M39 explains current evidence. M40 proposes an action. M43
+prepares evidence candidates. M41 prepares intervention candidates. M44 presents those
+qualified layers. None silently inherits upstream mutation/selection/execution
+authority.
 
 ## Contracts to preserve
 
@@ -257,9 +317,11 @@ K7 projection != M7C recurrence authority
 M36 read model != learner-state mutation
 M39 evidence synthesis != M7C assessment
 M40 action proposal != action execution
-M40 TEACH_CONCEPT != M9 intervention selection
+M43 candidate != M7C contradiction/refutation
+M41 candidate != M9 applicability mapping or selection
+M44 rendering != learner inference
 M40 RUN_*_TRANSFER_TEST != M10 transfer evidence
-M40 WAIT_FOR_REAL_GAME_EVIDENCE != mastery
+successful evidence case != mastery
 M9 selected intervention != effective intervention
 practice completion != transfer
 transparent policy != empirically optimal pedagogy
@@ -273,32 +335,30 @@ For any future package:
 
 1. reconcile live `main`;
 2. identify the existing authority owner before adding a subsystem;
-3. classify the work as `REPOSITORY_ONLY`, `HERMETIC_VALIDATION`, or
+3. classify work as `REPOSITORY_ONLY`, `HERMETIC_VALIDATION`, or
    `EXTERNAL_AUTHORITY`;
 4. define explicit inputs/outputs, claim ceiling, and forbidden authority changes;
 5. implement the smallest bounded contract;
 6. include positive and rejection/near-miss cases;
 7. merge only the exact final head that passes full pytest, Ruff, compileall, and the
    independent Stockfish job;
-8. reconcile current documentation after the feature packages merge.
+8. reconcile current documentation after feature packages merge.
 
 ## Likely next architecture work
 
-The new M40 routing makes the next needs clearer:
+The next product-pulled sequence is now:
 
 ```text
-M40 CHALLENGE_HYPOTHESIS / PRESENT_CONTROL
-    -> candidate M43 contradiction/control evidence acquisition
-
-M40 TEACH_CONCEPT
-    -> candidate M41 intervention matching / M9 candidate bridge
-
 M40 RUN_NEAR_TRANSFER_TEST / RUN_FAR_TRANSFER_TEST
-    -> candidate M42 bounded transfer/retest scheduling
+    -> M42 bounded transfer/retest planning
 
-M36 + M39 + M40
-    -> candidate M44 learner progress surface
+bounded recent participant games
+    -> M45 mentor queue using learner relevance, contradiction value,
+       transfer value, uncertainty, novelty, and objective importance
+
+M36/M39/M40 + K0-K7 + later M41/M42/M43 context
+    -> M46 adaptive Socratic tutor
 ```
 
-Those remain candidates. A fresh live-main audit must decide which action is the
-actual blocker before implementation.
+M35/M37 should move only if a concrete consumer/operator blocker requires them. M38
+must not become a second recurrence engine; reuse M7C.
