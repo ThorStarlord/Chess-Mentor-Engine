@@ -1,352 +1,304 @@
 # Chess Mentor Engine context
 
 > **Current implementation authority:**
-> [`docs/product/repository-build-status.md`](docs/product/repository-build-status.md)
->  
-> **Latest repository handoff:** [`STATUS.md`](STATUS.md)  
-> **Repository overview:** [`README.md`](README.md)  
-> **Architecture map:**
-> [`docs/architecture/architecture.md`](docs/architecture/architecture.md)
+> [`docs/product/repository-build-status.md`](docs/product/repository-build-status.md)  
+> **Latest handoff:** [`STATUS.md`](STATUS.md)  
+> **Architecture:** [`docs/architecture/architecture.md`](docs/architecture/architecture.md)  
+> **Latest runbook:**
+> [`docs/runbooks/m36-m40-learner-intelligence.md`](docs/runbooks/m36-m40-learner-intelligence.md)
 
 ## Product and authority
 
-Chess Mentor Engine is a persistent chess-learning system intended to convert
-objective chess evidence into individualized teaching decisions without collapsing
-chess truth, chess-knowledge semantics, participant self-report, learner inference,
-tutoring, deterministic feedback, model-authored language, model-output evaluation,
-review mechanics, and pedagogy into one authority layer.
+Chess Mentor Engine is intended to convert objective chess evidence into
+participant-specific teaching decisions without collapsing different kinds of truth
+into one layer.
 
-The central questions remain distinct:
+Keep these questions separate:
 
 ```text
 What is objectively happening on the board?
-Which registered chess concepts describe that evidence, and under what authority?
-What did the player actually notice, consider, and expect?
-What participant-specific explanation is currently supported strongly enough to affect teaching?
-What did deterministic grounding say versus what a model rendered?
-What execution/review mechanics were verified versus what still requires human/external authority?
-What later evidence supports practice success, transfer, or longitudinal change?
+What did the participant report noticing, considering, and expecting?
+What position-local discrepancy is supported?
+What participant-specific recurrence/hypothesis does M7C currently support or reject?
+What intervention has M9 actually selected?
+What bounded practice/transfer evidence does M10 record?
+What does M11 currently project longitudinally?
+What chess concepts are present under K0-K7 authority?
+What can M36/M39 summarize without changing those sources?
+What action may M40 propose without executing it?
 ```
-
-Learner-model conclusions remain bounded product hypotheses, not claims that the
-system has established causal cognitive mechanisms.
 
 ## Current implementation boundary
 
-The numbered milestone sequence is qualified through **M34 — Hermetic
-Reviewed-Coaching Recovery Reconciliation**. On top of M34, the repository now also
-has a separately labeled, qualified **Chess Knowledge Ontology program K0–K7**.
+The contiguous milestone sequence remains qualified through **M34**. Additional
+qualified work includes:
 
-The K labels do not consume the provisional M35+ labels in the product build plan.
-Use `docs/product/repository-build-status.md` for the moving implementation boundary,
-`STATUS.md` for the latest handoff,
-`docs/runbooks/chess-knowledge-ontology-program.md` for the ontology restart path,
-and `docs/runbooks/m32-m34-milestone-runbook.md` for the previous numbered milestone.
+- Chess Knowledge Ontology **K0–K7**;
+- **M36** deterministic learner-state read model;
+- **M39** hypothesis evidence synthesizer;
+- **M40** teaching-priority / next-session planner.
 
-### Capability sequence
+M35, M37, and M38 remain candidate labels and are not implicitly implemented.
 
-- **M1–M4:** canonical PGN/game/position provenance, deterministic chess
-  context/features, normalized UCI evidence, objective played-decision comparison,
-  and bounded diagnostic selection.
-- **M5–M7:** frozen participant decision evidence, position-local discrepancy facts
-  and assessments, participant-specific learner hypotheses, contradiction/challenge
-  evidence, recurrence policies, and append-only hypothesis lifecycle.
-- **M8–M11:** controlled evidence-aware tutoring, explicit intervention
-  applicability/selection, bounded practice/transfer evidence, and append-only
-  longitudinal learner state.
-- **M12–M18:** local evidence/artifact inspection, replay-verified persistent tutor
-  transitions, engine-backed analysis, deterministic evaluation presentation,
-  grounded mentor feedback, analysis-to-presentation bridging, and diagnostic move
-  analysis queues.
-- **M19–M22:** provider-neutral model-language rendering, bounded model-output
-  evaluation, participant-authorized candidate-to-tutor launch, and hermetic
-  cross-layer fidelity qualification.
-- **M23–M27:** installed diagnostic-to-persistent-tutor bridging, provider/evaluator
-  execution conformance, authority-separated coach review, persistent reviewed
-  coaching, and a mechanically verified execution ledger.
-- **M28–M31:** deterministic local review rendering, persisted-review bridging,
-  participant-scoped package/navigation/export, and hermetic synthetic-canary/manual
-  retry-history preflight.
-- **M32–M34:** exact machine-consumer review delivery, deterministic M16 feedback
-  tracing, and hermetic reviewed-coaching recovery reconciliation.
-- **K0–K3:** ontology authority, strict registry/validation, stable concept IDs,
-  tactical/Lichess crosswalks, position features, strategic principles, qualitative
-  evaluation factors, candidate plans, and pedagogy metadata.
-- **K4–K5:** provenance-bound knowledge assertions plus conservative deterministic
-  detectors for a deliberately narrow mechanical subset.
-- **K6:** model-consumable ontology context bound beside an unchanged M19 request.
-- **K7:** typed ontology projection over existing M7C recurrence units while
-  preserving M7C support/contradiction relations exactly.
-
-## Current operational path
-
-The principal product path remains:
+## Current authority graph
 
 ```text
-PGN / canonical position
--> deterministic chess context
--> provenance-bound engine evidence
--> objective played-decision comparison / bounded diagnostic selection
--> M15 deterministic evaluation presentation
--> M18 diagnostic candidate batch
--> explicit participant candidate selection + separate capture consent
--> M23 cme-candidate-tutor
--> M21 authorization / launch
--> exact M5 PlayerDecisionContext
--> persisted replay-verifiable M8 state=selected
--> M13 tutor capture / freeze / reveal / compare workflow
--> position-local M6 discrepancy + optional bounded M7 context
--> replay-verified persisted M8 state=compared
--> M26 reviewed-coaching operator
-   -> M16 deterministic grounded feedback
-   -> optional M19 request / M24 provider execution / M19 coaching
-   -> optional M20 request / M24 evaluator execution / M20 bounded evaluation
-   -> M25 authority-separated coach-review read model
-   -> atomic append-only M26 run lineage
--> M27 mechanical reviewed-coaching execution ledger
--> M29 persisted review -> M28 deterministic reference surface
--> M30 participant-scoped review package / navigation / export
--> M32 machine-readable persisted review delivery bundle
--> M33 deterministic M16 mentor-feedback trace
--> optional M31 synthetic-canary/manual-retry preflight
--> optional M34 hermetic multi-attempt recovery reconciliation
--> explicit M9 training applicability / selection
--> M10 outcome / transfer evidence
--> append-only M11 longitudinal learner state
+OBJECTIVE CHESS
+M1-M4 / M14-M18
+canonical position, deterministic features, engine evidence, selection
+        |
+        v
+PARTICIPANT EVIDENCE
+M5 / M8 / M21 / M23
+captured reasoning and exposure/consent boundaries
+        |
+        v
+LEARNER INFERENCE
+M6 position-local discrepancy
+        |
+        v
+M7 / M7C participant-specific hypothesis, recurrence, contradiction
+        |
+        +------------------------------+
+        |                              |
+        v                              v
+TRAINING / OUTCOMES                CHESS SEMANTICS
+M9 intervention selection          K0-K7 ontology/assertions/detectors
+M10 bounded outcome evidence       + optional M7C-preserving projection
+M11 longitudinal learner state     |
+        |                           |
+        +-------------+-------------+
+                      |
+                      v
+                M36 READ MODEL
+                      |
+                      v
+                M39 SYNTHESIS
+                      |
+                      v
+                M40 PROPOSAL
 ```
 
-The ontology is a cross-cutting semantic layer:
+Separately, the existing deterministic feedback/model/review path remains:
 
 ```text
-canonical chess subject
--> K0–K3 concept definition / registry
--> optional K4 assertion
--> optional K5 deterministic detector
-
-K4 assertion bundle
-   +--> K6 model sidecar + exact unchanged M19 request
-   +--> K7 learner projection + exact existing M7C assessment
+M15 presentation + M6/M7
+-> M16 deterministic mentor grounding
+-> optional M19 model request/prose
+-> optional M20 evaluator judgment
+-> M24 execution seam
+-> M25-M30 review/persistence/navigation
+-> M32 consumer fidelity
+-> M33 deterministic trace
+-> optional M31/M34 safety/recovery surfaces
 ```
 
-Not every application invokes every optional layer. Every arrow remains an authority
-boundary.
+The learner-intelligence path does not silently rewrite that model/review chain.
 
-## Separation of responsibilities
+## Chess Knowledge Ontology mental model
 
-### Objective chess authority
-
-`chess/`, M3 engine evidence, M4 comparison/selection, and M15 presentation own
-canonical board state, legal actions, exact source provenance, qualified low-level
-features, normalized engine judgments, and score/perspective semantics. Mate,
-bounds, partial results, unavailable states, terminal states, and compatibility
-states are preserved rather than coerced into fake precision.
-
-Objective chess authority does not establish player cognition, learner traits, or
-pedagogical effectiveness.
-
-### Chess-knowledge definition authority
-
-K0–K3 own the registered vocabulary: stable concept identity, human-readable
-semantics, hierarchy/relationships, external crosswalks, detector-support metadata,
-authority ceilings, and pedagogy metadata.
-
-A concept definition is not an assertion that the concept occurs in a position.
-Registry membership is not detector availability. A strategic principle is not an
-engine-score component, and a candidate plan is not a best move or an M9 training
-intervention.
-
-### Chess-knowledge assertion authority
-
-K4 represents bounded claims against exact position/move subjects with explicit
-status, authority class, evidence refs, provenance, qualifiers, ontology fingerprint,
-claim scope, and content-addressed identity.
-
-Deterministic facts, engine-derived claims, external taxonomy tags, heuristic
-assessments, model interpretations, and human ratifications remain different
-assertion authorities.
-
-An assertion remains chess-content evidence. It does not establish what a
-participant perceived and does not directly create a learner hypothesis.
-
-### Deterministic ontology detector authority
-
-K5 may assert only its explicitly qualified mechanical subset. Position detectors
-cover check/checkmate, absolute pin, bishop pair, open/semi-open files,
-isolated/doubled/passed pawns, and pawn islands. Move-transition detectors cover
-promotion/underpromotion, moved-piece fork, discovered check, and double check.
-
-Do not infer that other registered tactics, principles, evaluation factors, or plans
-are automatically detected. Extending detector scope requires exact semantics and
-positive plus near-miss/rejection qualification.
-
-### Diagnostic-selection authority
-
-M4 owns explicit versioned selection policy and deterministic candidate/control
-batching. M18 orchestrates that policy over a selected game interval. Neither M18
-nor M23 silently selects a candidate for the participant.
-
-### Participant-authorization authority
-
-M21 records candidate selection and capture consent as distinct participant
-decisions. M23 operationalizes and persists that exact contract. Candidate selection
-is never evidence-capture consent.
-
-### Participant-evidence authority
-
-M5 raw/frozen player responses and exposure state remain distinct from engine and
-ontology evidence. Diagnostic rationale revealed before capture may contaminate the
-pre-reveal measurement boundary; repository qualification does not prove what a
-future UI displayed at a given moment.
-
-### Learning-inference authority
-
-M6 describes position-local discrepancies. M7/M7C represents bounded
-participant-specific recurring hypotheses with support, contradiction, challenge,
-provenance, recurrence policy, and lifecycle. Recurrence is not a causal cognitive
-mechanism, permanent trait, or automatic training eligibility decision.
-
-K7 does not replace M7C. It attaches exact ontology assertions to already-classified
-M7C recurrence units and preserves the source relation verbatim. The same concept may
-occur in both supporting and contradictory units.
-
-### Tutor-state authority
-
-M8 owns controlled capture/freeze/reveal/comparison/explanation transitions. M13
-persists and replay-verifies those transitions. Completing or comparing an M8
-session does not automatically mutate M7/M11 or select M9 training.
-
-### Training/outcome authority
-
-M9 selects interventions only through explicit applicability rules. M10 records
-predeclared bounded outcome/transfer evidence. Practice completion, successful
-performance, near transfer, far transfer, real-game transfer, causality, and mastery
-remain separate claims. M11 derives longitudinal learner state from exact current
-hypothesis revisions and eligible evidence.
-
-Ontology pedagogy metadata may inform future policy design but does not itself grant
-M9 applicability or selection authority.
-
-### Deterministic feedback authority
-
-M16 composes deterministic session-local mentor feedback from exact M15/M6 and
-optional complete active-current M7 evidence. It does not invoke a model and remains
-the deterministic factual grounding ceiling.
-
-### Model-language authority
-
-M19 may ask an application-supplied provider to render prose from the exact M16
-request. Provenance establishes which request reached which model run; it does not
-establish semantic correctness, safety, or pedagogical effectiveness.
-
-K6 adds an optional sidecar. It validates and references an existing M19 request by
-exact identity; it does not insert keys into or refingerprint that request. The
-sidecar provides registered definitions, assertion authority, qualifiers,
-relationships, and anti-promotion instructions to an explicitly adopting consumer.
-
-### Model-output evaluation authority
-
-M20 records bounded `pass` / `fail` / `unclear` judgments under a frozen evaluation
-policy. M20 acceptance is not objective chess truth and does not turn evaluator
-rationale into deterministic evidence.
-
-### Execution-conformance authority
-
-M24 classifies one application-owned provider/evaluator adapter invocation, binds
-endpoint/request identity, and records deterministic execution provenance.
-Production vendor selection, automatic retry/backoff policy, credentials, privacy
-approval, cost controls, and latency SLOs remain external decisions.
-
-M31 can validate synthetic canaries and already-supplied manual retry histories. It
-never executes a retry and accepts only test canary material.
-
-### Persistence/review authority
-
-M25 assembles an authority-separated coach-review read model. M26 atomically persists
-reviewed-coaching outputs without advancing M8. M27 mechanically verifies the exact
-persisted execution chain. M28 deterministically renders M25. M29 resolves persisted
-review chains. M30 provides participant-scoped navigation/export.
-
-Participant scoping is an integrity boundary, not hosted authentication.
-
-### Consumer-delivery and trace authority
-
-M32 preserves exact machine-consumer semantics. M33 traces every substantive M16
-component back to exact deterministic source authority. Neither establishes browser
-quality, semantic truth of arbitrary model prose, or pedagogical efficacy.
-
-### Recovery-reconciliation authority
-
-M34 classifies supplied synthetic M24 multi-attempt histories against one
-already-persisted mechanically verified M26 target as `complete` or
-`resume_eligible`. It never executes or authorizes retry and does not establish
-external-side-effect idempotency or production recovery correctness.
-
-## Contracts contributors must preserve
+K0–K7 exists to provide stable chess semantics, not learner psychology.
 
 ```text
-objective chess truth != participant self-report != learner inference
-concept definition != concept assertion != learner inference
-registered concept != automatically detectable concept
-external taxonomy tag != deterministic CME detector result
-ontology concept presence != M7C hypothesis relation
-K7 descriptive projection != recurrence reclassification or learner mutation
-K6 ontology sidecar != M19 request identity or M16 factual authority
-heuristic principle != engine-evaluation decomposition
-strategic plan != best move != M9 training intervention
-local discrepancy != recurrence != causal learner trait
-supported recurrence != automatic training eligibility
-selected intervention != effective intervention
-practice completion != successful performance != transfer != mastery
-engine analysis != evaluation presentation != grounded feedback != model coaching
+concept definition
+!=
+position/move assertion
+!=
+participant perception
+!=
+learner hypothesis
+```
+
+A tactic such as `tactic.fork` may be mechanically present while the participant
+understood it perfectly. Conversely, a learner discrepancy may concern search
+process rather than the surface motif. Do not infer one from the other.
+
+K7 attaches typed chess context to already-classified M7C recurrence units and
+preserves M7C relations verbatim. It does not become recurrence authority.
+
+## M36 mental model
+
+M36 is the deterministic answer to:
+
+> What does current qualified repository evidence say about this participant now?
+
+It may combine exact current M7/M7C, M9, M10, M11, and optional K7 information.
+
+It must remain a **read model**:
+
+```text
+M36 output != new M7 evidence
+M36 output != M11 mutation
+M36 output != M9 selection
+M36 output != mastery
+```
+
+Construction intentionally rejects stale or non-current revisions and mismatched
+participant/source identities.
+
+## M39 mental model
+
+M39 is the deterministic answer to:
+
+> Why is this current learner hypothesis at its current M7C status, what challenges
+> it, and what evidence remains missing?
+
+It binds an exact current M36 entry to an exact current M7 revision and M7C
+assessment, plus the exact K7 projection when M36 references one.
+
+M39 preserves:
+
+- support and independent-support counts;
+- contradiction and successful-counterexample evidence;
+- context exceptions, unclear, and mixed units;
+- M7C status reasons and review records;
+- exact source games/positions/evidence links;
+- optional typed chess context;
+- explicit evidence gaps and bounded future-change conditions.
+
+It does not recalculate M7C.
+
+```text
+M39 synthesis != recurrence classification
+```
+
+## M40 mental model
+
+M40 asks:
+
+> Given current qualified evidence, which *kind* of learner-facing action should be
+> proposed next under this explicit policy?
+
+Its bounded action vocabulary is:
+
+```text
+COLLECT_NEW_EVIDENCE
+CHALLENGE_HYPOTHESIS
+PRESENT_CONTROL
+TEACH_CONCEPT
+ASSIGN_PRACTICE
+RUN_NEAR_TRANSFER_TEST
+RUN_FAR_TRANSFER_TEST
+WAIT_FOR_REAL_GAME_EVIDENCE
+```
+
+The default policy is intentionally contradiction-first:
+
+- contradicted hypothesis -> present control/disconfirming evidence;
+- unclear hypothesis -> challenge;
+- insufficient/isolated/candidate recurrence -> collect evidence;
+- supported but one-sided -> challenge;
+- supported but unresolved alternatives remain -> challenge;
+- supported and sufficiently challenged, no M9 selection -> teach concept;
+- mixed M9 state -> collect/resolve upstream, do not override M9;
+- selected M9 intervention -> practice, then near transfer, then far transfer, then
+  real-game observation according to current M10/M11 evidence.
+
+Across active hypotheses, explicit action priorities rank the candidates. That
+ranking is a transparent heuristic policy, not a learned score and not evidence of
+optimal pedagogy.
+
+Most importantly:
+
+```text
+M40 decision_authority = proposal_only
+```
+
+M40 never performs the proposed action.
+
+## Authority owners contributors must preserve
+
+### Objective chess
+
+`chess/`, M3/M4, and M15 own canonical board state, legal actions, deterministic
+features, engine evidence, score/bound/mate semantics, and objective selection
+contracts. They do not own learner psychology.
+
+### Participant evidence
+
+M5/M8 capture and freeze participant-reported reasoning under explicit exposure
+boundaries. Participant self-report is evidence, not chess truth.
+
+### Learning inference
+
+M6 remains position-local. M7/M7C own participant-specific hypothesis lifecycle,
+recurrence status, support/challenge/contradiction evidence, and review policy.
+
+### Training and outcomes
+
+M9 owns explicit intervention selection. M10 owns bounded outcome/transfer evidence.
+M11 derives append-only longitudinal learner state from exact qualified inputs.
+
+### Deterministic feedback/model language
+
+M16 is the deterministic mentor-grounding ceiling. M19 model language may render that
+context but does not inherit deterministic authority. M20 evaluator judgments remain
+bounded judgments.
+
+### Chess semantics
+
+K0–K7 own ontology identities, semantics, provenance-bound assertions, conservative
+detector outputs, and qualified sidecar/projection contracts. They do not own M7C,
+M9, or learner-state mutation.
+
+### Learner-intelligence projections
+
+M36 reads current state. M39 explains current evidence. M40 proposes a next action.
+None of them silently inherit mutation or execution authority.
+
+## Contracts to preserve
+
+```text
+objective chess truth != participant evidence != learner inference
+one M6 discrepancy != recurrence != causal trait
+concept occurrence != participant perception or learner weakness
+K7 semantic coverage missing != concept absent
+K7 projection != M7C recurrence authority
+M36 read model != learner-state mutation
+M39 evidence synthesis != M7C assessment
+M40 action proposal != action execution
+M40 TEACH_CONCEPT != M9 intervention selection
+M40 RUN_*_TRANSFER_TEST != M10 transfer evidence
+M40 WAIT_FOR_REAL_GAME_EVIDENCE != mastery
+M9 selected intervention != effective intervention
+practice completion != transfer
+transparent policy != empirically optimal pedagogy
 M16 deterministic grounding != M19 model prose
-request provenance != semantic correctness of model prose
-M20 evaluator acceptance != objective chess truth
-participant candidate selection != capture consent
-M23 operator/persistence != M6/M7/M9 authority
-M24 execution conformance != vendor approval or retry authority
-M27 mechanically_verified != semantic truth
-M30 participant navigation != authentication or privacy approval
-M32 machine-consumer fidelity != production UI quality or model truth
-M33 deterministic traceability != model/evaluator authority
-M34 resume eligibility != retry authorization, execution, or side-effect idempotency
+M20 evaluator acceptance != objective truth
 ```
 
-## CLI and API boundaries
+## Qualification discipline
 
-Installed commands remain:
+For any future package:
+
+1. reconcile live `main`;
+2. identify the existing authority owner before adding a subsystem;
+3. classify the work as `REPOSITORY_ONLY`, `HERMETIC_VALIDATION`, or
+   `EXTERNAL_AUTHORITY`;
+4. define explicit inputs/outputs, claim ceiling, and forbidden authority changes;
+5. implement the smallest bounded contract;
+6. include positive and rejection/near-miss cases;
+7. merge only the exact final head that passes full pytest, Ruff, compileall, and the
+   independent Stockfish job;
+8. reconcile current documentation after the feature packages merge.
+
+## Likely next architecture work
+
+The new M40 routing makes the next needs clearer:
 
 ```text
-cme
-cme-candidate-tutor
-cme-coach-review
-cme-reviewed-coaching
-cme-reviewed-coaching-ledger
-cme-coach-review-reference
-cme-persisted-coach-review-reference
-cme-participant-review
+M40 CHALLENGE_HYPOTHESIS / PRESENT_CONTROL
+    -> candidate M43 contradiction/control evidence acquisition
+
+M40 TEACH_CONCEPT
+    -> candidate M41 intervention matching / M9 candidate bridge
+
+M40 RUN_NEAR_TRANSFER_TEST / RUN_FAR_TRANSFER_TEST
+    -> candidate M42 bounded transfer/retest scheduling
+
+M36 + M39 + M40
+    -> candidate M44 learner progress surface
 ```
 
-The `cme` command exposes game/position inspection, bounded engine analysis,
-diagnostic queue construction, artifact inspection, and persistent tutor actions.
-K0–K7 introduce no production CLI command. Their public Python API is exposed under
-`chess_mentor_engine.chess_knowledge` and documented in
-`docs/runbooks/chess-knowledge-ontology-program.md`.
-
-## Productization boundary
-
-The repository still stops short of claiming:
-
-- hosted authentication/authorization or multi-user tenancy;
-- production database/retention architecture;
-- production LLM/evaluator vendor selection and credential transport;
-- automatic retry/backoff/rate-limit policy or external-side-effect idempotency;
-- production privacy/security approval;
-- browser/device correctness, accessibility, localization, or usability;
-- semantic safety/correctness of arbitrary model prose;
-- complete automatic detection of the ontology vocabulary;
-- causal learner traits, automatic intervention efficacy, or mastery;
-- empirical tutoring efficacy or intervention-caused improvement.
-
-Future work should increasingly be pulled by a concrete learner/tutor/product need,
-then add the minimum additional infrastructure required to preserve these authority
-boundaries.
+Those remain candidates. A fresh live-main audit must decide which action is the
+actual blocker before implementation.
