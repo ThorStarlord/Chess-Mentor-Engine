@@ -14,7 +14,7 @@ from datetime import datetime
 from typing import Any, Literal, TypeAlias
 
 from chess_mentor_engine.chess import canonical_json
-from chess_mentor_engine.learning import HypothesisEvidenceLink
+from chess_mentor_engine.learning import HypothesisEvidenceLink, HypothesisRevisionRef
 
 from .evidence_synthesis import (
     EvidenceSynthesisReference,
@@ -262,7 +262,7 @@ class EvidenceAcquisitionPlan:
     fingerprint: str
     participant_id: str
     hypothesis_id: str
-    hypothesis_revision_ref: Any
+    hypothesis_revision_ref: HypothesisRevisionRef
     next_session_plan_ref: EvidenceSynthesisReference
     proposal_ref: EvidenceSynthesisReference
     synthesis_ref: EvidenceSynthesisReference | None
@@ -306,8 +306,7 @@ class EvidenceAcquisitionPlan:
         _unique_strings("search_gaps", self.search_gaps)
         if self.decision_authority != "candidate_only":
             raise ValueError("M43 cannot grant M7C or execution authority")
-        expected_scope = "participant_specific_evidence_acquisition_candidates"
-        if self.claim_scope != expected_scope:
+        if self.claim_scope != "participant_specific_evidence_acquisition_candidates":
             raise ValueError("unknown M43 claim scope")
         if self.m7c_effect != "not_established" or self.mastery != "not_established":
             raise ValueError("M43 cannot establish M7C effect or mastery")
@@ -407,14 +406,13 @@ def _plan_ref(plan: NextSessionPlan) -> EvidenceSynthesisReference:
 def _proposal_ref(
     proposal: NextSessionActionCandidate,
 ) -> EvidenceSynthesisReference:
-    payload = proposal.to_dict()
     return EvidenceSynthesisReference(
         kind="next_session_action_candidate",
         ref_id=(
             f"{proposal.hypothesis_id}:"
             f"{proposal.hypothesis_revision_ref.revision_id}:{proposal.action}"
         ),
-        fingerprint=_digest(payload),
+        fingerprint=_digest(proposal.to_dict()),
     )
 
 
@@ -441,14 +439,14 @@ def _kind_for_additional_link(
     *,
     intent: EvidenceAcquisitionIntent,
 ) -> EvidenceCandidateKind | None:
-    mapping: dict[str, EvidenceCandidateKind] = {
+    mapped: dict[str, EvidenceCandidateKind] = {
         "contradicts": "potential_contradiction",
         "successful_counterexample": "potential_successful_counterexample",
         "context_exception": "potential_context_exception",
         "unclear": "insufficiently_classified",
     }
-    if relation in mapping:
-        return mapping[relation]
+    if relation in mapped:
+        return mapped[relation]
     if relation == "supports" and intent == "collect_new_evidence":
         return "novel_retest_context"
     return None
@@ -458,8 +456,6 @@ def _candidate_from_current_unit(
     *,
     unit: HypothesisEvidenceUnitSynthesis,
     policy: EvidenceAcquisitionPolicy,
-    current_positions: set[str],
-    current_games: set[str],
 ) -> EvidenceAcquisitionCandidate | None:
     kind = _kind_for_current_unit(unit.relation)
     if kind is None:
@@ -478,8 +474,8 @@ def _candidate_from_current_unit(
         upstream_relation=unit.relation,
         candidate_kind=kind,
         policy_priority=policy.priority_for(kind),
-        new_game=unit.source_game_id not in current_games,
-        new_position=unit.source_position_id not in current_positions,
+        new_game=False,
+        new_position=False,
         link_ref_ids=tuple(item.link_id for item in unit.link_refs),
         context_ref_ids=unit.context_ref_ids,
         measurement_conditions=unit.measurement_conditions,
@@ -510,9 +506,13 @@ def _candidate_from_additional_link(
         "candidate for explicit review or future M7C reassessment."
     ]
     if new_game:
-        reasons.append("The source game is independent of games in the current synthesis.")
+        reasons.append(
+            "The source game is independent of games in the current synthesis."
+        )
     if new_position:
-        reasons.append("The source position is not already represented in the synthesis.")
+        reasons.append(
+            "The source position is not already represented in the synthesis."
+        )
     return EvidenceAcquisitionCandidate(
         source_ref=EvidenceSynthesisReference(
             kind="hypothesis_evidence_link",
@@ -548,8 +548,6 @@ def _validate_inputs(
         raise ValueError("M43 proposal is not contained in the exact M40 plan")
     if proposal.action not in _SUPPORTED_ACTIONS:
         raise ValueError("M43 cannot consume this M40 action")
-    if next_session_plan.participant_id == "":
-        raise ValueError("M43 requires a participant-scoped M40 plan")
     if proposal.synthesis_ref is None:
         if synthesis is not None:
             raise ValueError("M43 synthesis supplied for proposal without M39 source")
@@ -604,21 +602,17 @@ def build_evidence_acquisition_plan(
     excluded = 0
     if synthesis is not None and intent == "present_control":
         for unit in synthesis.units:
-            candidate = _candidate_from_current_unit(
-                unit=unit,
-                policy=policy,
-                current_positions=set(),
-                current_games=set(),
-            )
+            candidate = _candidate_from_current_unit(unit=unit, policy=policy)
             if candidate is not None:
                 candidates.append(candidate)
 
     allowed = set(policy.allowed_additional_measurement_conditions)
     for link in additional_links:
-        if link.link_id in current_link_ids or link.source_position_id in current_positions:
-            excluded += 1
-            continue
-        if link.measurement_condition not in allowed:
+        duplicate = (
+            link.link_id in current_link_ids
+            or link.source_position_id in current_positions
+        )
+        if duplicate or link.measurement_condition not in allowed:
             excluded += 1
             continue
         candidate = _candidate_from_additional_link(
