@@ -162,7 +162,9 @@ class KnowledgeSubject:
             if self.move_uci is not None:
                 raise ValueError("move_sequence subject cannot carry move_uci")
             if self.comparison_position_id is not None:
-                raise ValueError("move_sequence subject cannot carry comparison position")
+                raise ValueError(
+                    "move_sequence subject cannot carry comparison position"
+                )
         elif self.subject_kind == "position_comparison":
             if self.comparison_position_id is None:
                 raise ValueError(
@@ -543,4 +545,6 @@ def _validate_assertion_semantics(
             raise ValueError("human provenance requires human-ratified authority")
     elif provenance.source_kind == "system":
         if authority_class not in _DETERMINISTIC_AUTHORITIES:
-            raise ValueError("system provenance is restricted to deterministic authority")
+            raise ValueError(
+                "system provenance is restricted to deterministic authority"
+            )
