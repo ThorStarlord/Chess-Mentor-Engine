@@ -138,7 +138,8 @@ def _validate_canaries(values: Sequence[str]) -> tuple[str, ...]:
         suffix = value[len(SYNTHETIC_CANARY_PREFIX) :]
         if len(suffix) < 8 or any(char.isspace() for char in suffix):
             raise ExecutionEnvelopePreflightError(
-                "synthetic canary suffix must contain at least eight non-space characters"
+                "synthetic canary suffix must contain at least eight "
+                "non-space characters"
             )
     return canaries
 
@@ -391,7 +392,7 @@ def build_execution_envelope_preflight(
     synthetic_canaries: Sequence[str],
     max_attempts: int = 3,
 ) -> ExecutionEnvelopePreflightResult:
-    """Qualify synthetic-canary privacy and manual retry history without executing it."""
+    """Validate synthetic-canary privacy and manual retry history only."""
     _nonempty(participant_id, "participant_id")
     _nonempty(run_artifact_id, "run_artifact_id")
     if type(max_attempts) is not int or not 1 <= max_attempts <= 10:
