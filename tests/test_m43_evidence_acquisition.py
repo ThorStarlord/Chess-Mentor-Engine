@@ -23,7 +23,16 @@ from chess_mentor_engine.learning import (
 CREATED_AT = "2026-09-11T14:00:00-03:00"
 
 
-def _link(revision_ref, link_id, relation, position_id, game_id, *, participant="P01", condition="clean"):
+def _link(
+    revision_ref,
+    link_id,
+    relation,
+    position_id,
+    game_id,
+    *,
+    participant="P01",
+    condition="clean",
+):
     return HypothesisEvidenceLink(
         link_id=link_id,
         fingerprint=f"fp-{link_id}",
@@ -197,7 +206,14 @@ def test_m43_excludes_duplicate_position_and_contaminated_link():
 def test_m43_rejects_cross_participant_and_stale_revision_links():
     plan, synthesis = _challenge()
     revision = plan.selected_candidate.hypothesis_revision_ref
-    cross = _link(revision, "l-cross", "contradicts", "p2", "g2", participant="P02")
+    cross = _link(
+        revision,
+        "l-cross",
+        "contradicts",
+        "p2",
+        "g2",
+        participant="P02",
+    )
     with pytest.raises(ValueError, match="participant mismatch"):
         build_evidence_acquisition_plan(
             next_session_plan=plan,
@@ -208,7 +224,13 @@ def test_m43_rejects_cross_participant_and_stale_revision_links():
             created_at=CREATED_AT,
         )
 
-    stale = _link(_revision_ref("other"), "l-stale", "contradicts", "p3", "g3")
+    stale = _link(
+        _revision_ref("other"),
+        "l-stale",
+        "contradicts",
+        "p3",
+        "g3",
+    )
     with pytest.raises(ValueError, match="current-revision mismatch"):
         build_evidence_acquisition_plan(
             next_session_plan=plan,
