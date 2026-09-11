@@ -485,7 +485,7 @@ def _choose_frozen_action(
             "assisted_followup",
             (
                 "Baseline evidence is frozen; a bounded non-answer hint is now "
-                "permitted."
+                "permitted.",
             ),
             (),
         )
