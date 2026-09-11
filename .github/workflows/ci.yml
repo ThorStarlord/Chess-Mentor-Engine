@@ -31,6 +31,9 @@ jobs:
       - name: Run Ruff
         run: ruff check .
 
+      - name: Compile source and tests
+        run: python -m compileall -q src tests
+
   stockfish-integration:
     runs-on: ubuntu-24.04
     steps:
