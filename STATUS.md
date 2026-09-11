@@ -1,28 +1,29 @@
 # Chess Mentor Engine — Repository Handoff
 
 **Prepared:** 2026-09-11  
+**Current main authority baseline:** `2fd14c32e81d19222cc3e2f332337c00f8086f5f`  
 **Contiguous numbered baseline:** M1–M34 qualified  
 **Qualified semantic program:** Chess Knowledge Ontology K0–K7  
 **Qualified post-M34 learner-intelligence packages:** M36, M39, M40, M41, M42, M43, M44, M45, M46  
-**Post-feature baseline:** `3ec19446b4957d4e8f20ed3865b7d090d55c3cb5`
+**Integrated V1 local-consumer package:** PR #94 — `cme-local-tutor`
 
 This is the current restart handoff for `ThorStarlord/Chess-Mentor-Engine`.
 Use [`docs/product/repository-build-status.md`](docs/product/repository-build-status.md)
 as the moving implementation authority and
-[`docs/runbooks/m42-m46-learner-tutor-loop.md`](docs/runbooks/m42-m46-learner-tutor-loop.md)
-for the latest focused restart/qualification path.
+[`docs/runbooks/v1-local-tutor-vertical-slice.md`](docs/runbooks/v1-local-tutor-vertical-slice.md)
+for the latest local-consumer restart/qualification path.
 
-## Current outcome
+## Current V1 state
 
-The learner/tutor-loop milestone is complete:
+The repository has a coherent authority-separated backend and an integrated local tutor composition surface. Version 1.0 is **not yet release-qualified** because distribution identity/artifact qualification remains pending.
 
 ```text
-M42  Bounded Transfer / Retest Planning             MERGED - PR #90
-M45  Participant-Scoped Batch Mentor Queue          MERGED - PR #91
-M46  Adaptive Socratic Tutor Action Policy          MERGED - PR #92
+V1 Package 1 — Local Tutor Vertical Slice                  INTEGRATED
+V1 Package 2 — Architecture / Authority Documentation     THIS RECONCILIATION
+V1 Package 3 — Release Candidate / Distribution           PENDING
 ```
 
-These extend the previously qualified M36/M39/M40/M41/M43/M44 layer. Numbering remains intentionally non-contiguous. **M35, M37, and M38 are not implied to be implemented.** K8 is also not implied or required.
+Do not infer that a pending release package means another learner-intelligence subsystem is missing.
 
 ## Strongest qualified learner/tutor chain
 
@@ -47,140 +48,52 @@ M40 ranked next-session action proposal
         +-- transfer need --> M42 bounded transfer/retest plan
         `-- explanation ----> M44 learner-progress reference surface
 
-bounded M4D diagnostic batch + explicit participant scope
+exact M18 diagnostic queue
++ exact M44 learner-progress view
++ optional exact M42 transfer plan(s)
+        |
+        v
+V1 LOCAL TUTOR COMPOSITION (`cme-local-tutor`)
         |
         v
 M45 participant-scoped mentor queue
         |
         v
-exact M8 controlled tutor lifecycle
-+ optional M44 learner context
-+ optional M45 queue item
-+ optional M42 transfer plan
+explicit operator selection + capture consent
         |
         v
-M46 proposed next Socratic question / hint / reveal / reflection
+M23 persistence/authorization bridge -> exact persisted M8 checkpoint
         |
         v
-M8 remains actual execution / exposure / capture / reveal authority
+M46 proposed next Socratic action
+        |
+        v
+existing `cme tutor` commands remain M8 execution / exposure authority
         |
         v
 later M10 outcome evidence and M11 longitudinal state
 ```
 
-The repository has therefore moved beyond merely representing evidence. It can now deterministically assemble current learner state, explain why a learner hypothesis is held, propose a next learning action, prepare challenge/training/transfer candidates, prioritize a bounded review queue, and choose a bounded next tutoring action while preserving the evidence-measurement boundary.
+The V1 local composition layer is orchestration-only. It does not create a second learner model, silently select an intervention, execute tutoring, establish transfer, or claim mastery.
 
-## M42 — Bounded Transfer / Retest Planning
+## V1 local tutor integration provenance
 
-**PR:** #90  
-**Final head:** `4df41644b4b5ffdd9abf54d349b7048f0e514078`  
-**Merge commit:** `c8af423f37c9ad7a423594ffa5d43f83c2b2d4ab`  
-**CI run:** `34623130217`
+**PR:** #94  
+**Final head:** `9867105509e0f243a7823066d626abe1cad40148`  
+**Merge commit:** `2fd14c32e81d19222cc3e2f332337c00f8086f5f`  
+**PR CI run:** `34642933193`
 
-M42 adds content-addressed transfer-position candidates, a versioned transfer/retest policy, and content-addressed transfer/retest plans for exact M40 near/far-transfer proposals.
-
-It binds exact M40 and M9 identities, uses M10-compatible reuse keys to reject exact practice replay, makes semantic relation/surface variation/freshness/exposure explicit, and returns an explicit no-eligible-candidate result rather than weakening the policy.
-
-M42 also adds an additive M44 transfer-plan reference presentation while keeping the existing M44 v1 learner-progress contract unchanged.
+Exact-candidate qualification:
 
 ```text
-M42 plan != M10 outcome evidence
-planned != completed
-completed != successful transfer
-successful transfer != mastery
-```
-
-Final qualification:
-
-```text
-925 passed
+948 passed
 8 intentional regular-job Stockfish skips
 Ruff PASS
 compileall PASS
-independent Stockfish job PASS
+independent Stockfish integration: 8 passed
 ```
 
-## M45 — Participant-Scoped Batch Mentor Queue
-
-**PR:** #91  
-**Final head:** `0af40490d9a7a70699b1d015d65a53fb86af66f2`  
-**Merge commit:** `725de02a27c836e7fe150cc3874482cf45511444`  
-**CI run:** `34624375982`
-
-M45 binds an exact participant-agnostic M4D diagnostic batch to explicit participant-local provenance and produces a bounded deterministic mentor queue.
-
-Ranking dimensions remain separate and inspectable:
-
-```text
-M40 action alignment
-contradiction / control value
-transfer value
-learner relevance
-uncertainty reduction
-bounded objective importance
-novelty
-semantic diversity
-```
-
-Learner/challenge/transfer value can outrank a larger centipawn-loss position. Objective-only candidates remain objective-only with zero learner relevance rather than acquiring fabricated learner claims.
-
-```text
-M45 queue rank != learner hypothesis
-M45 queue rank != M9 selection
-M45 queue rank != M10 outcome
-M45 queue rank != empirically optimal review order
-```
-
-Final qualification: full repository pytest, Ruff, compileall, and independent Stockfish gate PASS on the exact final head.
-
-## M46 — Adaptive Socratic Tutor Action Policy
-
-**PR:** #92  
-**Final head:** `cc89c5cf1402d02cadf76fa0d80c903296d51aea`  
-**Merge commit:** `3ec19446b4957d4e8f20ed3865b7d090d55c3cb5`  
-**CI run:** `34629592288`
-
-M46 adds a deterministic adaptive-tutor policy/proposal over the exact M8 tutor lifecycle.
-
-Central invariant:
-
-```text
-M46 proposes the next pedagogical action
-!= M8 authorizes and records the actual tutoring transition
-```
-
-Qualified behavior preserves clean measurement:
-
-```text
-before M8 baseline freeze -> CONTINUE_BASELINE_CAPTURE only
-frozen + evidence/challenge intent -> objective reveal may be proposed
-frozen + teaching intent -> bounded assisted hint may be proposed
-frozen + transfer intent -> exact M42 transfer plan required
-post-reveal -> ASK_REFLECTION as post-reveal evidence
-completed -> NO_FURTHER_ACTION
-```
-
-Every deterministic M46 proposal states:
-
-```text
-execution_authority = proposal_only
-model_language = not_generated
-mastery = not_established
-```
-
-M46 validates exact M8/M44 identity and optionally exact M45 queue/item and M42 transfer-plan identity. It does not mutate learner state, generate live model prose, create M10 outcomes, or bypass M8 pre-reveal capture rules.
-
-The public M46 exports are lazy-loaded from `chess_mentor_engine.tutoring` so the established tutoring import graph remains stable.
-
-Final qualification:
-
-```text
-939 passed
-8 intentional regular-job Stockfish skips
-Ruff PASS
-compileall PASS
-independent Stockfish job PASS
-```
+Focused V1 tests include positive workflow coverage plus tamper, participant-drift, queue/session-drift, declined-selection/consent, and authority-edge rejection cases.
 
 ## Durable authority boundaries
 
@@ -199,6 +112,8 @@ M42 transfer plan != M10 transfer evidence
 M44 rendering != learner inference
 M45 mentor priority != learner diagnosis or intervention selection
 M46 tutor proposal != M8 tutoring execution / exposure authority
+V1 local composition != new chess / learner / pedagogy / outcome authority
+M45 rank one != implicit user consent
 assisted response != baseline unassisted evidence
 post-reveal reflection != pre-reveal evidence
 successful evidence case != mastery
@@ -207,26 +122,31 @@ M16 deterministic grounding != M19 model prose
 M20 evaluator acceptance != objective chess truth
 ```
 
-## Product-pulled ontology rule
+## Current operational surfaces
 
-M42, M45, and M46 all shipped without a generic K8. That is the desired default.
+Installed operator commands include:
 
 ```text
-concrete learner/tutor consumer needs semantic distinction X
--> prove K0-K7 cannot represent X safely
--> add the minimum ontology extension
--> add rejection tests
--> consume it in the requesting feature
--> qualify ontology + consumer together
+cme
+cme-local-tutor
+cme-candidate-tutor
+cme-coach-review
+cme-reviewed-coaching
+cme-reviewed-coaching-ledger
+cme-coach-review-reference
+cme-persisted-coach-review-reference
+cme-participant-review
 ```
 
-Do not expand ontology coverage merely to increase vocabulary or detector count.
+`cme-local-tutor start|next` composes exact already-qualified artifacts and persisted M8 state. Actual M8 tutoring transitions still use the existing `cme tutor ...` commands.
 
-## Current operational boundary
+M36/M39/M40/M41/M42/M43/M44/M45/M46 remain deterministic Python APIs and/or local reference surfaces. The V1 composition does not create a hosted runtime or production frontend.
 
-M36/M39/M40/M41/M42/M43/M44/M45/M46 are deterministic Python APIs and/or local reference surfaces. Existing M12–M30 commands remain the established CLI/operator surface. This milestone adds no production frontend, hosted runtime, paid/live model call, or production credential requirement.
+## Current claim ceiling
 
-The repository still cannot mechanically establish:
+The repository can mechanically establish deterministic local composition, provenance/identity checks, authority preservation, engine-to-consumer evaluation fidelity, and hermetic workflow behavior.
+
+It still cannot mechanically establish:
 
 - real participant usefulness or approval;
 - production browser/device/accessibility/usability quality;
@@ -236,19 +156,10 @@ The repository still cannot mechanically establish:
 - hosted authentication or multi-tenancy readiness;
 - production provider retry/cost/secrets operations.
 
-## Next decision boundary
+## Remaining Version 1.0 repository blocker
 
-**Do not automatically start another backend milestone.** The backend learner/tutor loop is now coherent enough that the next work should be pulled by a concrete product bottleneck.
+The next required V1 package is **Release Candidate & Distribution Qualification**. It must reconcile package identity/version, build a distributable artifact, clean-install that artifact, smoke the promised installed commands/package data, and add the clean-install witness to release qualification while preserving the existing full repository gate.
 
-A fresh live-main audit should choose between two leading directions:
+Until that package is qualified, do not claim `VERSION_1_REPOSITORY_READY`.
 
-1. **Concrete end-to-end local consumer** (`REPOSITORY_ONLY / HERMETIC_VALIDATION`)
-   - make the already-qualified path easy to exercise as one local workflow:
-     `recent games -> M45 queue -> M8/M46 tutoring -> reflection -> M42/M10 retest`;
-   - reuse existing contracts rather than add a new authority layer;
-   - this is the preferred default if the product is currently hard to experience end to end.
-2. **M47 bounded multi-session study plan** (`REPOSITORY_ONLY / HERMETIC_VALIDATION`)
-   - only if the active product need is composing several existing M40/M41/M42 actions into a short revisable plan;
-   - preserve revision history, contradiction/retest checkpoints, and no mastery/optimality claim.
-
-M35/M37 should be pulled forward only by a concrete operator/compatibility blocker. M38 must not become a second recurrence engine; reuse M7C. K8 must remain product-pulled.
+M35, M37, M38, K8, M47, hosted deployment, multi-tenancy, mobile, gamification, generic provider expansion, and empirical tutoring research are not substitutes for this remaining V1 release task.
