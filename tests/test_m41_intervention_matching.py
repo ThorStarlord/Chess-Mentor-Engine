@@ -3,13 +3,15 @@ from __future__ import annotations
 from dataclasses import replace
 
 import pytest
-from test_m40_next_session_planner import _entry, _plan_for
+from test_m40_next_session_planner import _entry, _plan_for, _read_model, _synthesis
 from test_m9_qualification import _intervention, _registry, _training_author
 
 from chess_mentor_engine.chess_knowledge import OntologyRegistry
 from chess_mentor_engine.learner_intelligence import (
     build_default_intervention_matching_policy,
+    build_default_next_session_policy,
     build_intervention_candidate_set,
+    build_next_session_plan,
     define_intervention_semantic_profile,
     validate_intervention_candidate_set,
     validate_intervention_matching_policy,
@@ -20,25 +22,33 @@ CREATED_AT = "2026-09-11T14:30:00-03:00"
 
 
 def _teaching_plan(*, concept_ids=("tactic.fork",)):
-    plan, read_model, syntheses, _ = _plan_for(_entry(), contradiction_count=1)
-    synthesis = replace(syntheses[0], concept_ids=concept_ids)
-    plan = replace(
-        plan,
-        candidates=tuple(
-            replace(item, concept_ids=concept_ids, synthesis_ref=replace(
-                item.synthesis_ref,
-                ref_id=synthesis.synthesis_id,
-                fingerprint=synthesis.fingerprint,
-            ))
-            for item in plan.candidates
-        ),
-        selected_candidate=None,
+    entry = _entry()
+    read_model = _read_model(entry)
+    synthesis = _synthesis(
+        read_model,
+        entry,
+        contradiction_count=1,
+        concept_ids=concept_ids,
     )
-    plan = replace(plan, selected_candidate=plan.candidates[0])
+    plan = build_next_session_plan(
+        learner_read_model=read_model,
+        evidence_syntheses=(synthesis,),
+        policy=build_default_next_session_policy(),
+        created_at="2026-09-11T14:25:00-03:00",
+    )
+    assert plan.selected_candidate.action == "TEACH_CONCEPT"
     return plan, read_model, synthesis
 
 
-def _profile(intervention, ontology, *, target=(), reinforce=(), contraindicated=(), modes=()):
+def _profile(
+    intervention,
+    ontology,
+    *,
+    target=(),
+    reinforce=(),
+    contraindicated=(),
+    modes=(),
+):
     return define_intervention_semantic_profile(
         intervention=intervention,
         ontology=ontology,
@@ -108,7 +118,8 @@ def test_m41_preserves_multiple_eligible_candidates_without_selecting_one():
         created_at=CREATED_AT,
     )
 
-    assert all(item.status == "eligible_candidate" for item in result.ranked_candidates)
+    statuses = tuple(item.status for item in result.ranked_candidates)
+    assert statuses == ("eligible_candidate", "eligible_candidate")
     assert result.selection_authority == "not_exercised"
     assert not hasattr(result, "selected_intervention")
 
@@ -141,7 +152,7 @@ def test_m41_explicit_contraindication_is_ineligible():
     assert candidate.contraindication_matches == ("tactic.fork",)
 
 
-def test_m41_empty_concept_context_stays_insufficient_instead_of_parsing_prose():
+def test_m41_empty_concept_context_stays_insufficient():
     ontology = OntologyRegistry.load_default()
     plan, _, synthesis = _teaching_plan(concept_ids=())
     intervention = _intervention()
@@ -158,7 +169,10 @@ def test_m41_empty_concept_context_stays_insufficient_instead_of_parsing_prose()
 
     assert result.target_concept_ids == ()
     assert result.ranked_candidates[0].status == "insufficient_information"
-    assert any("will not infer concepts from free text" in gap for gap in result.matching_gaps)
+    assert any(
+        "will not infer concepts from free text" in gap
+        for gap in result.matching_gaps
+    )
 
 
 def test_m41_rejects_non_teaching_m40_action():
@@ -217,7 +231,9 @@ def test_m41_profile_and_policy_identity_are_tamper_detectable():
 
     policy = build_default_intervention_matching_policy()
     with pytest.raises(ValueError, match="policy fingerprint mismatch"):
-        validate_intervention_matching_policy(replace(policy, fingerprint="tampered"))
+        validate_intervention_matching_policy(
+            replace(policy, fingerprint="tampered")
+        )
 
 
 def test_m41_candidate_set_is_rebuildable_and_tamper_detectable():
