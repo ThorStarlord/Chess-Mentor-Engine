@@ -57,6 +57,28 @@ This is an inspectable product heuristic, not an empirically optimal transfer de
 
 K0-K7 is optional semantic validation. M42 validates supplied concept IDs when an ontology snapshot is supplied but does not require a new ontology schema. Add ontology semantics only if a concrete transfer consumer proves K0-K7 cannot represent a necessary distinction safely.
 
+## Additive M44 presentation
+
+The existing `m44.learner-progress-view.v1` and its base reference surface remain unchanged. M42 adds an optional presentation-only layer:
+
+```text
+exact M44 learner-progress view
++ zero/one exact M42 plan per hypothesis
+-> m44.learner-progress-transfer-reference-surface.v1
+```
+
+This additive surface validates the M44 view identity, exact M40 plan reference, participant, current hypothesis revision, and near/far action match before rendering. It can show the transfer kind, measurement target, selected game/position, semantic relation, freshness, held-constant dimensions, varied dimensions, and explicit planning gaps.
+
+The presentation repeats the claim boundary visibly:
+
+```text
+planned != completed
+completed != successful transfer
+successful transfer != mastery
+```
+
+It does not modify the M44 v1 view schema and creates no M10 or execution authority.
+
 ## Rejection cases
 
 M42 fails closed for:
@@ -71,6 +93,8 @@ M42 fails closed for:
 - previously exposed candidates when freshness is required;
 - near-only surface variation presented as far transfer;
 - unknown ontology concepts when ontology validation is requested;
-- tampered candidate, policy, or plan identities.
+- tampered candidate, policy, plan, M44 view, or additive surface identities;
+- duplicate M42 plans for one M44 hypothesis;
+- M42 plan bound to a different M40 plan/revision/action than the M44 view.
 
 An empty eligible pool is a valid `no_eligible_candidate` result with explicit blocking uncertainty; it is not silently converted into a lower-quality test.
