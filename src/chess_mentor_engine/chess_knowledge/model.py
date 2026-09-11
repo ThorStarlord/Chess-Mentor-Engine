@@ -215,7 +215,9 @@ class ChessConcept:
         _require_unique("parent_ids", self.parent_ids)
         if self.concept_id in self.parent_ids:
             raise ValueError("concept cannot be its own parent")
-        relation_keys = tuple((item.kind, item.target_id) for item in self.relationships)
+        relation_keys = tuple(
+            (item.kind, item.target_id) for item in self.relationships
+        )
         if len(set(relation_keys)) != len(relation_keys):
             raise ValueError("concept relationships must be unique")
         mapping_keys = tuple(
@@ -224,16 +226,22 @@ class ChessConcept:
         )
         if len(set(mapping_keys)) != len(mapping_keys):
             raise ValueError("external mappings must be unique")
-        if self.detection_support == "deterministic" and self.default_assertion_authority not in {
-            "rule_derived",
-            "deterministic_position_fact",
-        }:
+        if (
+            self.detection_support == "deterministic"
+            and self.default_assertion_authority
+            not in {
+                "rule_derived",
+                "deterministic_position_fact",
+            }
+        ):
             raise ValueError("deterministic concepts require deterministic authority")
         if (
             self.detection_support == "sequence_based"
             and self.default_assertion_authority != "deterministic_sequence_pattern"
         ):
-            raise ValueError("sequence-based concepts require sequence-pattern authority")
+            raise ValueError(
+                "sequence-based concepts require sequence-pattern authority"
+            )
         if (
             self.detection_support == "heuristic"
             and self.default_assertion_authority
