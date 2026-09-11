@@ -32,7 +32,10 @@ dev = [
 where = ["src"]
 
 [tool.setuptools.package-data]
-chess_mentor_engine = ["py.typed"]
+chess_mentor_engine = [
+    "py.typed",
+    "chess_knowledge/data/*.json",
+]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

@@ -1,0 +1,434 @@
+{
+  "schema_version": "chess-knowledge-ontology.v1",
+  "content_version": "1.0.0",
+  "concepts": [
+    {
+      "id": "group.tactical",
+      "kind": "concept_group",
+      "preferred_name": "Tactical Concepts",
+      "definition": "Grouping node for concrete short-horizon tactical mechanisms and resources.",
+      "detection_support": "none",
+      "default_assertion_authority": "heuristic_assessment"
+    },
+    {
+      "id": "group.tactical_direct",
+      "kind": "concept_group",
+      "preferred_name": "Geometric and Direct Attack Motifs",
+      "definition": "Tactical mechanisms driven primarily by direct attacks and geometric alignments.",
+      "detection_support": "none",
+      "default_assertion_authority": "heuristic_assessment",
+      "parent_ids": ["group.tactical"]
+    },
+    {
+      "id": "group.tactical_defender",
+      "kind": "concept_group",
+      "preferred_name": "Defender and Piece Manipulation",
+      "definition": "Tactical mechanisms that exploit defensive duties, overloaded pieces, or restricted mobility.",
+      "detection_support": "none",
+      "default_assertion_authority": "heuristic_assessment",
+      "parent_ids": ["group.tactical"]
+    },
+    {
+      "id": "group.tactical_tempo",
+      "kind": "concept_group",
+      "preferred_name": "Line and Tempo Manipulation",
+      "definition": "Tactical mechanisms that alter lines, move order, or tactical timing.",
+      "detection_support": "none",
+      "default_assertion_authority": "heuristic_assessment",
+      "parent_ids": ["group.tactical"]
+    },
+    {
+      "id": "group.tactical_pawn",
+      "kind": "concept_group",
+      "preferred_name": "Pawn and Promotion Tactics",
+      "definition": "Tactical mechanisms centered on pawn breakthroughs or promotion.",
+      "detection_support": "none",
+      "default_assertion_authority": "heuristic_assessment",
+      "parent_ids": ["group.tactical"]
+    },
+    {
+      "id": "group.mating_patterns",
+      "kind": "concept_group",
+      "preferred_name": "Classic Mating Patterns",
+      "definition": "Named geometric checkmate patterns used for recognition and coaching.",
+      "detection_support": "none",
+      "default_assertion_authority": "heuristic_assessment",
+      "parent_ids": ["group.tactical"]
+    },
+    {
+      "id": "group.defensive_resources",
+      "kind": "concept_group",
+      "preferred_name": "Defensive and Drawing Resources",
+      "definition": "Tactical or positional resources primarily used to resist loss or secure a draw.",
+      "detection_support": "none",
+      "default_assertion_authority": "heuristic_assessment",
+      "parent_ids": ["group.tactical"]
+    },
+    {
+      "id": "tactic.fork",
+      "kind": "tactical_motif",
+      "preferred_name": "Fork",
+      "definition": "One piece attacks two or more opposing targets simultaneously.",
+      "detection_support": "sequence_based",
+      "default_assertion_authority": "deterministic_sequence_pattern",
+      "aliases": ["Double Attack"],
+      "parent_ids": ["group.tactical_direct"],
+      "external_mappings": [{"namespace": "lichess.puzzle_theme", "external_id": "fork", "relation": "exact"}],
+      "pedagogy": {
+        "recognition_questions": ["After this move, how many valuable enemy targets does the moved piece attack?"],
+        "common_misconceptions": ["A fork must always attack the king."],
+        "training_modes": ["fork_recognition", "candidate_move_enumeration"],
+        "learner_band": "foundational_to_intermediate"
+      }
+    },
+    {
+      "id": "tactic.absolute_pin",
+      "kind": "tactical_motif",
+      "preferred_name": "Absolute Pin",
+      "definition": "A piece cannot legally move because doing so would expose its own king to check.",
+      "detection_support": "deterministic",
+      "default_assertion_authority": "deterministic_position_fact",
+      "parent_ids": ["group.tactical_direct"],
+      "external_mappings": [{"namespace": "lichess.puzzle_theme", "external_id": "pin", "relation": "broader"}]
+    },
+    {
+      "id": "tactic.relative_pin",
+      "kind": "tactical_motif",
+      "preferred_name": "Relative Pin",
+      "definition": "A piece may legally move, but doing so exposes a strategically or materially more valuable target behind it.",
+      "detection_support": "heuristic",
+      "default_assertion_authority": "heuristic_assessment",
+      "parent_ids": ["group.tactical_direct"],
+      "external_mappings": [{"namespace": "lichess.puzzle_theme", "external_id": "pin", "relation": "broader"}]
+    },
+    {
+      "id": "tactic.skewer",
+      "kind": "tactical_motif",
+      "preferred_name": "Skewer",
+      "definition": "A higher-value target is attacked along a line and, after it moves, a lower-value target behind it is exposed.",
+      "detection_support": "sequence_based",
+      "default_assertion_authority": "deterministic_sequence_pattern",
+      "aliases": ["Reverse Pin"],
+      "parent_ids": ["group.tactical_direct"],
+      "relationships": [{"kind": "related_to", "target_id": "tactic.relative_pin"}],
+      "external_mappings": [{"namespace": "lichess.puzzle_theme", "external_id": "skewer", "relation": "exact"}]
+    },
+    {
+      "id": "tactic.discovered_attack",
+      "kind": "tactical_motif",
+      "preferred_name": "Discovered Attack",
+      "definition": "Moving one piece uncovers an attack by a friendly long-range piece that had been blocked.",
+      "detection_support": "sequence_based",
+      "default_assertion_authority": "deterministic_sequence_pattern",
+      "parent_ids": ["group.tactical_direct"],
+      "external_mappings": [{"namespace": "lichess.puzzle_theme", "external_id": "discoveredAttack", "relation": "exact"}]
+    },
+    {
+      "id": "tactic.discovered_check",
+      "kind": "tactical_motif",
+      "preferred_name": "Discovered Check",
+      "definition": "A discovered attack in which the newly uncovered line checks the opposing king.",
+      "detection_support": "sequence_based",
+      "default_assertion_authority": "deterministic_sequence_pattern",
+      "parent_ids": ["group.tactical_direct"],
+      "relationships": [{"kind": "requires", "target_id": "tactic.discovered_attack"}],
+      "external_mappings": [{"namespace": "lichess.puzzle_theme", "external_id": "discoveredCheck", "relation": "exact"}]
+    },
+    {
+      "id": "tactic.double_check",
+      "kind": "tactical_motif",
+      "preferred_name": "Double Check",
+      "definition": "Two pieces simultaneously give check to the opposing king after one move.",
+      "detection_support": "sequence_based",
+      "default_assertion_authority": "deterministic_sequence_pattern",
+      "parent_ids": ["group.tactical_direct"],
+      "relationships": [{"kind": "related_to", "target_id": "tactic.discovered_check"}],
+      "external_mappings": [{"namespace": "lichess.puzzle_theme", "external_id": "doubleCheck", "relation": "exact"}]
+    },
+    {
+      "id": "tactic.x_ray_attack",
+      "kind": "tactical_motif",
+      "preferred_name": "X-Ray Attack",
+      "definition": "A long-range piece exerts latent attack or defensive influence through an intervening opposing piece.",
+      "detection_support": "heuristic",
+      "default_assertion_authority": "heuristic_assessment",
+      "aliases": ["X-Ray Defense"],
+      "parent_ids": ["group.tactical_direct"],
+      "external_mappings": [{"namespace": "lichess.puzzle_theme", "external_id": "xRayAttack", "relation": "exact"}]
+    },
+    {
+      "id": "tactic.capturing_defender",
+      "kind": "tactical_motif",
+      "preferred_name": "Capturing the Defender",
+      "definition": "A critical defending piece is captured so its defended target or square becomes vulnerable.",
+      "detection_support": "sequence_based",
+      "default_assertion_authority": "deterministic_sequence_pattern",
+      "parent_ids": ["group.tactical_defender"],
+      "relationships": [{"kind": "related_to", "target_id": "tactic.deflection"}],
+      "external_mappings": [{"namespace": "lichess.puzzle_theme", "external_id": "capturingDefender", "relation": "exact"}]
+    },
+    {
+      "id": "tactic.deflection",
+      "kind": "tactical_motif",
+      "preferred_name": "Deflection",
+      "definition": "A move forces or induces an opposing piece away from a defensive duty, enabling another tactical objective.",
+      "detection_support": "heuristic",
+      "default_assertion_authority": "heuristic_assessment",
+      "aliases": ["Removal of the Guard"],
+      "parent_ids": ["group.tactical_defender"],
+      "relationships": [
+        {"kind": "related_to", "target_id": "tactic.capturing_defender"},
+        {"kind": "related_to", "target_id": "tactic.overload"}
+      ],
+      "external_mappings": [{"namespace": "lichess.puzzle_theme", "external_id": "deflection", "relation": "exact"}],
+      "pedagogy": {
+        "recognition_questions": ["Which opposing piece is performing a critical defensive job?"],
+        "common_misconceptions": ["A defended target cannot be attacked successfully until it becomes literally undefended."],
+        "training_modes": ["critical_defender_identification", "deflection_puzzles"],
+        "learner_band": "intermediate"
+      }
+    },
+    {
+      "id": "tactic.attraction",
+      "kind": "tactical_motif",
+      "preferred_name": "Attraction",
+      "definition": "A move forces or encourages an opposing piece onto a square where a follow-up tactic becomes possible.",
+      "detection_support": "heuristic",
+      "default_assertion_authority": "heuristic_assessment",
+      "aliases": ["Decoy"],
+      "parent_ids": ["group.tactical_defender"],
+      "external_mappings": [{"namespace": "lichess.puzzle_theme", "external_id": "attraction", "relation": "exact"}]
+    },
+    {
+      "id": "tactic.overload",
+      "kind": "tactical_motif",
+      "preferred_name": "Overloaded Piece",
+      "definition": "One defending piece carries multiple critical duties that cannot all be maintained after the tactical sequence.",
+      "detection_support": "heuristic",
+      "default_assertion_authority": "heuristic_assessment",
+      "parent_ids": ["group.tactical_defender"],
+      "relationships": [{"kind": "related_to", "target_id": "tactic.deflection"}]
+    },
+    {
+      "id": "tactic.interference",
+      "kind": "tactical_motif",
+      "preferred_name": "Interference",
+      "definition": "A move blocks an opposing line of attack or defense between two pieces or between a piece and a critical square.",
+      "detection_support": "sequence_based",
+      "default_assertion_authority": "deterministic_sequence_pattern",
+      "parent_ids": ["group.tactical_defender"],
+      "external_mappings": [{"namespace": "lichess.puzzle_theme", "external_id": "interference", "relation": "exact"}]
+    },
+    {
+      "id": "tactic.trapped_piece",
+      "kind": "tactical_motif",
+      "preferred_name": "Trapped Piece",
+      "definition": "A piece has no adequate escape from an impending material loss because its legal or safe mobility is restricted.",
+      "detection_support": "heuristic",
+      "default_assertion_authority": "heuristic_assessment",
+      "parent_ids": ["group.tactical_defender"],
+      "external_mappings": [{"namespace": "lichess.puzzle_theme", "external_id": "trappedPiece", "relation": "exact"}]
+    },
+    {
+      "id": "tactic.desperado",
+      "kind": "tactical_motif",
+      "preferred_name": "Desperado",
+      "definition": "A piece expected to be lost first extracts the greatest available material, checking, or positional value.",
+      "detection_support": "heuristic",
+      "default_assertion_authority": "heuristic_assessment",
+      "parent_ids": ["group.tactical_defender"]
+    },
+    {
+      "id": "tactic.clearance",
+      "kind": "tactical_motif",
+      "preferred_name": "Clearance",
+      "definition": "A move vacates a square, file, rank, or diagonal so another friendly piece can use that line or square.",
+      "detection_support": "heuristic",
+      "default_assertion_authority": "heuristic_assessment",
+      "aliases": ["Clearance Sacrifice"],
+      "parent_ids": ["group.tactical_tempo"],
+      "external_mappings": [{"namespace": "lichess.puzzle_theme", "external_id": "clearance", "relation": "exact"}]
+    },
+    {
+      "id": "tactic.intermezzo",
+      "kind": "tactical_motif",
+      "preferred_name": "Intermezzo",
+      "definition": "An intermediate forcing move is inserted before an otherwise expected continuation such as a recapture.",
+      "detection_support": "heuristic",
+      "default_assertion_authority": "heuristic_assessment",
+      "aliases": ["Zwischenzug", "In-between Move"],
+      "parent_ids": ["group.tactical_tempo"],
+      "external_mappings": [{"namespace": "lichess.puzzle_theme", "external_id": "intermezzo", "relation": "exact"}]
+    },
+    {
+      "id": "tactic.quiet_move",
+      "kind": "tactical_motif",
+      "preferred_name": "Quiet Move",
+      "definition": "A non-checking, non-capturing move in a tactical sequence creates or preserves a decisive threat.",
+      "detection_support": "heuristic",
+      "default_assertion_authority": "heuristic_assessment",
+      "parent_ids": ["group.tactical_tempo"],
+      "external_mappings": [{"namespace": "lichess.puzzle_theme", "external_id": "quietMove", "relation": "exact"}]
+    },
+    {
+      "id": "tactic.sacrifice",
+      "kind": "tactical_motif",
+      "preferred_name": "Sacrifice",
+      "definition": "Material is deliberately given up in a forcing or concrete sequence to obtain compensating tactical value.",
+      "detection_support": "heuristic",
+      "default_assertion_authority": "heuristic_assessment",
+      "parent_ids": ["group.tactical_tempo"],
+      "external_mappings": [{"namespace": "lichess.puzzle_theme", "external_id": "sacrifice", "relation": "exact"}]
+    },
+    {
+      "id": "tactic.promotion",
+      "kind": "tactical_motif",
+      "preferred_name": "Promotion Tactic",
+      "definition": "A tactical sequence whose decisive mechanism includes promoting a pawn.",
+      "detection_support": "sequence_based",
+      "default_assertion_authority": "deterministic_sequence_pattern",
+      "parent_ids": ["group.tactical_pawn"],
+      "external_mappings": [{"namespace": "lichess.puzzle_theme", "external_id": "promotion", "relation": "exact"}]
+    },
+    {
+      "id": "tactic.underpromotion",
+      "kind": "tactical_motif",
+      "preferred_name": "Underpromotion",
+      "definition": "A pawn promotes to a rook, bishop, or knight rather than a queen because that choice serves the position better.",
+      "detection_support": "sequence_based",
+      "default_assertion_authority": "deterministic_sequence_pattern",
+      "parent_ids": ["group.tactical_pawn"],
+      "relationships": [{"kind": "requires", "target_id": "tactic.promotion"}],
+      "external_mappings": [{"namespace": "lichess.puzzle_theme", "external_id": "underPromotion", "relation": "exact"}]
+    },
+    {
+      "id": "tactic.pawn_breakthrough",
+      "kind": "tactical_motif",
+      "preferred_name": "Pawn Breakthrough",
+      "definition": "Pawn advances or sacrifices create a forced route for a surviving pawn to promote.",
+      "detection_support": "heuristic",
+      "default_assertion_authority": "heuristic_assessment",
+      "parent_ids": ["group.tactical_pawn"]
+    },
+    {
+      "id": "tactic.attacking_f2_f7",
+      "kind": "tactical_motif",
+      "preferred_name": "Attack on f2 or f7",
+      "definition": "A tactical attack concentrates on the initially king-only defended f2 or f7 pawn and surrounding king geometry.",
+      "detection_support": "heuristic",
+      "default_assertion_authority": "heuristic_assessment",
+      "aliases": ["Weak f2/f7"],
+      "parent_ids": ["group.tactical_direct"],
+      "external_mappings": [{"namespace": "lichess.puzzle_theme", "external_id": "attackingF2F7", "relation": "exact"}]
+    },
+    {
+      "id": "mate.back_rank",
+      "kind": "mating_pattern",
+      "preferred_name": "Back-Rank Mate",
+      "definition": "A rook or queen mates a king confined on its home rank by its own pieces or otherwise unavailable escape squares.",
+      "detection_support": "heuristic",
+      "default_assertion_authority": "heuristic_assessment",
+      "parent_ids": ["group.mating_patterns"],
+      "external_mappings": [{"namespace": "lichess.puzzle_theme", "external_id": "backRankMate", "relation": "exact"}]
+    },
+    {
+      "id": "mate.smothered",
+      "kind": "mating_pattern",
+      "preferred_name": "Smothered Mate",
+      "definition": "A knight checkmates a king whose escape squares are occupied or otherwise blocked by its own pieces.",
+      "detection_support": "heuristic",
+      "default_assertion_authority": "heuristic_assessment",
+      "parent_ids": ["group.mating_patterns"],
+      "external_mappings": [{"namespace": "lichess.puzzle_theme", "external_id": "smotheredMate", "relation": "exact"}]
+    },
+    {
+      "id": "mate.anastasia",
+      "kind": "mating_pattern",
+      "preferred_name": "Anastasia's Mate",
+      "definition": "A knight controls key escape squares while a rook or queen mates a king confined near the edge of the board.",
+      "detection_support": "heuristic",
+      "default_assertion_authority": "heuristic_assessment",
+      "parent_ids": ["group.mating_patterns"],
+      "external_mappings": [{"namespace": "lichess.puzzle_theme", "external_id": "anastasiaMate", "relation": "exact"}]
+    },
+    {
+      "id": "mate.arabian",
+      "kind": "mating_pattern",
+      "preferred_name": "Arabian Mate",
+      "definition": "A rook and knight coordinate to mate a king in or near a corner, with the knight protecting the rook and covering escape squares.",
+      "detection_support": "heuristic",
+      "default_assertion_authority": "heuristic_assessment",
+      "parent_ids": ["group.mating_patterns"],
+      "external_mappings": [{"namespace": "lichess.puzzle_theme", "external_id": "arabianMate", "relation": "exact"}]
+    },
+    {
+      "id": "mate.boden",
+      "kind": "mating_pattern",
+      "preferred_name": "Boden's Mate",
+      "definition": "Two bishops on crossing diagonals mate a king whose escape is restricted by its own pieces.",
+      "detection_support": "heuristic",
+      "default_assertion_authority": "heuristic_assessment",
+      "parent_ids": ["group.mating_patterns"],
+      "external_mappings": [{"namespace": "lichess.puzzle_theme", "external_id": "bodenMate", "relation": "exact"}]
+    },
+    {
+      "id": "mate.dovetail",
+      "kind": "mating_pattern",
+      "preferred_name": "Dovetail Mate",
+      "definition": "A queen mates an adjacent king while the king's diagonal escape squares are obstructed by friendly pieces or controlled squares.",
+      "detection_support": "heuristic",
+      "default_assertion_authority": "heuristic_assessment",
+      "aliases": ["Cozio Mate"],
+      "parent_ids": ["group.mating_patterns"],
+      "external_mappings": [{"namespace": "lichess.puzzle_theme", "external_id": "dovetailMate", "relation": "exact"}]
+    },
+    {
+      "id": "mate.hook",
+      "kind": "mating_pattern",
+      "preferred_name": "Hook Mate",
+      "definition": "A rook, knight, and supporting pawn coordinate to mate a king whose mobility is restricted by nearby pieces, commonly including an opposing pawn.",
+      "detection_support": "heuristic",
+      "default_assertion_authority": "heuristic_assessment",
+      "parent_ids": ["group.mating_patterns"],
+      "external_mappings": [{"namespace": "lichess.puzzle_theme", "external_id": "hookMate", "relation": "exact"}]
+    },
+    {
+      "id": "defense.perpetual_check",
+      "kind": "defensive_resource",
+      "preferred_name": "Perpetual Check",
+      "definition": "A checking sequence can be repeated so the opponent cannot escape without allowing repetition or another drawing mechanism.",
+      "detection_support": "heuristic",
+      "default_assertion_authority": "heuristic_assessment",
+      "parent_ids": ["group.defensive_resources"]
+    },
+    {
+      "id": "defense.stalemate_resource",
+      "kind": "defensive_resource",
+      "preferred_name": "Stalemate Resource",
+      "definition": "A defensive sequence aims to reach a position where the side to move has no legal move while not in check.",
+      "detection_support": "heuristic",
+      "default_assertion_authority": "heuristic_assessment",
+      "aliases": ["Stalemate Trick"],
+      "parent_ids": ["group.defensive_resources"]
+    },
+    {
+      "id": "defense.fortress",
+      "kind": "defensive_resource",
+      "preferred_name": "Fortress",
+      "definition": "A materially inferior side establishes a position the opponent cannot practically or theoretically break without conceding the drawing structure.",
+      "detection_support": "heuristic",
+      "default_assertion_authority": "heuristic_assessment",
+      "parent_ids": ["group.defensive_resources"]
+    },
+    {
+      "id": "defense.zugzwang",
+      "kind": "defensive_resource",
+      "preferred_name": "Zugzwang",
+      "definition": "The obligation to move worsens a side's position because all available moves concede something important.",
+      "detection_support": "heuristic",
+      "default_assertion_authority": "heuristic_assessment",
+      "parent_ids": ["group.defensive_resources"],
+      "external_mappings": [{"namespace": "lichess.puzzle_theme", "external_id": "zugzwang", "relation": "exact"}]
+    }
+  ]
+}
