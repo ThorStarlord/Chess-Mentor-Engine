@@ -1,20 +1,21 @@
 # Chess Mentor Engine
 
 Chess Mentor Engine is a persistent chess-learning system that keeps objective
-chess evidence, participant evidence, learner inference, tutoring, model-authored
-language, model-output evaluation, review mechanics, and pedagogy in separate
-provenance-bearing layers.
+chess evidence, chess-knowledge semantics, participant evidence, learner inference,
+tutoring, model-authored language, model-output evaluation, review mechanics, and
+pedagogy in separate provenance-bearing layers.
 
 > **Current implementation authority:**
 > [`docs/product/repository-build-status.md`](docs/product/repository-build-status.md)
 >  
-> **Latest completed milestone handoff:** [`STATUS.md`](STATUS.md)  
+> **Latest repository handoff:** [`STATUS.md`](STATUS.md)  
 > **Contributor orientation:** [`CONTEXT.md`](CONTEXT.md)  
 > **Architecture map:**
 > [`docs/architecture/architecture.md`](docs/architecture/architecture.md)
 
-**Current implementation boundary:** M34 — Hermetic Reviewed-Coaching Recovery
-Reconciliation. M1–M34 are qualified; M32–M34 are the latest completed milestone.
+**Current qualified boundary:** numbered milestones M1–M34 plus the post-M34 Chess
+Knowledge Ontology program K0–K7. The K labels are a separate qualified package
+namespace and do not consume provisional M35+ roadmap labels.
 
 Repository description: Persistent AI chess tutor that learns how you think,
 diagnoses recurring mistakes, and turns game evidence into personalized training.
@@ -26,22 +27,22 @@ or bad. Chess Mentor Engine is aimed at the harder longitudinal problem:
 
 ```text
 What is objectively happening on the board?
+Which chess concepts describe that evidence, and under what authority?
 What did this player actually notice, consider, and expect?
 What recurring explanation is currently supported strongly enough to affect teaching?
 What should the player practice next?
 Did that learning transfer into later play?
 ```
 
-The repository therefore treats evidence, inference, model language, evaluator
-judgment, and pedagogy as different authorities. A convincing model explanation is
-not promoted into chess truth, and repeated errors are not automatically promoted
-into permanent cognitive traits.
+The repository therefore treats chess evidence, concept semantics, participant
+evidence, learner inference, model language, evaluator judgment, and pedagogy as
+different authorities. A registered concept is not automatically present in a
+position; concept presence is not automatically a learner weakness; and a convincing
+model explanation is not promoted into chess truth.
 
 ## Current bounded product path
 
-The qualified repository path now reaches from deterministic chess evidence through
-persistent reviewed coaching, participant review delivery, provenance tracing, and
-hermetic recovery planning:
+The qualified product path remains:
 
 ```text
 PGN / canonical position
@@ -76,12 +77,26 @@ PGN / canonical position
 -> append-only M11 longitudinal learner state
 ```
 
-Not every application must invoke every optional downstream layer. Every arrow is
-still an authority boundary.
+The Chess Knowledge Ontology is a cross-cutting semantic layer over that path:
+
+```text
+canonical chess subject
+-> K0–K3 registered concept definition
+-> optional K4 provenance-bound assertion
+-> optional K5 deterministic detector for the qualified mechanical subset
+
+exact K4 assertion bundle
+   +--> K6 model-consumable ontology sidecar bound to an unchanged M19 request
+   +--> K7 learner-knowledge projection + existing M7C recurrence assessment
+        -> original M7C relation preserved verbatim
+```
+
+Not every application must invoke every optional layer. Every arrow remains an
+authority boundary.
 
 ## Capability map
 
-| Milestones | Qualified capability |
+| Packages | Qualified capability |
 | --- | --- |
 | M1–M4 | Canonical games/positions, deterministic chess context/features, normalized engine evidence, played-decision comparison, and explicit diagnostic selection. |
 | M5–M7 | Frozen participant evidence, position-local reasoning discrepancy, participant-specific learner hypotheses, recurrence, challenge, and contradiction evidence. |
@@ -91,6 +106,9 @@ still an authority boundary.
 | M23–M27 | Diagnostic-to-persistent-tutor operator, provider/evaluator execution conformance, coach-review read model, persistent reviewed coaching, and mechanical execution ledger. |
 | M28–M31 | Deterministic local review surface, persisted-review bridge, participant-scoped navigation/export, and hermetic privacy/manual-retry preflight. |
 | M32–M34 | Machine-consumer review-delivery fidelity, deterministic mentor-feedback traceability, and hermetic reviewed-coaching recovery reconciliation. |
+| K0–K3 | Versioned Chess Knowledge Ontology authority, strict registry/validation, tactical/Lichess crosswalk, position features, principles, evaluation factors, plans, and pedagogy metadata. |
+| K4–K5 | Provenance-bound knowledge assertions plus a deliberately conservative deterministic detector subset. |
+| K6–K7 | Authority-preserving ontology projection for model consumers and M7C-preserving learner-knowledge projection. |
 
 See the moving
 [`repository-build-status.md`](docs/product/repository-build-status.md) for exact PR,
@@ -98,10 +116,16 @@ qualification, and current-boundary details.
 
 ## Core authority rules
 
-The implementation is built around these separations:
-
 ```text
-objective chess truth != participant self-report != learner inference
+objective chess truth != chess concept definition != participant self-report
+concept definition != concept assertion != learner inference
+registered concept != automatically detectable concept
+ontology concept presence != M7C hypothesis relation
+K7 descriptive projection != recurrence reclassification or learner mutation
+K6 ontology sidecar != M19 request identity or M16 factual authority
+external taxonomy tag != deterministic CME detector result
+heuristic principle != engine-evaluation decomposition
+strategic plan != best move != M9 training intervention
 local discrepancy != recurrence != causal learner trait
 supported recurrence != automatic training eligibility
 selected intervention != effective intervention
@@ -117,6 +141,29 @@ M32 consumer fidelity != production UI correctness
 M33 deterministic traceability != model or pedagogical truth
 M34 resume eligibility != retry authorization or retry execution
 ```
+
+## Chess Knowledge Ontology
+
+The ontology program is documented under [`docs/chess-knowledge/`](docs/chess-knowledge/)
+and consolidated in the
+[`K0–K7 runbook`](docs/runbooks/chess-knowledge-ontology-program.md).
+
+Key properties:
+
+- stable dotted concept IDs and deterministic ontology/concept fingerprints;
+- strict graph, mapping, alias, schema, and authority validation;
+- tactical vocabulary plus a Lichess puzzle-theme crosswalk;
+- separate position features, strategic principles, qualitative evaluation factors,
+  candidate plans, and pedagogy metadata;
+- bounded, provenance-bearing assertions over exact chess subjects;
+- deterministic automatic detection only for the explicitly qualified mechanical
+  subset;
+- an opt-in K6 sidecar that augments model-provider context without changing M19;
+- a K7 projection that adds typed chess context to existing M7C recurrence evidence
+  without deciding recurrence itself.
+
+K0–K7 introduce no new production CLI command and make no production provider,
+frontend, learner-causality, intervention-efficacy, or mastery claim.
 
 ## Install
 
@@ -158,8 +205,8 @@ cme artifacts list/show/verify
 cme tutor ...
 ```
 
-M31–M34 are primarily Python API / hermetic validation surfaces. M32–M34 did not
-introduce new production CLI commands.
+M31–M34 and K0–K7 are primarily Python API / hermetic qualification surfaces. They
+do not add production CLI commands.
 
 ### Inspect deterministic game and position evidence
 
@@ -255,150 +302,5 @@ The reviewed-coaching commands do not select a production model/evaluator provid
 for the application. Network execution occurs only through explicitly supplied
 M24-compatible application adapters.
 
-See the milestone runbooks under [`docs/runbooks/`](docs/runbooks/) for exact
-operator arguments and artifact contracts.
-
-## Important Python boundaries
-
-Principal package/domain surfaces include:
-
-- `chess_mentor_engine.chess` — canonical chess state, provenance, context, and
-  deterministic chess features;
-- `chess_mentor_engine.analysis` — normalized provenance-bound M3 engine evidence;
-- `chess_mentor_engine.selection` — M4 comparison and diagnostic selection;
-- `chess_mentor_engine.evidence` — participant evidence;
-- `chess_mentor_engine.learning` — M6 discrepancy and M7 learner hypotheses;
-- `chess_mentor_engine.tutoring` — M8 state machine and M21 orchestration;
-- `chess_mentor_engine.training` — M9 intervention registry/selection;
-- `chess_mentor_engine.evaluation` — M10 outcome and transfer evidence;
-- `chess_mentor_engine.longitudinal` — M11 learner state;
-- `chess_mentor_engine.presentation` — M15 deterministic evaluation projection;
-- `chess_mentor_engine.feedback` — M16 deterministic grounded mentor feedback;
-- `chess_mentor_engine.coaching` — M19 model language and M20 evaluation contracts;
-- `chess_mentor_engine.storage` — immutable local artifacts and verified replay;
-- `chess_mentor_engine.review_delivery` — M32 exact machine-consumer review bundle;
-- `chess_mentor_engine.mentor_feedback_trace` — M33 deterministic M16 provenance
-  trace;
-- `chess_mentor_engine.execution_recovery_reconciliation` — M34 hermetic recovery
-  reconciliation plan.
-
-M16 remains the deterministic factual grounding ceiling. M19 may render model prose
-from that grounding, but request binding does not establish semantic correctness.
-M20 records bounded evaluator judgments without converting them into objective truth.
-
-## Latest milestone: M32–M34
-
-### M32 — Persisted Review Delivery Fidelity
-
-`m32.persisted-review-delivery-fidelity.v1` projects one exact participant-scoped
-M30 package into a stable machine-consumer contract. It preserves explicit authority
-labels, source ordering/fingerprints, White-versus-decision-mover perspective,
-symbolic mate, bounds, partial/unavailable states, comparison state, and
-child-analysis status.
-
-### M33 — Deterministic Mentor-Feedback Trace
-
-`m33.deterministic-mentor-feedback-trace.v1` binds every substantive deterministic
-M16 feedback component to stable identity, ordinal, content hash, source authority,
-source pointer, and source fields. M19/M20 remain separate presence/fingerprint
-metadata and cannot become deterministic source authority.
-
-### M34 — Reviewed-Coaching Recovery Reconciliation
-
-`m34.reviewed-coaching-recovery-reconciliation.v1` reconciles supplied synthetic M24
-multi-attempt histories against one already-persisted, mechanically verified M26
-target. It may classify a history as `complete` or `resume_eligible`, but it never
-executes or authorizes a retry and does not establish external-side-effect
-idempotency.
-
-See [`STATUS.md`](STATUS.md) and the
-[M32–M34 milestone runbook](docs/runbooks/m32-m34-milestone-runbook.md).
-
-## Validation
-
-Focused latest-milestone qualification:
-
-```bash
-python -m pytest tests/test_m32_persisted_review_delivery_fidelity.py -rs
-python -m pytest tests/test_m33_deterministic_mentor_feedback_trace.py -rs
-python -m pytest tests/test_m34_reviewed_coaching_recovery_reconciliation.py -rs
-```
-
-Full repository merge gate:
-
-```bash
-python -m pytest -rs
-python -m ruff check .
-python -m compileall -q src tests
-STOCKFISH_EXECUTABLE=/path/to/stockfish \
-  python -m pytest tests/integration/test_stockfish_uci.py -rs
-```
-
-Pull-request CI is the merge authority. The Stockfish witness requires an actual
-external executable; a skipped integration suite is not an independent-engine pass.
-No standalone Python static type checker is configured.
-
-## Documentation authority
-
-Active documentation has deliberately different jobs:
-
-| Document | Responsibility |
-| --- | --- |
-| `README.md` | Product overview, installation, operational entry points, and navigation. |
-| `CONTEXT.md` | Contributor reasoning model, invariants, and current cross-layer boundaries. |
-| `docs/product/repository-build-status.md` | **Canonical moving implementation and qualification status.** |
-| `STATUS.md` | Completed latest-milestone handoff; historical once a later milestone replaces it. |
-| `docs/architecture/architecture.md` | Current high-level implemented architecture and authority map. |
-| `docs/product/chess-mentor-engine-repository-build-plan.md` | Planning history plus future candidate directions; not an approved work queue. |
-| `docs/decisions/` | Ratified historical architectural decisions. |
-| `docs/runbooks/` | Milestone/operator qualification and restart procedures. |
-
-When narrative documents disagree about what is currently implemented, use
-`docs/product/repository-build-status.md` as the status authority and then reconcile
-the stale document rather than silently choosing a second source of truth.
-
-## Current claim ceiling
-
-The repository has qualified deterministic chess/evidence contracts, persistent
-bounded tutor state, an operational diagnostic-to-persistent-tutor bridge,
-provider-neutral execution conformance, authority-separated review, atomic
-persistent reviewed coaching, privacy-bounded mechanical execution verification,
-deterministic persisted review rendering/navigation, a machine-readable consumer
-fidelity contract, deterministic mentor-feedback provenance tracing, and hermetic
-reviewed-coaching recovery reconciliation.
-
-It still does **not** establish:
-
-- causal cognitive diagnosis or permanent learner traits;
-- optimal/effective intervention selection, intervention-caused improvement, or
-  automatic mastery;
-- universal engine-evaluation or move-quality thresholds;
-- automatic M6 diagnosis generation from engine output;
-- automatic M7/M11 mutation from tutor, analysis, or model-coaching calls;
-- semantic correctness, safety, or pedagogical quality of arbitrary model prose;
-- semantic completeness/correctness of an arbitrary M20 evaluator;
-- a production LLM/evaluator vendor, credential flow, transport policy, automatic
-  retry/backoff policy, latency/cost budget, or secrets architecture;
-- external-side-effect idempotency or production recovery correctness;
-- production privacy/security approval;
-- correct disclosure/consent behavior in an external end-user UI;
-- production UI usability, accessibility, localization, visual correctness, or
-  browser/device compatibility;
-- hosted authentication/authorization, multi-user production persistence,
-  observability, or deployment readiness;
-- empirical tutoring efficacy.
-
-## What comes next
-
-M32–M34 are complete. Future implementation must begin with a fresh audit of live
-`main` and a newly approved bounded work-package queue. The current handoff suggests,
-but does not pre-authorize:
-
-1. operator exposure for M32 delivery and M33 trace artifacts;
-2. a hermetic cross-surface consumer regression contract across M30/M32/M33;
-3. an explicit external-adoption and human-QA plan for frontend/provider/privacy/
-   security/retry decisions.
-
-See
-[`docs/product/chess-mentor-engine-repository-build-plan.md`](docs/product/chess-mentor-engine-repository-build-plan.md)
-for the planning view.
+See the runbooks under [`docs/runbooks/`](docs/runbooks/) for exact operator/API
+contracts and qualification commands.
