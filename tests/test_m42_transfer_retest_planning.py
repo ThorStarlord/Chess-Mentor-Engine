@@ -43,9 +43,13 @@ def _sources(*, far: bool = False):
     )
     expected = "RUN_FAR_TRANSFER_TEST" if far else "RUN_NEAR_TRANSFER_TEST"
     assert plan.selected_candidate.action == expected
-    intervention = _intervention(
-        key="forcing-resource-scan",
-        exercise_key="forcing-resource-scan-ex",
+    intervention = replace(
+        _intervention(
+            key="forcing-resource-scan",
+            exercise_key="forcing-resource-scan-ex",
+        ),
+        intervention_id="intervention-1",
+        fingerprint="intervention-fingerprint",
     )
     ref = TrainingInterventionRef(
         intervention_id=intervention.intervention_id,
@@ -168,7 +172,9 @@ def test_m42_far_transfer_requires_material_surface_change():
         intervention=intervention,
         candidate_positions=(near, far),
         practice_position_reuse_keys=(),
-        measurement_target="Test the same bounded skill in a materially different context.",
+        measurement_target=(
+            "Test the same bounded skill in a materially different context."
+        ),
         policy=build_default_transfer_retest_policy(),
         created_at=CREATED_AT,
         ontology=OntologyRegistry.load_default(),
@@ -337,7 +343,9 @@ def test_m42_candidate_policy_and_plan_are_tamper_detectable():
     policy = build_default_transfer_retest_policy()
     validate_transfer_retest_policy(policy)
     with pytest.raises(ValueError, match="policy fingerprint mismatch"):
-        validate_transfer_retest_policy(replace(policy, require_fresh_candidate=False))
+        validate_transfer_retest_policy(
+            replace(policy, require_fresh_candidate=False)
+        )
 
     plan, intervention, selection = _sources()
     result = build_transfer_retest_plan(
