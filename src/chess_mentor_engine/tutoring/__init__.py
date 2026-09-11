@@ -1,19 +1,9 @@
 """Evidence-aware tutor-session orchestration."""
 
-from .adaptive import (
-    ADAPTIVE_TUTOR_POLICY_SCHEMA_VERSION,
-    ADAPTIVE_TUTOR_PROPOSAL_SCHEMA_VERSION,
-    AdaptiveTutorAction,
-    AdaptiveTutorPolicy,
-    AdaptiveTutorPolicyRef,
-    AdaptiveTutorProposal,
-    ExposureEffect,
-    ResponseEvidenceClass,
-    build_adaptive_tutor_proposal,
-    build_default_adaptive_tutor_policy,
-    validate_adaptive_tutor_policy,
-    validate_adaptive_tutor_proposal,
-)
+from __future__ import annotations
+
+import importlib
+
 from .model import (
     TutorComparison,
     TutorExplanation,
@@ -50,6 +40,32 @@ from .session import (
     reveal_tutor_objective_evidence,
     start_tutor_session,
 )
+
+_ADAPTIVE_EXPORTS = {
+    "ADAPTIVE_TUTOR_POLICY_SCHEMA_VERSION",
+    "ADAPTIVE_TUTOR_PROPOSAL_SCHEMA_VERSION",
+    "AdaptiveTutorAction",
+    "AdaptiveTutorPolicy",
+    "AdaptiveTutorPolicyRef",
+    "AdaptiveTutorProposal",
+    "ExposureEffect",
+    "ResponseEvidenceClass",
+    "build_adaptive_tutor_proposal",
+    "build_default_adaptive_tutor_policy",
+    "validate_adaptive_tutor_policy",
+    "validate_adaptive_tutor_proposal",
+}
+
+
+def __getattr__(name: str):
+    """Load M46 only after the established tutoring package is initialized."""
+    if name not in _ADAPTIVE_EXPORTS:
+        raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
+    module = importlib.import_module(f"{__name__}.adaptive")
+    value = getattr(module, name)
+    globals()[name] = value
+    return value
+
 
 __all__ = [
     "ADAPTIVE_TUTOR_POLICY_SCHEMA_VERSION",
