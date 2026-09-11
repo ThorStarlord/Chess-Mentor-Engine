@@ -258,7 +258,9 @@ class AdaptiveTutorProposal:
             "tutor_session_ref": self.tutor_session_ref.to_dict(),
             "learner_progress_view_ref": self.learner_progress_view_ref.to_dict(),
             "mentor_queue_ref": (
-                None if self.mentor_queue_ref is None else self.mentor_queue_ref.to_dict()
+                None
+                if self.mentor_queue_ref is None
+                else self.mentor_queue_ref.to_dict()
             ),
             "mentor_queue_item_ref": (
                 None
@@ -350,7 +352,10 @@ def _validate_queue_context(
     if queue is None or item is None:
         return None, None
     expected = _digest(queue.identity_payload())
-    if queue.fingerprint != expected or queue.queue_id != f"mentor_queue_{expected[:20]}":
+    if (
+        queue.fingerprint != expected
+        or queue.queue_id != f"mentor_queue_{expected[:20]}"
+    ):
         raise ValueError("M46 mentor-queue identity mismatch")
     if queue.participant_id != view.participant_id:
         raise ValueError("M46 mentor-queue participant mismatch")
@@ -390,7 +395,10 @@ def _validate_transfer_context(
         raise ValueError("M46 requires a selected M42 position when a plan is supplied")
     context = session.capture_session.context
     selected = plan.selected_candidate.position
-    if selected.game_id != context.game_id or selected.position_id != context.position_id:
+    if (
+        selected.game_id != context.game_id
+        or selected.position_id != context.position_id
+    ):
         raise ValueError("M46 M42 selected position does not match tutor position")
     return _transfer_ref(plan)
 
@@ -423,7 +431,10 @@ def _choose_frozen_action(
             "none",
             "none",
             ("M40 requests transfer testing but no exact M42 test plan is supplied.",),
-            ("A qualified M42 transfer/retest plan is required before transfer tutoring.",),
+            (
+                "A qualified M42 transfer/retest plan is required before "
+                "transfer tutoring.",
+            ),
         )
     if next_action == "WAIT_FOR_REAL_GAME_EVIDENCE":
         return (
@@ -431,7 +442,10 @@ def _choose_frozen_action(
             None,
             "none",
             "none",
-            ("M40 requests future real-game evidence rather than a tutor intervention.",),
+            (
+                "M40 requests future real-game evidence rather than a tutor "
+                "intervention.",
+            ),
             ("No current-session tutor action can manufacture real-game evidence.",),
         )
     if next_action in _EVIDENCE_ACTIONS and policy.evidence_actions_reveal_after_freeze:
@@ -440,7 +454,10 @@ def _choose_frozen_action(
             None,
             "objective_reveal",
             "none",
-            ("Clean M8 baseline evidence is frozen; objective reveal may now proceed.",),
+            (
+                "Clean M8 baseline evidence is frozen; objective reveal may now "
+                "proceed.",
+            ),
             (),
         )
     recognition = _recognition_question(hypothesis)
@@ -460,10 +477,16 @@ def _choose_frozen_action(
     if next_action in {"TEACH_CONCEPT", "ASSIGN_PRACTICE", *_TRANSFER_ACTIONS}:
         return (
             "GIVE_MINIMAL_HINT",
-            "Re-examine the position using the target decision process before seeing the answer.",
+            (
+                "Re-examine the position using the target decision process before "
+                "seeing the answer."
+            ),
             "assisted_followup",
             "assisted_followup",
-            ("Baseline evidence is frozen; a bounded non-answer hint is now permitted.",),
+            (
+                "Baseline evidence is frozen; a bounded non-answer hint is now "
+                "permitted."
+            ),
             (),
         )
     return (
@@ -526,7 +549,8 @@ def build_adaptive_tutor_proposal(
             "M8 pre-reveal baseline is not fully frozen; adaptive tutoring is blocked.",
         )
         blocking = (
-            "Complete the existing qualified M8 capture protocol before hints or reveals.",
+            "Complete the existing qualified M8 capture protocol before hints "
+            "or reveals.",
         )
     elif state == "frozen":
         (
@@ -550,7 +574,8 @@ def build_adaptive_tutor_proposal(
         exposure = "post_reveal"
         response_class = "post_reveal_reflection"
         reasons = (
-            "Objective evidence is already revealed; any new response is post-reveal reflection.",
+            "Objective evidence is already revealed; any new response is "
+            "post-reveal reflection.",
         )
         blocking = ()
     elif state == "completed":
