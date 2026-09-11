@@ -122,24 +122,28 @@ def _policies(args: argparse.Namespace):
 
 def _preview(args: argparse.Namespace, queue, batch, view, plans):
     queue_policy, adaptive_policy = _policies(args)
-    snapshot = build_local_tutor_workflow(
-        participant_id=args.participant,
-        diagnostic_batch=batch,
-        batch_source_refs=(_batch_source_ref(queue),),
-        learner_progress_view=view,
-        transfer_plans=plans,
-        queue_policy=queue_policy,
-        adaptive_tutor_policy=adaptive_policy,
-        created_at=args.created_at,
-        hypothesis_id=args.hypothesis_id,
-    )
-    # Fail before persistence if an active M8 session could not deterministically
-    # select the exact learner hypothesis for the proposed rank-one review item.
-    resolved_hypothesis_id = _resolve_hypothesis_id(
-        view=view,
-        item=snapshot.active_item,
-        requested_hypothesis_id=args.hypothesis_id,
-    )
+    try:
+        snapshot = build_local_tutor_workflow(
+            participant_id=args.participant,
+            diagnostic_batch=batch,
+            batch_source_refs=(_batch_source_ref(queue),),
+            learner_progress_view=view,
+            transfer_plans=plans,
+            queue_policy=queue_policy,
+            adaptive_tutor_policy=adaptive_policy,
+            created_at=args.created_at,
+            hypothesis_id=args.hypothesis_id,
+        )
+        resolved_hypothesis_id = _resolve_hypothesis_id(
+            view=view,
+            item=snapshot.active_item,
+            requested_hypothesis_id=args.hypothesis_id,
+        )
+    except LocalTutorWorkflowError as exc:
+        raise LocalTutorCliError(str(exc)) from exc
+
+    # Fail before persistence if multiple exact plans would make the future
+    # M8/M46 active transfer context ambiguous.
     matching_transfers = tuple(
         plan
         for plan in plans
