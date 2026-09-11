@@ -8,7 +8,7 @@ training, inferring causality, or establishing mastery.
 from __future__ import annotations
 
 from collections import Counter
-from dataclasses import dataclass
+from dataclasses import asdict, dataclass
 from typing import Any, Literal, TypeAlias
 
 from chess_mentor_engine.chess_knowledge.learner_projection import (
@@ -30,7 +30,6 @@ from .model import (
 )
 
 LEARNER_STATE_READ_MODEL_SCHEMA_VERSION = "m36.learner-state-read-model.v1"
-
 SelectionSummaryState: TypeAlias = Literal["none", "selected", "mixed"]
 
 
@@ -85,15 +84,23 @@ class LearnerInterventionSummary:
             raise LongitudinalStateError("selection decision refs must be unique")
         labels = tuple(label for label, _ in self.decision_counts)
         if len(set(labels)) != len(labels):
-            raise LongitudinalStateError("selection decision count labels must be unique")
+            raise LongitudinalStateError(
+                "selection decision count labels must be unique"
+            )
         if any(not label or count < 1 for label, count in self.decision_counts):
-            raise LongitudinalStateError("selection decision counts must be positive")
+            raise LongitudinalStateError(
+                "selection decision counts must be positive"
+            )
         if sum(count for _, count in self.decision_counts) != len(self.decision_refs):
             raise LongitudinalStateError("selection decision counts must match refs")
         if self.state == "none" and self.selected_interventions:
-            raise LongitudinalStateError("none intervention state cannot cite selections")
+            raise LongitudinalStateError(
+                "none intervention state cannot cite selections"
+            )
         if self.state == "selected" and not self.selected_interventions:
-            raise LongitudinalStateError("selected intervention state requires a selection")
+            raise LongitudinalStateError(
+                "selected intervention state requires a selection"
+            )
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -119,14 +126,19 @@ class LearnerKnowledgeSummary:
         if any(not item for item in self.concept_ids):
             raise LongitudinalStateError("knowledge concept IDs must not be empty")
         if self.covered_recurrence_unit_count < 0:
-            raise LongitudinalStateError("covered recurrence count must not be negative")
+            raise LongitudinalStateError(
+                "covered recurrence count must not be negative"
+            )
         if self.uncovered_recurrence_unit_count < 0:
-            raise LongitudinalStateError("uncovered recurrence count must not be negative")
-        if self.projection_ref is None:
-            if self.concept_ids or self.covered_recurrence_unit_count:
-                raise LongitudinalStateError(
-                    "knowledge content requires an exact K7 projection reference"
-                )
+            raise LongitudinalStateError(
+                "uncovered recurrence count must not be negative"
+            )
+        if self.projection_ref is None and (
+            self.concept_ids or self.covered_recurrence_unit_count
+        ):
+            raise LongitudinalStateError(
+                "knowledge content requires an exact K7 projection reference"
+            )
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -166,9 +178,13 @@ class LearnerHypothesisReadEntry:
         if self.current_revision_ref.hypothesis_id != self.hypothesis_id:
             raise LongitudinalStateError("M36 hypothesis/revision mismatch")
         if self.authority_lifecycle_state not in {"active", "retired", "superseded"}:
-            raise LongitudinalStateError("unknown M36 hypothesis lifecycle state")
+            raise LongitudinalStateError(
+                "unknown M36 hypothesis lifecycle state"
+            )
         if (self.m7_status is None) != (self.m7_assessment_ref is None):
-            raise LongitudinalStateError("M36 M7 status/reference must appear together")
+            raise LongitudinalStateError(
+                "M36 M7 status/reference must appear together"
+            )
         if len(set(self.unresolved_alternative_notes)) != len(
             self.unresolved_alternative_notes
         ):
@@ -189,7 +205,7 @@ class LearnerHypothesisReadEntry:
                 if self.m7_assessment_ref is None
                 else self.m7_assessment_ref.to_dict()
             ),
-            "outcome_dimensions": [item.__dict__ for item in self.outcome_dimensions],
+            "outcome_dimensions": [asdict(item) for item in self.outcome_dimensions],
             "intervention": self.intervention.to_dict(),
             "knowledge": self.knowledge.to_dict(),
         }
@@ -214,7 +230,9 @@ class LearnerStateReadModel:
         _nonempty("participant_id", self.participant_id)
         timestamp(self.created_at)
         if self.source_snapshot_ref.kind != "learner_state_snapshot":
-            raise LongitudinalStateError("M36 requires an exact M11 snapshot reference")
+            raise LongitudinalStateError(
+                "M36 requires an exact M11 snapshot reference"
+            )
         ids = tuple(item.hypothesis_id for item in self.hypotheses)
         if ids != tuple(sorted(ids)) or len(set(ids)) != len(ids):
             raise LongitudinalStateError("M36 hypotheses must be unique and sorted")
@@ -253,9 +271,7 @@ def _intervention_summary(
     decisions: tuple[InterventionSelectionDecision, ...],
 ) -> LearnerInterventionSummary:
     relevant = tuple(
-        item
-        for item in decisions
-        if item.hypothesis_revision_ref == revision_ref
+        item for item in decisions if item.hypothesis_revision_ref == revision_ref
     )
     for item in relevant:
         if item.participant_id != participant_id:
@@ -263,6 +279,7 @@ def _intervention_summary(
     ids = tuple(item.selection_id for item in relevant)
     if len(set(ids)) != len(ids):
         raise LongitudinalStateError("M36 intervention selections must be unique")
+
     selected: dict[str, TrainingInterventionRef] = {}
     for item in relevant:
         if item.decision == "selected" and item.selected_intervention_ref is not None:
@@ -277,6 +294,7 @@ def _intervention_summary(
         state = "selected"
     else:
         state = "mixed"
+
     return LearnerInterventionSummary(
         state=state,
         selected_interventions=selected_refs,
@@ -307,7 +325,9 @@ def _knowledge_summary(
             ref_id=projection.projection_id,
             fingerprint=projection.fingerprint,
         ),
-        concept_ids=tuple(sorted(item.concept_id for item in projection.concept_summaries)),
+        concept_ids=tuple(
+            sorted(item.concept_id for item in projection.concept_summaries)
+        ),
         covered_recurrence_unit_count=len(projection.covered_recurrence_unit_ids),
         uncovered_recurrence_unit_count=len(projection.uncovered_recurrence_unit_ids),
     )
@@ -323,14 +343,14 @@ def build_learner_state_read_model(
 ) -> LearnerStateReadModel:
     """Build a deterministic read-only current learner summary from qualified inputs."""
     timestamp(created_at)
-    if snapshot.participant_id == "":
-        raise LongitudinalStateError("M36 snapshot participant must not be empty")
+    _nonempty("snapshot.participant_id", snapshot.participant_id)
 
     revisions_by_id = {item.revision_id: item for item in revisions}
     if len(revisions_by_id) != len(revisions):
         raise LongitudinalStateError("M36 revisions must be unique")
     projection_by_revision = {
-        item.hypothesis_revision_ref.revision_id: item for item in knowledge_projections
+        item.hypothesis_revision_ref.revision_id: item
+        for item in knowledge_projections
     }
     if len(projection_by_revision) != len(knowledge_projections):
         raise LongitudinalStateError("M36 K7 projections must be unique per revision")
@@ -381,15 +401,20 @@ def build_learner_state_read_model(
         )
 
     used_revision_ids = {item.current_revision_ref.revision_id for item in entries}
-    extra_revisions = set(revisions_by_id) - used_revision_ids
-    if extra_revisions:
-        raise LongitudinalStateError("M36 revisions include non-current hypothesis data")
+    if set(revisions_by_id) - used_revision_ids:
+        raise LongitudinalStateError(
+            "M36 revisions include non-current hypothesis data"
+        )
     for decision in intervention_decisions:
         if decision.hypothesis_revision_ref.revision_id not in used_revision_ids:
-            raise LongitudinalStateError("M36 selection references non-current revision")
+            raise LongitudinalStateError(
+                "M36 selection references non-current revision"
+            )
     for projection in knowledge_projections:
         if projection.hypothesis_revision_ref.revision_id not in used_revision_ids:
-            raise LongitudinalStateError("M36 K7 projection references non-current revision")
+            raise LongitudinalStateError(
+                "M36 K7 projection references non-current revision"
+            )
 
     ordered = tuple(sorted(entries, key=lambda item: item.hypothesis_id))
     payload = {
