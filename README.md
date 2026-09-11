@@ -13,36 +13,39 @@ language, evaluator judgment, and pedagogy in separate provenance-bearing layers
 
 ## Current implementation boundary
 
-The contiguous numbered milestone series remains qualified through **M34**. The
-repository also has the qualified **K0–K7 Chess Knowledge Ontology** program and the
-non-contiguous post-M34 learner-intelligence packages **M36, M39, and M40**.
+The contiguous numbered milestone series remains qualified through **M34**. Additional
+qualified work includes:
 
-M35, M37, and M38 remain planning labels; later-numbered qualified packages do not
-imply those candidates were implemented.
+- **K0–K7** Chess Knowledge Ontology;
+- **M36** deterministic learner-state read model;
+- **M39** hypothesis evidence synthesis;
+- **M40** teaching-priority / next-session proposal;
+- **M43** contradiction/control evidence acquisition;
+- **M41** ontology-aware intervention matching;
+- **M44** learner-progress local reference surface.
+
+The numbering is intentionally non-contiguous. M35, M37, M38, and M42 are not implied
+to be implemented.
 
 Repository description: Persistent AI chess tutor that learns how you think,
 diagnoses recurring mistakes, and turns game evidence into personalized training.
 
 ## Product thesis
 
-The product is aimed at a problem ordinary engine analysis does not solve by itself:
+The product targets a problem ordinary engine analysis does not solve by itself:
 
 ```text
 What is objectively happening on the board?
 What did this player actually notice, consider, and expect?
 What recurring learner hypothesis is currently supported or contradicted?
-What should happen next: gather evidence, challenge the hypothesis, teach, practice,
-or test transfer?
+Why does CME currently believe that?
+What evidence would challenge or narrow the belief?
+What kind of learning action should happen next?
+Which training artifacts are plausible candidates without pretending they are proven?
 Did later evidence support transfer without pretending that proves mastery?
 ```
 
-The repository therefore treats chess truth, participant evidence, learner inference,
-and pedagogical decisions as different authorities.
-
 ## Qualified learner-intelligence path
-
-The current evidence and semantic substrate now reaches a deterministic planning
-proposal:
 
 ```text
 PGN / canonical position
@@ -66,6 +69,12 @@ M39 exact hypothesis evidence synthesis
         |
         v
 M40 transparent next-session action proposal
+        |
+        +-- challenge/control/collect --> M43 evidence candidates
+        |
+        +-- teach concept ------------> M41 intervention candidates
+        |
+        `------------------------------> M44 learner-progress presentation
 ```
 
 M40 currently proposes one of:
@@ -81,20 +90,20 @@ RUN_FAR_TRANSFER_TEST
 WAIT_FOR_REAL_GAME_EVIDENCE
 ```
 
-The proposal has no execution authority. It does not mutate M7/M11, replace M9,
-create M10 evidence, start a tutor session, or call a model/provider.
+M40 remains proposal-only. M43 prepares evidence candidates, M41 prepares intervention
+candidates, and M44 presents exact qualified sources. None of those layers silently
+executes the action, changes M7C recurrence state, exercises M9 selection authority,
+or creates M10 outcome evidence.
 
 ## Chess Knowledge Ontology
 
-The K0–K7 program supplies a typed semantic bridge between board evidence and
-coaching consumers:
+K0–K7 supplies a typed semantic bridge between board evidence and tutoring consumers:
 
 ```text
 concept definition
-!=
-concept assertion in a position/move
-!=
-learner inference about a participant
+!= concept assertion in a position/move
+!= participant perception
+!= learner inference
 ```
 
 It contains tactical motifs, position features, strategic principles, evaluation
@@ -102,12 +111,14 @@ factors, plans, pedagogy metadata, a Lichess crosswalk, provenance-bound asserti
 conservative detectors, optional M19 coaching context, and an M7C-preserving learner
 projection.
 
-A registered concept is not automatically detectable, and a detected concept is not
-proof that the participant noticed or misunderstood it.
+The ontology is now **shared product infrastructure, not the primary workstream**.
+Do not open a generic K8 merely to make the ontology larger. Extend it only when a
+concrete consumer exposes a semantic distinction K0–K7 cannot represent safely, and
+qualify that minimum extension with the requesting consumer.
+
+M41 and M44 both qualified without any ontology schema/data expansion.
 
 ## Core authority rules
-
-Preserve these boundaries:
 
 ```text
 objective chess truth != participant self-report != learner inference
@@ -117,9 +128,11 @@ K7 projection != M7C recurrence classification
 M36 read model != learner-state mutation authority
 M39 synthesis != M7C recurrence authority
 M40 proposal != execution authority
-M40 action proposal != M9 intervention selection
+M43 evidence candidate != M7C contradiction/refutation
+M41 intervention candidate != M9 applicability mapping or selection
+M44 rendering != learner inference
 M40 transfer-test proposal != M10 transfer evidence
-WAIT_FOR_REAL_GAME_EVIDENCE != mastery
+successful evidence case != mastery
 transparent heuristic policy != empirically optimal pedagogy
 M16 deterministic grounding != M19 model-authored language
 M20 evaluator acceptance != objective chess truth
@@ -163,8 +176,8 @@ cme artifacts list/show/verify
 cme tutor ...
 ```
 
-M36/M39/M40 currently remain Python API / deterministic-hermetic surfaces. They add
-no new production CLI command.
+M36/M39/M40/M41/M43/M44 remain Python API and/or deterministic local-reference
+surfaces. They add no production CLI command.
 
 ## Latest Python surfaces
 
@@ -174,31 +187,43 @@ no new production CLI command.
 from chess_mentor_engine.longitudinal import build_learner_state_read_model
 ```
 
-M36 composes exact current M7/M9/M10/M11 evidence plus optional K7 context into one
-content-addressed participant read model.
-
-### M39 hypothesis evidence synthesis
+### M39 / M40 learner intelligence
 
 ```python
 from chess_mentor_engine.learner_intelligence import (
     build_hypothesis_evidence_synthesis,
-)
-```
-
-M39 explains the exact current M7C evidence for one current learner hypothesis,
-including contradictions, counterexamples, context exceptions, evidence gaps, and
-optional K7 concepts.
-
-### M40 next-session planner
-
-```python
-from chess_mentor_engine.learner_intelligence import (
     build_default_next_session_policy,
     build_next_session_plan,
 )
 ```
 
-M40 ranks transparent next-action proposals under an explicit versioned policy.
+### M43 evidence acquisition
+
+```python
+from chess_mentor_engine.learner_intelligence import (
+    build_default_evidence_acquisition_policy,
+    build_evidence_acquisition_plan,
+)
+```
+
+### M41 intervention matching
+
+```python
+from chess_mentor_engine.learner_intelligence import (
+    define_intervention_semantic_profile,
+    build_default_intervention_matching_policy,
+    build_intervention_candidate_set,
+)
+```
+
+### M44 learner-progress reference surface
+
+```python
+from chess_mentor_engine.learner_intelligence import (
+    build_learner_progress_view,
+    build_learner_progress_reference_surface,
+)
+```
 
 ## Qualification
 
@@ -208,6 +233,9 @@ Latest focused suites:
 python -m pytest tests/test_m36_learner_state_read_model.py -rs
 python -m pytest tests/test_m39_hypothesis_evidence_synthesis.py -rs
 python -m pytest tests/test_m40_next_session_planner.py -rs
+python -m pytest tests/test_m41_intervention_matching.py -rs
+python -m pytest tests/test_m43_evidence_acquisition.py -rs
+python -m pytest tests/test_m44_learner_progress_reference.py -rs
 ```
 
 Full repository gate:
@@ -220,13 +248,29 @@ STOCKFISH_EXECUTABLE=/path/to/stockfish \
   python -m pytest tests/integration/test_stockfish_uci.py -rs
 ```
 
-See [`docs/runbooks/m36-m40-learner-intelligence.md`](docs/runbooks/m36-m40-learner-intelligence.md)
+See [`docs/runbooks/m41-m44-tutor-decision-loop.md`](docs/runbooks/m41-m44-tutor-decision-loop.md)
 for the latest restart and qualification path.
+
+## Next product direction
+
+The strongest next sequence is now:
+
+```text
+M42  bounded near/far transfer and retest planning
+ ->
+M45  batch recent games -> mentor queue
+ ->
+M46  adaptive Socratic tutoring
+```
+
+M35/M37 should be pulled forward only by a concrete consumer/operator blocker. M38
+must not become a second recurrence engine; reuse M7C.
 
 ## Productization boundary
 
-The repository has strong local evidence, semantic, learner-intelligence, and
-planning contracts. It still does not establish production authentication,
-privacy/security approval, hosted multi-user persistence, production provider/retry
-policy, production frontend quality, causal learner diagnosis, intervention-caused
-improvement, mastery, or empirical tutoring efficacy.
+The repository has strong local evidence, semantic, learner-intelligence, decision,
+candidate-preparation, and reference-presentation contracts. It still does not
+establish production authentication, privacy/security approval, hosted multi-user
+persistence, production provider/retry policy, production frontend quality, causal
+learner diagnosis, intervention-caused improvement, mastery, or empirical tutoring
+efficacy.
