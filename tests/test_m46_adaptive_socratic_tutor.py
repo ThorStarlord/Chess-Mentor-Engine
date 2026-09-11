@@ -17,7 +17,6 @@ from chess_mentor_engine.chess_knowledge import OntologyRegistry
 from chess_mentor_engine.evaluation import OutcomePosition, OutcomeReference
 from chess_mentor_engine.learner_intelligence import (
     EvidenceSynthesisReference,
-    bind_mentor_queue_batch_scope,
     build_default_mentor_queue_policy,
     build_default_next_session_policy,
     build_default_transfer_retest_policy,
