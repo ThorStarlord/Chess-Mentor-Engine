@@ -1,5 +1,21 @@
 """Deterministic learner-intelligence projections over qualified evidence."""
 
+from .evidence_acquisition import (
+    EVIDENCE_ACQUISITION_PLAN_SCHEMA_VERSION,
+    EVIDENCE_ACQUISITION_POLICY_SCHEMA_VERSION,
+    EvidenceAcquisitionCandidate,
+    EvidenceAcquisitionIntent,
+    EvidenceAcquisitionPlan,
+    EvidenceAcquisitionPolicy,
+    EvidenceAcquisitionPolicyRef,
+    EvidenceCandidateKind,
+    EvidenceCandidateOrigin,
+    SemanticCoverage,
+    build_default_evidence_acquisition_policy,
+    build_evidence_acquisition_plan,
+    validate_evidence_acquisition_plan,
+    validate_evidence_acquisition_policy,
+)
 from .evidence_synthesis import (
     HYPOTHESIS_EVIDENCE_SYNTHESIS_SCHEMA_VERSION,
     EvidenceSynthesisReference,
@@ -25,9 +41,18 @@ from .next_session import (
 )
 
 __all__ = [
+    "EVIDENCE_ACQUISITION_PLAN_SCHEMA_VERSION",
+    "EVIDENCE_ACQUISITION_POLICY_SCHEMA_VERSION",
     "HYPOTHESIS_EVIDENCE_SYNTHESIS_SCHEMA_VERSION",
     "NEXT_SESSION_PLAN_SCHEMA_VERSION",
     "NEXT_SESSION_POLICY_SCHEMA_VERSION",
+    "EvidenceAcquisitionCandidate",
+    "EvidenceAcquisitionIntent",
+    "EvidenceAcquisitionPlan",
+    "EvidenceAcquisitionPolicy",
+    "EvidenceAcquisitionPolicyRef",
+    "EvidenceCandidateKind",
+    "EvidenceCandidateOrigin",
     "EvidenceSynthesisReference",
     "HypothesisEvidenceCounts",
     "HypothesisEvidenceSynthesis",
@@ -38,9 +63,14 @@ __all__ = [
     "NextSessionPlan",
     "NextSessionPolicy",
     "NextSessionPolicyRef",
+    "SemanticCoverage",
+    "build_default_evidence_acquisition_policy",
     "build_default_next_session_policy",
+    "build_evidence_acquisition_plan",
     "build_hypothesis_evidence_synthesis",
     "build_next_session_plan",
+    "validate_evidence_acquisition_plan",
+    "validate_evidence_acquisition_policy",
     "validate_hypothesis_evidence_synthesis",
     "validate_next_session_plan",
     "validate_next_session_policy",
