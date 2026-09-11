@@ -61,7 +61,9 @@ def _timestamp(name: str, value: str) -> None:
     try:
         parsed = datetime.fromisoformat(value.replace("Z", "+00:00"))
     except ValueError as exc:
-        raise LocalTutorWorkflowError(f"{name} must be an ISO-8601 timestamp") from exc
+        raise LocalTutorWorkflowError(
+            f"{name} must be an ISO-8601 timestamp"
+        ) from exc
     if parsed.tzinfo is None or parsed.utcoffset() is None:
         raise LocalTutorWorkflowError(f"{name} must include a timezone offset")
 
@@ -74,7 +76,10 @@ def _session_ref(session: TutorSession) -> EvidenceSynthesisReference:
     )
 
 
-def _stage_for(session: TutorSession, proposal: AdaptiveTutorProposal) -> LocalTutorStage:
+def _stage_for(
+    session: TutorSession,
+    proposal: AdaptiveTutorProposal,
+) -> LocalTutorStage:
     if proposal.action == "CONTINUE_BASELINE_CAPTURE":
         return "baseline_capture"
     if proposal.action == "ASK_REFLECTION":
@@ -96,7 +101,10 @@ def _resolve_hypothesis_id(
             raise LocalTutorWorkflowError(
                 "requested hypothesis_id is not present in the exact M44 view"
             )
-        if item.hypothesis_ids and requested_hypothesis_id not in item.hypothesis_ids:
+        if (
+            item.hypothesis_ids
+            and requested_hypothesis_id not in item.hypothesis_ids
+        ):
             raise LocalTutorWorkflowError(
                 "requested hypothesis_id is not linked to the exact M45 queue item"
             )
@@ -186,41 +194,59 @@ class LocalTutorWorkflowSnapshot:
         if self.active_item not in self.mentor_queue.items:
             raise LocalTutorWorkflowError("active item is not in the exact M45 queue")
         if self.stage == "review_ready":
-            if self.tutor_session_ref is not None or self.adaptive_tutor_proposal is not None:
+            has_active_session = (
+                self.tutor_session_ref is not None
+                or self.adaptive_tutor_proposal is not None
+            )
+            if has_active_session:
                 raise LocalTutorWorkflowError(
                     "review-ready workflow must not claim an active tutor session"
                 )
             if self.next_action != "START_SELECTED_REVIEW":
                 raise LocalTutorWorkflowError("review-ready next action is invalid")
         else:
-            if self.tutor_session_ref is None or self.adaptive_tutor_proposal is None:
+            if (
+                self.tutor_session_ref is None
+                or self.adaptive_tutor_proposal is None
+            ):
                 raise LocalTutorWorkflowError(
                     "active tutor workflow requires exact M8 and M46 references"
                 )
             if self.next_action != self.adaptive_tutor_proposal.action:
-                raise LocalTutorWorkflowError("workflow next action must equal M46 action")
+                raise LocalTutorWorkflowError(
+                    "workflow next action must equal M46 action"
+                )
         if self.orchestration_authority != "composition_only":
-            raise LocalTutorWorkflowError("local workflow cannot grant execution authority")
-        if self.learner_effect != "not_established" or self.mastery != "not_established":
+            raise LocalTutorWorkflowError(
+                "local workflow cannot grant execution authority"
+            )
+        if (
+            self.learner_effect != "not_established"
+            or self.mastery != "not_established"
+        ):
             raise LocalTutorWorkflowError(
                 "local workflow cannot establish learner effect or mastery"
             )
 
     def identity_payload(self) -> dict[str, Any]:
+        tutor_session_ref = (
+            None
+            if self.tutor_session_ref is None
+            else self.tutor_session_ref.to_dict()
+        )
+        adaptive_proposal = (
+            None
+            if self.adaptive_tutor_proposal is None
+            else self.adaptive_tutor_proposal.to_dict()
+        )
         return {
             "schema_version": self.schema_version,
             "participant_id": self.participant_id,
             "batch_scope": self.batch_scope.to_dict(),
             "mentor_queue": self.mentor_queue.to_dict(),
             "active_item": self.active_item.to_dict(),
-            "tutor_session_ref": (
-                None if self.tutor_session_ref is None else self.tutor_session_ref.to_dict()
-            ),
-            "adaptive_tutor_proposal": (
-                None
-                if self.adaptive_tutor_proposal is None
-                else self.adaptive_tutor_proposal.to_dict()
-            ),
+            "tutor_session_ref": tutor_session_ref,
+            "adaptive_tutor_proposal": adaptive_proposal,
             "stage": self.stage,
             "next_action": self.next_action,
             "created_at": self.created_at,
@@ -285,7 +311,8 @@ def build_local_tutor_workflow(
         matching_items = tuple(
             item
             for item in queue.items
-            if item.game_id == context.game_id and item.position_id == context.position_id
+            if item.game_id == context.game_id
+            and item.position_id == context.position_id
         )
         if len(matching_items) != 1:
             raise LocalTutorWorkflowError(
@@ -316,18 +343,18 @@ def build_local_tutor_workflow(
         stage = _stage_for(tutor_session, proposal)
         next_action = proposal.action
 
+    session_payload = (
+        None if session_reference is None else session_reference.to_dict()
+    )
+    proposal_payload = None if proposal is None else proposal.to_dict()
     payload = {
         "schema_version": LOCAL_TUTOR_WORKFLOW_SCHEMA_VERSION,
         "participant_id": participant_id,
         "batch_scope": batch_scope.to_dict(),
         "mentor_queue": queue.to_dict(),
         "active_item": item.to_dict(),
-        "tutor_session_ref": (
-            None if session_reference is None else session_reference.to_dict()
-        ),
-        "adaptive_tutor_proposal": (
-            None if proposal is None else proposal.to_dict()
-        ),
+        "tutor_session_ref": session_payload,
+        "adaptive_tutor_proposal": proposal_payload,
         "stage": stage,
         "next_action": next_action,
         "created_at": created_at,
