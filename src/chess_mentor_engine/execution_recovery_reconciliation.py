@@ -340,11 +340,15 @@ def _target_context(
         source_fingerprints.get("model_evaluation"),
     )
     if roles == () and expected_optional != (None, None):
-        raise ReviewedCoachingRecoveryError("deterministic M26 target optionality drifted")
+        raise ReviewedCoachingRecoveryError(
+            "deterministic M26 target optionality drifted"
+        )
     if roles == (_PROVIDER_ROLE,) and (
         expected_optional[0] is None or expected_optional[1] is not None
     ):
-        raise ReviewedCoachingRecoveryError("provider-only M26 target optionality drifted")
+        raise ReviewedCoachingRecoveryError(
+            "provider-only M26 target optionality drifted"
+        )
     if roles == _EXECUTION_ROLES and any(item is None for item in expected_optional):
         raise ReviewedCoachingRecoveryError("model M26 target optionality drifted")
 
@@ -506,7 +510,8 @@ def _build_history(
         if provider["status"] == "failed":
             if evaluator is not None:
                 raise ReviewedCoachingRecoveryError(
-                    "evaluator attempt cannot follow a failed provider in the same attempt"
+                    "evaluator attempt cannot follow a failed provider in the "
+                    "same attempt"
                 )
             outcome = "failed"
             failure_record = provider
@@ -811,17 +816,25 @@ def validate_reviewed_coaching_recovery_plan(value: Any) -> dict[str, Any]:
         "M34 target",
     )
     roles = target["roles"]
-    if type(roles) is not list or tuple(roles) not in ((), (_PROVIDER_ROLE,), _EXECUTION_ROLES):
+    allowed_roles = ((), (_PROVIDER_ROLE,), _EXECUTION_ROLES)
+    if type(roles) is not list or tuple(roles) not in allowed_roles:
         raise ReviewedCoachingRecoveryError("M34 target roles drifted")
     if target["completed_run"] is not True:
         raise ReviewedCoachingRecoveryError("M34 target must be a completed M26 run")
     if type(target["attempt_number"]) is not int or target["attempt_number"] < 0:
         raise ReviewedCoachingRecoveryError("M34 target attempt number is invalid")
     if bool(roles) != (target["attempt_number"] > 0):
-        raise ReviewedCoachingRecoveryError("M34 target attempt/role optionality drifted")
+        raise ReviewedCoachingRecoveryError(
+            "M34 target attempt/role optionality drifted"
+        )
     execution_fingerprints = target["execution_fingerprints"]
-    if type(execution_fingerprints) is not dict or set(execution_fingerprints) != set(roles):
-        raise ReviewedCoachingRecoveryError("M34 target execution fingerprints drifted")
+    if (
+        type(execution_fingerprints) is not dict
+        or set(execution_fingerprints) != set(roles)
+    ):
+        raise ReviewedCoachingRecoveryError(
+            "M34 target execution fingerprints drifted"
+        )
     for role in roles:
         _sha256(execution_fingerprints[role], f"M34 {role} target fingerprint")
     if len(refs["m24_executions"]) != len(roles):
@@ -849,14 +862,24 @@ def validate_reviewed_coaching_recovery_plan(value: Any) -> dict[str, Any]:
         raise ReviewedCoachingRecoveryError("M34 history fingerprint mismatch")
     if not roles:
         if history:
-            raise ReviewedCoachingRecoveryError("M34 deterministic history must be empty")
+            raise ReviewedCoachingRecoveryError(
+                "M34 deterministic history must be empty"
+            )
     else:
         if not history:
-            raise ReviewedCoachingRecoveryError("M34 external history must not be empty")
+            raise ReviewedCoachingRecoveryError(
+                "M34 external history must not be empty"
+            )
         expected_attempts = list(range(1, len(history) + 1))
-        actual_attempts = [item.get("attempt_number") for item in history if type(item) is dict]
+        actual_attempts = [
+            item.get("attempt_number")
+            for item in history
+            if type(item) is dict
+        ]
         if actual_attempts != expected_attempts:
-            raise ReviewedCoachingRecoveryError("M34 history attempts must be contiguous")
+            raise ReviewedCoachingRecoveryError(
+                "M34 history attempts must be contiguous"
+            )
         for index, item in enumerate(history, start=1):
             attempt = _strict(item, _ATTEMPT_KEYS, f"M34 attempt {index}")
             provider = _validate_summary(
@@ -933,7 +956,9 @@ def validate_reviewed_coaching_recovery_plan(value: Any) -> dict[str, Any]:
         if latest != target["attempt_number"]:
             raise ReviewedCoachingRecoveryError("M34 complete state attempt drifted")
         if reconciliation["next_attempt_number"] is not None:
-            raise ReviewedCoachingRecoveryError("M34 complete state cannot have next attempt")
+            raise ReviewedCoachingRecoveryError(
+                "M34 complete state cannot have next attempt"
+            )
         if reconciliation["restart_scope"] != "none":
             raise ReviewedCoachingRecoveryError("M34 complete restart scope drifted")
         if reconciliation["requires_manual_external_authority"] is not False:
@@ -943,12 +968,16 @@ def validate_reviewed_coaching_recovery_plan(value: Any) -> dict[str, Any]:
             if final["outcome"] != "succeeded":
                 raise ReviewedCoachingRecoveryError("M34 complete history must succeed")
             if final["provider"]["matched_target_execution"] is not True:
-                raise ReviewedCoachingRecoveryError("M34 final provider target match drifted")
+                raise ReviewedCoachingRecoveryError(
+                    "M34 final provider target match drifted"
+                )
             if _EVALUATOR_ROLE in roles and (
                 final["evaluator"] is None
                 or final["evaluator"]["matched_target_execution"] is not True
             ):
-                raise ReviewedCoachingRecoveryError("M34 final evaluator target match drifted")
+                raise ReviewedCoachingRecoveryError(
+                    "M34 final evaluator target match drifted"
+                )
     elif reconciliation["state"] == "resume_eligible":
         if latest != target["attempt_number"] - 1:
             raise ReviewedCoachingRecoveryError("M34 resume attempt drifted")
@@ -977,7 +1006,8 @@ def validate_reviewed_coaching_recovery_plan(value: Any) -> dict[str, Any]:
     expected_fingerprint = _fingerprint(payload)
     if plan["fingerprint"] != expected_fingerprint:
         raise ReviewedCoachingRecoveryError("M34 recovery-plan fingerprint mismatch")
-    if plan["recovery_plan_id"] != f"reviewed_coaching_recovery_{expected_fingerprint[:20]}":
+    expected_id = f"reviewed_coaching_recovery_{expected_fingerprint[:20]}"
+    if plan["recovery_plan_id"] != expected_id:
         raise ReviewedCoachingRecoveryError("M34 recovery-plan identity mismatch")
     return copy.deepcopy(plan)
 
