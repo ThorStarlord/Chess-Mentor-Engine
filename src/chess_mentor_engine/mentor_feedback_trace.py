@@ -8,9 +8,9 @@ from typing import Any
 
 from chess_mentor_engine.chess import canonical_json
 from chess_mentor_engine.feedback.composer import (
+    _REFLECTION_PROMPTS,
     FEEDBACK_SCHEMA_VERSION,
     GroundedFeedbackError,
-    _REFLECTION_PROMPTS,
     _learner_context_content,
     _objective_content,
     _policy_payload,
@@ -25,7 +25,6 @@ from chess_mentor_engine.participant_review_package import M30_SCHEMA_VERSION
 from chess_mentor_engine.presentation import PRESENTATION_SCHEMA_VERSION
 from chess_mentor_engine.review import COACH_REVIEW_SCHEMA_VERSION
 from chess_mentor_engine.review_delivery import (
-    M32_SCHEMA_VERSION,
     ReviewDeliveryFidelityError,
     build_persisted_review_delivery_bundle,
 )
