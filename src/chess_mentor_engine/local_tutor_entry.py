@@ -7,13 +7,13 @@ import json
 import sys
 from collections.abc import Sequence
 
+from chess_mentor_engine.local_tutor import LocalTutorWorkflowError
 from chess_mentor_engine.local_tutor_cli import (
     LocalTutorCliError,
     _add_common_arguments,
     _cmd_local_tutor_next,
     _cmd_local_tutor_start,
 )
-from chess_mentor_engine.local_tutor import LocalTutorWorkflowError
 from chess_mentor_engine.storage import StorageError
 from chess_mentor_engine.tutoring import TutorSessionError
 
@@ -58,7 +58,10 @@ def build_parser() -> argparse.ArgumentParser:
 
     next_action = commands.add_parser(
         "next",
-        help="Replay an exact persisted M8 checkpoint and emit the current M46 proposal.",
+        help=(
+            "Replay an exact persisted M8 checkpoint and emit the current "
+            "M46 proposal."
+        ),
     )
     _add_common_arguments(next_action)
     next_action.add_argument("--db", required=True)
