@@ -180,7 +180,10 @@ def test_m39_reports_partial_k7_coverage_as_a_gap_not_concept_absence():
 
     uncovered = [item for item in synthesis.units if not item.concept_ids]
     assert len(uncovered) == 1
-    assert any("semantic coverage is incomplete" in item for item in synthesis.evidence_gaps)
+    assert any(
+        "semantic coverage is incomplete" in item
+        for item in synthesis.evidence_gaps
+    )
 
 
 def test_m39_rejects_cross_participant_request():
