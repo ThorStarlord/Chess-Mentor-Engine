@@ -1,7 +1,7 @@
 # ADR 0012 — Chess Knowledge Ontology authority contract
 
 **Status:** Accepted  
-**Scope:** Repository-only semantic vocabulary and future knowledge assertions  
+**Scope:** Repository-only semantic vocabulary and knowledge assertions  
 **Decision owner:** Chess Mentor Engine repository
 
 ## Context
@@ -31,7 +31,7 @@ The foundational invariant is:
 ```text
 ChessConcept definition
         !=
-position/move ConceptAssertion
+position/move KnowledgeAssertion
         !=
 ReasoningDiscrepancy
         !=
@@ -39,10 +39,10 @@ LearnerHypothesis / recurrence assessment
 ```
 
 A definition states what a concept means. It is not evidence that the concept occurs
-in a position. A future assertion may claim that a concept applies to a bounded
-position, move, or move sequence, but must carry derivation provenance and an
-authority class. Learner-level conclusions continue to require the existing M6/M7
-evidence chain.
+in a position. An assertion may claim that a concept applies to a bounded position,
+move, or move sequence, but must carry derivation provenance, evidence references,
+exact ontology identity, and an authority class. Learner-level conclusions continue
+to require the existing M6/M7 evidence chain.
 
 ## Concept domains
 
@@ -64,30 +64,36 @@ example `tactic.deflection`. IDs are never recycled for a different meaning.
 
 ## Assertion authority classes
 
-The ontology vocabulary declares the highest normal evidence class expected from a
-concept/detector pairing:
+The ontology/assertion layer distinguishes:
 
 ```text
 rule_derived
 deterministic_position_fact
 deterministic_sequence_pattern
 engine_derived
+external_taxonomy_tag
 heuristic_assessment
 model_interpretation
 human_ratified
 ```
 
-These classes are claim ceilings, not confidence scores.
+These classes are claim ceilings, not confidence scores and not an ordinal ranking.
 
 Important examples:
 
 ```text
-absolute pin                 -> deterministic_position_fact
-move creates a double check  -> deterministic_sequence_pattern
-engine score                 -> engine_derived
-initiative                   -> heuristic_assessment
-prophylactic intention       -> model_interpretation or human_ratified
+absolute pin                    -> deterministic_position_fact
+move creates a double check     -> deterministic_sequence_pattern
+engine score                    -> engine_derived
+Lichess puzzle theme            -> external_taxonomy_tag
+initiative                      -> heuristic_assessment
+prophylactic model explanation  -> model_interpretation
+explicit coach ratification     -> human_ratified
 ```
+
+A detector may assert only the default authority registered for its concept. Engine,
+external, model, human, and deterministic-system provenance are restricted to their
+corresponding authority families.
 
 ## External taxonomy policy
 
@@ -108,8 +114,30 @@ a broad external `pin` label may map to both `tactic.absolute_pin` and
 `tactic.relative_pin`; consumers may not silently choose one without additional
 evidence.
 
-External taxonomy drift must be explicit. Unknown themes are not silently promoted
-into new ontology concepts.
+External taxonomy assertions retain `external_taxonomy_tag` authority even for an
+exact mapping. External taxonomy drift must be explicit. Unknown themes are not
+silently promoted into new ontology concepts.
+
+## Assertion identity policy
+
+Position/move assertions are content-addressed artifacts. Their exact identity binds:
+
+- concept ID and concept fingerprint;
+- ontology fingerprint;
+- chess subject identity;
+- assertion status and authority;
+- qualifiers;
+- exact evidence references;
+- source provenance/version/fingerprint;
+- claim scope;
+- explicit timezone-aware creation timestamp.
+
+Deterministic assertions use `present` or `absent`; uncertainty must use a weaker or
+different derivation authority rather than weakening a supposedly deterministic
+claim in place.
+
+Assertion bundles may group only assertions for the same exact subject and ontology
+identity. Bundling does not increase assertion authority.
 
 ## Strategic-principle policy
 
@@ -177,6 +205,7 @@ The ontology has separate schema and content versions.
   evidence, and training without relying on free-text labels.
 - Deterministic and heuristic concepts can coexist without authority collapse.
 - Lichess interoperability becomes explicit rather than structurally controlling.
+- Position/move claims become independently traceable and tamper-evident.
 - Future recurrence and teaching-policy work can use durable semantic references.
 
 ### Costs
@@ -184,6 +213,7 @@ The ontology has separate schema and content versions.
 - Ontology curation and detector qualification are separate work.
 - A concept being present in the registry does not imply automatic detection.
 - Some concepts will remain heuristic or human/model interpreted.
+- Assertions add identity/provenance objects that downstream consumers must preserve.
 
 ## Rejected alternatives
 
@@ -202,6 +232,11 @@ claim ceiling.
 
 Rejected because this would move chess-knowledge assertion authority into the model
 and defeat the repository's evidence-first architecture.
+
+### Treat an exact external mapping as detector evidence
+
+Rejected because semantic crosswalk accuracy does not prove that CME independently
+derived the concept from the supplied position or move sequence.
 
 ### Create a new recurrence engine around ontology concepts
 
