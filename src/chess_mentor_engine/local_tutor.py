@@ -51,13 +51,9 @@ def _digest(value: object) -> str:
     return hashlib.sha256(canonical_json(value).encode("utf-8")).hexdigest()
 
 
-def _nonempty(name: str, value: str) -> None:
+def _timestamp(name: str, value: str) -> None:
     if not isinstance(value, str) or not value.strip():
         raise LocalTutorWorkflowError(f"{name} must not be empty")
-
-
-def _timestamp(name: str, value: str) -> None:
-    _nonempty(name, value)
     try:
         parsed = datetime.fromisoformat(value.replace("Z", "+00:00"))
     except ValueError as exc:
@@ -108,6 +104,8 @@ def _resolve_hypothesis_id(
             raise LocalTutorWorkflowError(
                 "requested hypothesis_id is not linked to the exact M45 queue item"
             )
+        # An explicit operator choice may add tutoring context to an objective-only
+        # review item, but it does not rewrite M45 learner relevance.
         return requested_hypothesis_id
 
     if len(item.hypothesis_ids) == 1:
@@ -121,16 +119,8 @@ def _resolve_hypothesis_id(
         raise LocalTutorWorkflowError(
             "M45 queue item links multiple hypotheses; supply hypothesis_id explicitly"
         )
-
-    current = tuple(
-        hypothesis.hypothesis_id
-        for hypothesis in view.hypotheses
-        if hypothesis.priority_rank == 1
-    )
-    if len(current) == 1:
-        return current[0]
     raise LocalTutorWorkflowError(
-        "no unique M44 current-priority hypothesis is available; supply hypothesis_id"
+        "M45 queue item has no learner-hypothesis link; supply hypothesis_id explicitly"
     )
 
 
@@ -141,16 +131,14 @@ def _matching_transfer_plan(
     transfer_plans: tuple[TransferRetestPlan, ...],
 ) -> TransferRetestPlan | None:
     context = session.capture_session.context
-    matching = []
-    for plan in transfer_plans:
-        selected = plan.selected_candidate
-        if (
-            plan.hypothesis_id == hypothesis_id
-            and selected is not None
-            and selected.position.game_id == context.game_id
-            and selected.position.position_id == context.position_id
-        ):
-            matching.append(plan)
+    matching = tuple(
+        plan
+        for plan in transfer_plans
+        if plan.hypothesis_id == hypothesis_id
+        and plan.selected_candidate is not None
+        and plan.selected_candidate.position.game_id == context.game_id
+        and plan.selected_candidate.position.position_id == context.position_id
+    )
     if len(matching) > 1:
         raise LocalTutorWorkflowError(
             "multiple exact M42 transfer plans match the active tutor position"
@@ -177,13 +165,6 @@ class LocalTutorWorkflowSnapshot:
     schema_version: str = LOCAL_TUTOR_WORKFLOW_SCHEMA_VERSION
 
     def __post_init__(self) -> None:
-        for name, value in (
-            ("workflow_id", self.workflow_id),
-            ("fingerprint", self.fingerprint),
-            ("participant_id", self.participant_id),
-            ("next_action", self.next_action),
-        ):
-            _nonempty(name, value)
         _timestamp("created_at", self.created_at)
         if self.schema_version != LOCAL_TUTOR_WORKFLOW_SCHEMA_VERSION:
             raise LocalTutorWorkflowError("unsupported local-tutor workflow schema")
@@ -194,28 +175,18 @@ class LocalTutorWorkflowSnapshot:
         if self.active_item not in self.mentor_queue.items:
             raise LocalTutorWorkflowError("active item is not in the exact M45 queue")
         if self.stage == "review_ready":
-            has_active_session = (
+            if (
                 self.tutor_session_ref is not None
                 or self.adaptive_tutor_proposal is not None
-            )
-            if has_active_session:
-                raise LocalTutorWorkflowError(
-                    "review-ready workflow must not claim an active tutor session"
-                )
-            if self.next_action != "START_SELECTED_REVIEW":
-                raise LocalTutorWorkflowError("review-ready next action is invalid")
-        else:
-            if (
-                self.tutor_session_ref is None
-                or self.adaptive_tutor_proposal is None
+                or self.next_action != "START_SELECTED_REVIEW"
             ):
-                raise LocalTutorWorkflowError(
-                    "active tutor workflow requires exact M8 and M46 references"
-                )
-            if self.next_action != self.adaptive_tutor_proposal.action:
-                raise LocalTutorWorkflowError(
-                    "workflow next action must equal M46 action"
-                )
+                raise LocalTutorWorkflowError("invalid review-ready workflow state")
+        elif (
+            self.tutor_session_ref is None
+            or self.adaptive_tutor_proposal is None
+            or self.next_action != self.adaptive_tutor_proposal.action
+        ):
+            raise LocalTutorWorkflowError("invalid active tutor workflow state")
         if self.orchestration_authority != "composition_only":
             raise LocalTutorWorkflowError(
                 "local workflow cannot grant execution authority"
@@ -227,26 +198,29 @@ class LocalTutorWorkflowSnapshot:
             raise LocalTutorWorkflowError(
                 "local workflow cannot establish learner effect or mastery"
             )
+        expected = _digest(self.identity_payload())
+        if self.fingerprint != expected:
+            raise LocalTutorWorkflowError("local-tutor workflow fingerprint mismatch")
+        if self.workflow_id != f"local_tutor_workflow_{expected[:20]}":
+            raise LocalTutorWorkflowError("local-tutor workflow identity mismatch")
 
     def identity_payload(self) -> dict[str, Any]:
-        tutor_session_ref = (
-            None
-            if self.tutor_session_ref is None
-            else self.tutor_session_ref.to_dict()
-        )
-        adaptive_proposal = (
-            None
-            if self.adaptive_tutor_proposal is None
-            else self.adaptive_tutor_proposal.to_dict()
-        )
         return {
             "schema_version": self.schema_version,
             "participant_id": self.participant_id,
             "batch_scope": self.batch_scope.to_dict(),
             "mentor_queue": self.mentor_queue.to_dict(),
             "active_item": self.active_item.to_dict(),
-            "tutor_session_ref": tutor_session_ref,
-            "adaptive_tutor_proposal": adaptive_proposal,
+            "tutor_session_ref": (
+                None
+                if self.tutor_session_ref is None
+                else self.tutor_session_ref.to_dict()
+            ),
+            "adaptive_tutor_proposal": (
+                None
+                if self.adaptive_tutor_proposal is None
+                else self.adaptive_tutor_proposal.to_dict()
+            ),
             "stage": self.stage,
             "next_action": self.next_action,
             "created_at": self.created_at,
@@ -277,7 +251,6 @@ def build_local_tutor_workflow(
     hypothesis_id: str | None = None,
 ) -> LocalTutorWorkflowSnapshot:
     """Compose the current V1 local-review state from exact qualified artifacts."""
-    _nonempty("participant_id", participant_id)
     _timestamp("created_at", created_at)
     if learner_progress_view.participant_id != participant_id:
         raise LocalTutorWorkflowError("M44 learner-progress participant mismatch")
@@ -324,18 +297,17 @@ def build_local_tutor_workflow(
             item=item,
             requested_hypothesis_id=hypothesis_id,
         )
-        transfer_plan = _matching_transfer_plan(
-            session=tutor_session,
-            hypothesis_id=resolved_hypothesis_id,
-            transfer_plans=transfer_plans,
-        )
         proposal = build_adaptive_tutor_proposal(
             tutor_session=tutor_session,
             learner_progress_view=learner_progress_view,
             hypothesis_id=resolved_hypothesis_id,
             mentor_queue=queue,
             mentor_queue_item=item,
-            transfer_plan=transfer_plan,
+            transfer_plan=_matching_transfer_plan(
+                session=tutor_session,
+                hypothesis_id=resolved_hypothesis_id,
+                transfer_plans=transfer_plans,
+            ),
             policy=adaptive_tutor_policy,
             created_at=created_at,
         )
@@ -343,18 +315,18 @@ def build_local_tutor_workflow(
         stage = _stage_for(tutor_session, proposal)
         next_action = proposal.action
 
-    session_payload = (
-        None if session_reference is None else session_reference.to_dict()
-    )
-    proposal_payload = None if proposal is None else proposal.to_dict()
     payload = {
         "schema_version": LOCAL_TUTOR_WORKFLOW_SCHEMA_VERSION,
         "participant_id": participant_id,
         "batch_scope": batch_scope.to_dict(),
         "mentor_queue": queue.to_dict(),
         "active_item": item.to_dict(),
-        "tutor_session_ref": session_payload,
-        "adaptive_tutor_proposal": proposal_payload,
+        "tutor_session_ref": (
+            None if session_reference is None else session_reference.to_dict()
+        ),
+        "adaptive_tutor_proposal": (
+            None if proposal is None else proposal.to_dict()
+        ),
         "stage": stage,
         "next_action": next_action,
         "created_at": created_at,
