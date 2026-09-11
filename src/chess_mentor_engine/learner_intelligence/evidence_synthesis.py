@@ -382,9 +382,10 @@ def _derive_gaps(
             "unit is present in the current M7C assessment."
         )
     if revision.unresolved_alternative_notes:
+        alternative_count = len(revision.unresolved_alternative_notes)
         gaps.append(
-            f"The current revision retains {len(revision.unresolved_alternative_notes)} "
-            "unresolved alternative explanation(s)."
+            f"The current revision retains {alternative_count} unresolved "
+            "alternative explanation(s)."
         )
     if projection is None:
         gaps.append("No K7 chess-knowledge projection is attached to this hypothesis.")
@@ -456,7 +457,10 @@ def build_hypothesis_evidence_synthesis(
         raise ValueError("M39 M36/M7C assessment identity mismatch")
     if entry.m7_status != assessment.status:
         raise ValueError("M39 M36/M7C status mismatch")
-    if any(unit.participant_id != participant_id for unit in assessment.recurrence_units):
+    if any(
+        unit.participant_id != participant_id
+        for unit in assessment.recurrence_units
+    ):
         raise ValueError("M39 recurrence-unit participant mismatch")
 
     entry_projection_ref: LearnerReadReference | None = entry.knowledge.projection_ref
