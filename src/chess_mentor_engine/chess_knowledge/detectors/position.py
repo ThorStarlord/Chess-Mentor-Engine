@@ -111,7 +111,11 @@ def detect_position_knowledge(
     in_check = board.is_in_check(side)
     legal_moves = board.legal_moves()
     side_qualifier = (KnowledgeQualifier(name="color", value=side),)
-    add("rule.check", status="present" if in_check else "absent", qualifiers=side_qualifier)
+    add(
+        "rule.check",
+        status="present" if in_check else "absent",
+        qualifiers=side_qualifier,
+    )
     add(
         "rule.checkmate",
         status="present" if in_check and not legal_moves else "absent",
@@ -185,7 +189,9 @@ def detect_position_knowledge(
                     "position.isolated_pawn",
                     qualifiers=(
                         KnowledgeQualifier(name="color", value=color),
-                        KnowledgeQualifier(name="pawn_square", value=square_name(square)),
+                        KnowledgeQualifier(
+                            name="pawn_square", value=square_name(square)
+                        ),
                     ),
                 )
             if _is_passed_pawn(square, color, pawns_by_color[enemy]):
@@ -193,7 +199,9 @@ def detect_position_knowledge(
                     "position.passed_pawn",
                     qualifiers=(
                         KnowledgeQualifier(name="color", value=color),
-                        KnowledgeQualifier(name="pawn_square", value=square_name(square)),
+                        KnowledgeQualifier(
+                            name="pawn_square", value=square_name(square)
+                        ),
                     ),
                 )
 
@@ -220,7 +228,8 @@ def detect_position_knowledge(
                 qualifiers=(
                     KnowledgeQualifier(name="color", value=color),
                     KnowledgeQualifier(
-                        name="files", value="".join(FILES[index] for index in island)
+                        name="files",
+                        value="".join(FILES[index] for index in island),
                     ),
                 ),
             )
@@ -251,10 +260,18 @@ def _pawn_squares(board: Board, color: str) -> tuple[int, ...]:
     return tuple(square for square, piece in enumerate(board.squares) if piece == pawn)
 
 
-def _is_passed_pawn(square: int, color: str, enemy_pawns: tuple[int, ...]) -> bool:
+def _is_passed_pawn(
+    square: int,
+    color: str,
+    enemy_pawns: tuple[int, ...],
+) -> bool:
     file_index = square % 8
     rank = square // 8
-    relevant_files = {value for value in (file_index - 1, file_index, file_index + 1) if 0 <= value < 8}
+    relevant_files = {
+        value
+        for value in (file_index - 1, file_index, file_index + 1)
+        if 0 <= value < 8
+    }
     for enemy_square in enemy_pawns:
         if enemy_square % 8 not in relevant_files:
             continue
