@@ -16,8 +16,10 @@ from typing import Any, TypeVar
 from chess_mentor_engine.candidate_tutor_cli import (
     M18_QUEUE_KIND,
     CandidateTutorCliError,
-    _run as _run_candidate_tutor,
     _validate_queue,
+)
+from chess_mentor_engine.candidate_tutor_cli import (
+    _run as _run_candidate_tutor,
 )
 from chess_mentor_engine.chess import canonical_json
 from chess_mentor_engine.learner_intelligence import (
