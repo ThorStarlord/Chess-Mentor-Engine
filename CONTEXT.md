@@ -4,8 +4,7 @@
 > [`docs/product/repository-build-status.md`](docs/product/repository-build-status.md)  
 > **Latest handoff:** [`STATUS.md`](STATUS.md)  
 > **Architecture:** [`docs/architecture/architecture.md`](docs/architecture/architecture.md)  
-> **Latest runbook:**
-> [`docs/runbooks/m42-m46-learner-tutor-loop.md`](docs/runbooks/m42-m46-learner-tutor-loop.md)
+> **Latest runbook:** [`docs/runbooks/v1-local-tutor-vertical-slice.md`](docs/runbooks/v1-local-tutor-vertical-slice.md)
 
 ## Product and authority
 
@@ -30,6 +29,7 @@ What transfer/retest may M42 plan without creating an M10 outcome?
 How may M44 present all of that without inventing new claims?
 Which recent review moments may M45 prioritize without diagnosing the learner?
 What may M46 ask/hint/reveal next without bypassing the M8 exposure lifecycle?
+How may the V1 local consumer compose those exact artifacts without acquiring their authority?
 ```
 
 ## Current implementation boundary
@@ -44,12 +44,13 @@ M40    Teaching-Priority / Next-Session Proposal
 M43    Contradiction / Control Evidence Acquisition
 M41    Ontology-Aware Intervention Matching
 M42    Bounded Transfer / Retest Planning
-M44    Learner Progress Reference Surface + Transfer Plan Presentation
+M44    Learner Progress Reference Surface
 M45    Participant-Scoped Batch Mentor Queue
 M46    Adaptive Socratic Tutor Action Policy
+V1     Local Tutor Composition (`cme-local-tutor`)
 ```
 
-M35, M37, and M38 remain unimplemented labels. K8 is not an active program.
+M35, M37, and M38 remain unimplemented labels. K8 is not an active program. The remaining repository blocker for Version 1.0 is release/distribution qualification, not another learner-intelligence layer.
 
 ## Current authority graph
 
@@ -65,10 +66,7 @@ captured reasoning and exposure/consent boundaries
         |
         v
 LEARNER INFERENCE
-M6 position-local discrepancy
-        |
-        v
-M7 / M7C participant-specific hypothesis, recurrence, contradiction
+M6 -> M7 / M7C
         |
         +------------------------------+
         |                              |
@@ -76,44 +74,50 @@ M7 / M7C participant-specific hypothesis, recurrence, contradiction
 TRAINING / OUTCOMES                CHESS SEMANTICS
 M9 intervention selection          K0-K7 ontology/assertions/detectors
 M10 bounded outcome evidence       + optional M7C-preserving projection
-M11 longitudinal learner state     |
-        |                           |
-        +-------------+-------------+
-                      |
-                      v
-                M36 READ MODEL
-                      |
-                      v
-                M39 SYNTHESIS
-                      |
-                      v
-                M40 PROPOSAL
-                      |
-          +-----------+------------+-------------+
-          |                        |             |
-          v                        v             v
-   M43 EVIDENCE              M41 TRAINING    M42 TRANSFER
-   CANDIDATES                CANDIDATES      PLAN
-          |                        |             |
-          +-----------+------------+-------------+
-                      |
-                      v
-                M44 REFERENCE VIEW
+M11 longitudinal learner state
+        |                              |
+        +---------------+--------------+
+                        |
+                        v
+                  M36 READ MODEL
+                        |
+                        v
+                  M39 SYNTHESIS
+                        |
+                        v
+                  M40 PROPOSAL
+                        |
+          +-------------+-------------+
+          |             |             |
+          v             v             v
+    M43 EVIDENCE   M41 TRAINING   M42 TRANSFER
+     CANDIDATES     CANDIDATES      PLAN
+          |             |             |
+          +-------------+-------------+
+                        |
+                        v
+                  M44 REFERENCE VIEW
 
-M4D DIAGNOSTIC BATCH + PARTICIPANT SCOPE
-                      |
-                      v
-                M45 MENTOR QUEUE
-                      |
-                      v
-                M8 TUTOR LIFECYCLE
-            + optional M44/M45/M42 context
-                      |
-                      v
-                M46 ACTION PROPOSAL
-                      |
-                      v
-                M8 EXECUTION / EXPOSURE
+EXACT M18 QUEUE + EXACT M44 VIEW + OPTIONAL EXACT M42 PLAN(S)
+                        |
+                        v
+             V1 LOCAL COMPOSITION
+                 `cme-local-tutor`
+                        |
+                        v
+                  M45 MENTOR QUEUE
+                        |
+                        v
+        explicit selection + capture consent
+                        |
+                        v
+             M23 -> persisted M8 checkpoint
+                        |
+                        v
+                 M46 ACTION PROPOSAL
+                        |
+                        v
+       existing M8 EXECUTION / EXPOSURE commands
 ```
 
 Separately, the deterministic feedback/model/review path remains:
@@ -128,106 +132,6 @@ M15 presentation + M6/M7
 -> M32 consumer fidelity
 -> M33 deterministic trace
 -> optional M31/M34 safety/recovery surfaces
-```
-
-The learner-intelligence path does not silently rewrite that model/review chain.
-
-## Chess Knowledge Ontology mental model
-
-K0–K7 provides stable chess semantics, not learner psychology.
-
-```text
-concept definition
-!= position/move assertion
-!= participant perception
-!= learner hypothesis
-```
-
-K7 attaches typed chess context to already-classified M7C recurrence units and preserves M7C relations verbatim. It does not become recurrence authority.
-
-### Product-pulled ontology rule
-
-The ontology is a shared dependency, not a destination. M41/M42/M44/M45/M46 all qualified without a generic K8.
-
-```text
-consumer needs semantic distinction X
--> prove K0-K7 cannot represent X safely
--> design the minimum ontology extension
--> add rejection tests
--> consume X in the requesting feature
--> qualify ontology + consumer together
-```
-
-## Learner-intelligence mental model
-
-### M36
-
-> What does current qualified repository evidence say about this participant now?
-
-Read-only. No learner-state mutation.
-
-### M39
-
-> Why is this learner hypothesis at its current M7C status, what challenges it, and what evidence remains missing?
-
-Source-traceable synthesis. No recurrence reclassification.
-
-### M40
-
-> Which kind of learner-facing action should be proposed next under an explicit versioned policy?
-
-Proposal-only. It does not execute the action.
-
-### M43
-
-> Which already-classified or potential participant-local evidence should be inspected to challenge, control, or extend current evidence?
-
-Candidate-only. It does not turn a candidate into an M7C relation.
-
-### M41
-
-> Which explicit M9 intervention versions are semantic candidates for the current M40 teaching need?
-
-Candidate-only. M9 remains applicability/selection authority.
-
-### M42
-
-> Which bounded near/far transfer position should be used to gather future evidence?
-
-Planning-only. M10 remains attempt/observation/outcome/transfer authority. Exact practice reuse and stale/exposed candidates fail closed.
-
-### M44
-
-> How can current learner evidence, uncertainty, next action, candidates, and transfer plan be presented without adding inference?
-
-Local reference presentation only. Missing optional information remains missing rather than becoming negative evidence.
-
-### M45
-
-> Which bounded recent diagnostic moments deserve review attention given current learner context?
-
-Review-priority proposal only. Ranking uses transparent dimensions rather than raw CP loss alone and does not create a learner diagnosis.
-
-### M46
-
-> Given exact M8 session state and exact learner context, what bounded tutoring action should be proposed next without destroying the measurement opportunity?
-
-M46 preserves this invariant:
-
-```text
-unassisted pre-reveal response
-!= assisted response after a hint
-!= post-reveal reflection
-```
-
-Before the M8 baseline is frozen, M46 can only propose continuing baseline capture. After freeze it may propose bounded hints or objective reveal according to exact learner intent; transfer tutoring requires an exact M42 plan. M8 remains execution/exposure/capture/reveal authority.
-
-Every M46 proposal records:
-
-```text
-execution_authority = proposal_only
-model_language = not_generated
-mastery = not_established
 ```
 
 ## Authority owners contributors must preserve
@@ -250,11 +154,15 @@ M9 owns explicit intervention applicability/selection. M10 owns bounded outcome/
 
 ### Chess semantics
 
-K0–K7 own ontology identities, semantics, provenance-bound assertions, conservative detector outputs, and qualified sidecar/projection contracts. They do not own M7C, M9, or learner-state mutation.
+K0-K7 own ontology identities, semantics, provenance-bound assertions, conservative detector outputs, and qualified sidecar/projection contracts. They do not own M7C, M9, or learner-state mutation.
 
 ### Learner intelligence and tutor proposals
 
 M36 reads current state. M39 explains evidence. M40 proposes an action. M43 prepares evidence candidates. M41 prepares intervention candidates. M42 prepares transfer/retest plans. M44 presents qualified layers. M45 ranks bounded review candidates. M46 proposes bounded tutor actions. None inherits upstream mutation/selection/outcome/execution authority.
+
+### V1 local composition
+
+`cme-local-tutor` is composition-only. It validates and combines exact already-qualified artifacts, uses M45 rank one only as a review proposal, requires explicit selection and capture consent, persists through the existing M23/M8 path, and surfaces an M46 proposal. It does not execute the M46 action or mint new chess/learner/outcome authority.
 
 ## Contracts to preserve
 
@@ -273,6 +181,8 @@ M42 plan != M10 outcome evidence
 M44 rendering != learner inference
 M45 queue priority != learner diagnosis or M9 selection
 M46 tutor proposal != M8 execution / exposure authority
+V1 composition != new learner / selection / outcome authority
+M45 rank one != implicit consent
 assisted follow-up != baseline unassisted evidence
 post-reveal reflection != pre-reveal evidence
 successful evidence case != mastery
@@ -285,31 +195,28 @@ M20 evaluator acceptance != objective truth
 
 ## Qualification discipline
 
-For any future package:
+For any package:
 
 1. reconcile live `main`;
 2. identify the concrete product/correctness problem and existing authority owner;
 3. classify work as `REPOSITORY_ONLY`, `HERMETIC_VALIDATION`, or `EXTERNAL_AUTHORITY`;
 4. define exact inputs/outputs, claim ceiling, and forbidden authority changes;
-5. reuse existing authority systems before adding a new subsystem;
+5. reuse existing authority systems before adding a subsystem;
 6. include positive and rejection/near-miss/tamper cases;
 7. merge only the exact final head that passes full pytest, Ruff, compileall, and the independent Stockfish job;
 8. reconcile current documentation after feature packages merge.
 
-## Next architecture decision
+## Current Version 1.0 decision
 
-The M42/M45/M46 backend sequence is complete. The next milestone should be pulled by the product, not milestone numbering.
-
-Strongest alternatives:
+The local composition gap is closed by PR #94. The next required V1 package is **Release Candidate & Distribution Qualification**:
 
 ```text
-A. concrete end-to-end local consumer
-   recent games -> M45 queue -> M8/M46 tutoring -> reflection -> M42/M10 retest
-
-B. M47 bounded multi-session study plan
-   only if composition across several sessions is the current product bottleneck
+current package identity/version
+-> build wheel/sdist
+-> clean fresh-environment install
+-> smoke promised commands and package data
+-> preserve full pytest/Ruff/compileall/Stockfish gate
+-> repository-qualified V1 candidate
 ```
 
-Prefer the local end-to-end consumer when the current issue is that the qualified backend is difficult to experience as one workflow. Choose M47 only when multi-session orchestration is demonstrably the missing capability.
-
-M35/M37 should move only if a concrete consumer/operator blocker requires them. M38 must not become a second recurrence engine; reuse M7C. K8 remains product-pulled.
+Do not substitute M35/M37/M38/K8/M47 or hosted-product work for this release task. Those are optional/conditional or external-authority work after the repository V1 boundary is qualified.

@@ -1,13 +1,10 @@
-# Architecture: implemented boundaries through M34 + K0–K7 + M36/M39/M40/M41/M43/M44
+# Architecture: implemented boundaries through M34 + K0-K7 + M36/M39/M40/M41/M42/M43/M44/M45/M46 + V1 local composition
 
-This document describes the currently implemented architectural boundaries. The
-moving implementation authority is
-[`../product/repository-build-status.md`](../product/repository-build-status.md).
+This document describes the currently implemented architectural boundaries. The moving implementation authority is [`../product/repository-build-status.md`](../product/repository-build-status.md).
 
 ## Architectural thesis
 
-Chess Mentor Engine is not one inference pipeline. It is a set of authority-separated
-layers connected by content-addressed provenance.
+Chess Mentor Engine is not one inference pipeline. It is a set of authority-separated layers connected by content-addressed provenance.
 
 ```text
 objective chess evidence
@@ -21,9 +18,10 @@ objective chess evidence
 != action proposal
 != candidate preparation
 != presentation
+!= orchestration composition
 ```
 
-The architecture is intentionally conservative about promotion between those layers.
+Composition may bind exact artifacts from several layers, but it does not inherit the authority of those layers.
 
 ## Current high-level graph
 
@@ -63,15 +61,37 @@ The architecture is intentionally conservative about promotion between those lay
                               v
                        M40 PROPOSAL
                               |
-                +-------------+-------------+
-                |                           |
-                v                           v
-       M43 EVIDENCE CANDIDATES     M41 INTERVENTION CANDIDATES
-                |                           |
-                +-------------+-------------+
+          +-------------------+-------------------+
+          |                   |                   |
+          v                   v                   v
+ M43 EVIDENCE CANDIDATES  M41 INTERVENTION   M42 TRANSFER /
+                          CANDIDATES          RETEST PLAN
+          |                   |                   |
+          +-------------------+-------------------+
                               |
                               v
                     M44 REFERENCE VIEW
+
+EXACT M18 QUEUE + EXACT M44 VIEW + OPTIONAL EXACT M42 PLAN(S)
+                              |
+                              v
+                   V1 LOCAL COMPOSITION
+                     `cme-local-tutor`
+                              |
+                              v
+                      M45 MENTOR QUEUE
+                              |
+                              v
+             explicit selection + capture consent
+                              |
+                              v
+                   M23 -> persisted M8
+                              |
+                              v
+                    M46 ACTION PROPOSAL
+                              |
+                              v
+           existing M8 EXECUTION / EXPOSURE authority
 ```
 
 The model/review execution chain remains separately authority-bounded:
@@ -89,14 +109,9 @@ M15 evaluation presentation + M6/M7 evidence
 -> M34 hermetic recovery reconciliation
 ```
 
-M36-M44 do not silently rewrite that path.
-
 ## M7 / M7C remains learner-recurrence authority
 
-M7 represents participant-specific hypotheses and their revision lineage. M7C owns the
-qualified recurrence/contradiction assessment over exact evidence units.
-
-Preserve:
+M7 represents participant-specific hypotheses and revision lineage. M7C owns qualified recurrence/contradiction assessment over exact evidence units.
 
 ```text
 one M6 discrepancy != recurrence
@@ -105,47 +120,29 @@ M43 candidate != M7C relation
 M39 explanation != M7C classification
 ```
 
-M43 can select already-classified controls for presentation or rank additional M7B
-links as **potential** review/reassessment candidates. Only the existing M7C/human
-review path may establish the recurrence relation under its own contract.
-
 ## M9 remains intervention-selection authority
 
-M9 separates:
+M41 is a semantic candidate layer before M9 authority.
 
 ```text
-registered intervention definition
-!= participant-specific applicability mapping
-!= deterministic selection decision
-!= intervention effect
-```
-
-M41 adds a semantic candidate layer before that authority. Exact
-`InterventionSemanticProfile` sidecars bind an M9 intervention version to ontology
-concept targeting/reinforcement/contraindication and training modes.
-
-M41 deliberately does not parse training prose to create a mapping.
-
-```text
-M41 eligible_candidate != M9 applicable
-M41 rank 1 != M9 selected
+M41 eligible candidate != M9 applicable
+M41 rank one != M9 selected
 M9 selected != effective
 ```
 
 ## M10 remains outcome / transfer authority
 
-M10 owns bounded practice, near-transfer, far-transfer, and real-game evidence. M40
-may propose a transfer test, but a proposal is not evidence.
-
-Future M42 may create a bounded test plan, but it must preserve:
+M42 is implemented as bounded transfer/retest planning. It binds exact M40/M9 identities, explicit candidate provenance, semantic relation, surface variation, freshness/exposure rules, and M10-compatible reuse keys.
 
 ```text
-scheduled retest != completed retest
+M42 planned retest != completed retest
 completed retest != successful transfer
 successful transfer != mastery
 ```
 
-## K0–K7 semantic architecture
+M42 does not create M10 evidence.
+
+## K0-K7 semantic architecture
 
 The ontology provides stable concepts and explanatory semantics while preserving:
 
@@ -156,156 +153,78 @@ concept definition
 != learner inference
 ```
 
-K0–K7 includes:
+There is no generic K8 roadmap item merely to make the ontology larger. Any extension must be pulled by a concrete consumer distinction K0-K7 cannot represent safely.
 
-- versioned stable concept identities;
-- tactical motifs, position features, principles, evaluation factors, plans, and
-  pedagogy metadata;
-- Lichess compatibility mappings without importing Lichess as universal truth;
-- provenance-bound position/move assertions;
-- conservative deterministic detectors;
-- an opt-in M19 model-context sidecar;
-- an M7C-preserving learner semantic projection.
+## M36 / M39 / M40 — read, explain, propose
 
-### Product-pulled ontology rule
+- **M36** composes exact current M7/M7C, M9, M10, M11 and optional K7 information into a participant-scoped read model. No mutation authority.
+- **M39** binds the exact current hypothesis evidence and explains support, contradiction, exceptions, gaps, and conditions without reclassifying recurrence.
+- **M40** applies an explicit versioned policy and proposes one next action. Its authority is `proposal_only`.
 
-There is no generic K8 roadmap item merely to make the ontology larger.
+## M43 / M41 / M42 — prepare candidates, do not promote them
 
-```text
-consumer needs semantic distinction X
--> verify current ontology cannot safely express X
--> add minimum semantic extension
--> add ontology rejection tests
--> use X in the consumer
--> qualify both together
-```
+- **M43** prepares contradiction/control/evidence candidates without turning them into M7C relations.
+- **M41** prepares ontology-aware intervention candidates without exercising M9 selection.
+- **M42** prepares bounded transfer/retest plans without creating M10 outcomes.
 
-M41 and M44 required no ontology schema/data expansion, demonstrating that K0–K7 is
-already a useful stable substrate.
+## M44 — learner-progress reference presentation
 
-## M36 — current learner-state read model
-
-M36 composes exact current M7/M7C, M9, M10, M11 and optional K7 information into a
-participant-scoped content-addressed read model.
-
-It has no mutation authority.
-
-## M39 — exact evidence explanation
-
-M39 binds an exact M36 state to the exact current M7 revision/M7C assessment and
-preserves support, contradiction, successful-counterexample, context-exception,
-unclear/mixed evidence, source refs, optional K7 concepts, gaps, and bounded conditions
-that could alter a future assessment.
-
-It explains existing evidence; it does not recalculate recurrence.
-
-## M40 — transparent next-action proposal
-
-M40 applies a versioned explicit policy over M36/M39 and proposes one action class:
-
-```text
-COLLECT_NEW_EVIDENCE
-CHALLENGE_HYPOTHESIS
-PRESENT_CONTROL
-TEACH_CONCEPT
-ASSIGN_PRACTICE
-RUN_NEAR_TRANSFER_TEST
-RUN_FAR_TRANSFER_TEST
-WAIT_FOR_REAL_GAME_EVIDENCE
-```
-
-Its authority is `proposal_only`.
-
-M40 is now the routing seam for downstream product work rather than downstream
-features independently inventing their own learner-intelligence policy.
-
-## M43 — contradiction/control evidence acquisition
-
-M43 consumes only the evidence-oriented M40 actions:
-
-```text
-CHALLENGE_HYPOTHESIS
-PRESENT_CONTROL
-COLLECT_NEW_EVIDENCE
-```
-
-It binds the exact M40 proposal, exact M39 synthesis when required, an explicit pool
-of exact-current participant-local M7B evidence links, and a versioned ranking policy.
-
-Output candidate kinds distinguish current M7C classifications from potential new
-review material.
-
-Its claim ceiling is:
-
-```text
-decision_authority = candidate_only
-m7c_effect = not_established
-mastery = not_established
-```
-
-M43 introduces no persistence/search backend and no second recurrence engine.
-
-## M41 — ontology-aware intervention matching
-
-M41 consumes an exact `TEACH_CONCEPT` proposal and exact M39 concept context. It binds
-the exact ontology snapshot, exact M9 intervention registry, explicit semantic-profile
-sidecars, and an explicit matching policy.
-
-It returns:
-
-```text
-eligible_candidate
-possible_candidate
-insufficient_information
-ineligible
-```
-
-Ontology pedagogical prerequisites are carried as **unverified prerequisites**. M41
-cannot infer whether the learner has or lacks them.
-
-Its claim ceiling is:
-
-```text
-selection_authority = not_exercised
-efficacy = not_established
-mastery = not_established
-```
-
-## M44 — learner progress reference presentation
-
-M44 is split into two implementation modules:
-
-```text
-progress_model.py
-    exact source validation + deterministic presentation model
-
-progress_render.py
-    escaped static HTML rendering from an already-built exact view
-```
-
-This physical separation reinforces:
+M44 validates exact source identities and renders deterministic local reference presentation. Missing optional layers remain missing rather than becoming negative evidence.
 
 ```text
 presentation composition != presentation rendering != learner inference
 ```
 
-M44 requires the exact M39 synthesis set referenced by M40, validates optional M43 and
-M41 artifacts against the same participant/revision/plan/proposal identities, resolves
-ontology display semantics under the exact ontology fingerprint, and preserves M40
-priority order.
-
-Optional missing M43/M41 layers are shown as unavailable/not supplied instead of
-negative evidence.
-
-The HTML surface:
-
-- is static and deterministic;
-- escapes source-controlled text;
-- loads no scripts/network resources;
-- is content-addressed;
-- claims local reference presentation only.
-
 It does not establish production browser/device/accessibility/usability quality.
+
+## M45 — participant-scoped mentor priority
+
+M45 binds an exact participant-agnostic diagnostic batch to explicit participant scope and ranks a bounded queue with separate, inspectable learner/challenge/transfer/uncertainty/objective/novelty/semantic-diversity dimensions.
+
+```text
+M45 priority != learner hypothesis
+M45 rank one != M9 selection
+M45 rank one != empirically optimal review order
+```
+
+## M46 — adaptive Socratic action proposal
+
+M46 consumes exact M8 session state and exact qualified context and proposes a bounded next tutoring action.
+
+```text
+M46 proposal != M8 execution
+```
+
+Before M8 baseline freeze it cannot expose adaptive help or objective reveal. Assisted responses and post-reveal reflections remain separate evidence classes. Transfer tutoring requires the exact current M42 plan.
+
+Every proposal records a proposal-only execution ceiling and does not establish mastery.
+
+## V1 local tutor composition
+
+`cme-local-tutor start|next` is a composition layer over existing authorities:
+
+```text
+exact M18 queue
++ exact M44 view
++ optional exact M42 plans
+-> M45 queue
+-> explicit operator selection + capture consent
+-> M23 authorization/persistence
+-> persisted M8 checkpoint
+-> M46 proposal
+```
+
+It then points the operator back to existing `cme tutor` transitions for actual M8 execution/exposure.
+
+The composition layer:
+
+- is content-addressed and deterministic;
+- validates exact identity/fingerprint relationships;
+- fails closed on tamper/participant/queue/session drift;
+- does not treat M45 rank one as consent;
+- does not convert M46 proposal into execution;
+- does not convert M42 plan into M10 evidence;
+- owns no new chess truth, learner inference, pedagogy selection, outcome, or mastery authority.
 
 ## Core invariants
 
@@ -318,10 +237,15 @@ M36 read model != learner-state mutation
 M39 synthesis != M7C recurrence authority
 M40 proposal != execution
 M43 candidate != M7C contradiction/refutation
-M41 candidate != M9 applicability mapping
-M41 rank != M9 selection
+M41 candidate != M9 applicability mapping / selection
+M42 plan != M10 transfer evidence
 M44 rendering != learner inference
-M40 transfer proposal != M10 transfer evidence
+M45 priority != learner diagnosis / M9 selection
+M46 proposal != M8 execution / exposure
+V1 composition != upstream authority
+M45 rank one != implicit consent
+assisted response != baseline unassisted evidence
+post-reveal reflection != pre-reveal evidence
 successful evidence case != mastery
 transparent policy != empirically optimal pedagogy
 M16 deterministic grounding != M19 model prose
@@ -334,7 +258,7 @@ The implemented architecture does not establish:
 
 - causal cognitive diagnosis/permanent learner traits;
 - complete automatic chess-concept detection;
-- automatic learner-state mutation from ontology or model outputs;
+- automatic learner-state mutation from ontology/model outputs;
 - intervention efficacy or optimal pedagogy;
 - transfer/mastery from plans or practice alone;
 - production UI/accessibility/usability quality;
@@ -342,23 +266,16 @@ The implemented architecture does not establish:
 - production privacy/security/compliance posture;
 - production provider retry/cost/secrets authority.
 
-## Next product-pulled seams
+## Version 1.0 architecture boundary
 
-The strongest next architecture sequence is:
+The architecture/product-consumption gap identified for V1 is now integrated. The remaining repository V1 task is release/distribution qualification, not another architecture layer:
 
 ```text
-M40 RUN_NEAR_TRANSFER_TEST / RUN_FAR_TRANSFER_TEST
--> M42 bounded transfer/retest plan
--> actual bounded result
--> existing M10 evidence authority
-
-bounded recent participant games
--> M45 mentor queue using objective importance + learner relevance +
-   contradiction value + transfer value + uncertainty + novelty
-
-M36/M39/M40 + K0-K7 + M41/M42/M43
--> M46 adaptive Socratic tutoring under explicit pedagogical action boundaries
+synchronize release identity/version
+-> build distributable artifact
+-> clean-install in a fresh environment
+-> smoke installed commands and package data
+-> preserve full repository + Stockfish qualification
 ```
 
-M35/M37 remain available only when concrete operator/consumer needs pull them forward.
-M38 must never duplicate M7C recurrence authority.
+M35/M37/M38/K8/M47 and hosted-product work remain conditional, optional, post-V1, or external-authority concerns unless a fresh repository audit proves otherwise.
