@@ -47,7 +47,8 @@ def qualify_wheel(path: Path, *, expected_version: str) -> None:
     expected_prefix = f"chess_mentor_engine-{expected_version}-"
     if not path.name.startswith(expected_prefix) or path.suffix != ".whl":
         raise DistributionQualificationError(
-            f"wheel filename does not identify version {expected_version}: {path.name}"
+            "wheel version is not identified by the expected filename: "
+            f"expected {expected_version!r}, got {path.name!r}"
         )
 
     with zipfile.ZipFile(path) as archive:
