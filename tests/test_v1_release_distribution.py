@@ -4,17 +4,34 @@ import io
 import tarfile
 import zipfile
 from pathlib import Path
+from types import ModuleType
 
 import pytest
 
-from tools.release_qualification import (
-    EXPECTED_CONSOLE_SCRIPTS,
-    EXPECTED_PACKAGE_FILES,
-    DistributionQualificationError,
-    qualify_distributions,
-    qualify_sdist,
-    qualify_wheel,
+EXPECTED_CONSOLE_SCRIPTS = {
+    "cme": "chess_mentor_engine.cli:main",
+    "cme-candidate-tutor": "chess_mentor_engine.candidate_tutor_cli:main",
+    "cme-coach-review": "chess_mentor_engine.coach_review_cli:main",
+    "cme-reviewed-coaching": "chess_mentor_engine.reviewed_coaching_cli:main",
+    "cme-reviewed-coaching-ledger": "chess_mentor_engine.reviewed_coaching_ledger_cli:main",
+    "cme-coach-review-reference": "chess_mentor_engine.coach_review_reference_cli:main",
+    "cme-persisted-coach-review-reference": "chess_mentor_engine.persisted_review_reference_cli:main",
+    "cme-participant-review": "chess_mentor_engine.participant_review_package_cli:main",
+    "cme-local-tutor": "chess_mentor_engine.local_tutor_entry:main",
+}
+EXPECTED_PACKAGE_FILES = (
+    "chess_mentor_engine/py.typed",
+    "chess_mentor_engine/chess_knowledge/data/ontology.v1.json",
+    "chess_mentor_engine/chess_knowledge/data/strategy.v1.json",
 )
+
+
+def _release_qualification() -> ModuleType:
+    try:
+        from tools import release_qualification
+    except ModuleNotFoundError:
+        pytest.fail("tools.release_qualification is missing")
+    return release_qualification
 
 
 def _write_wheel(
@@ -78,20 +95,25 @@ def _write_sdist(
 
 
 def test_release_distributions_accept_exact_v1_contract(tmp_path: Path) -> None:
+    qualifier = _release_qualification()
+    assert qualifier.EXPECTED_CONSOLE_SCRIPTS == EXPECTED_CONSOLE_SCRIPTS
+    assert qualifier.EXPECTED_PACKAGE_FILES == EXPECTED_PACKAGE_FILES
+
     wheel = tmp_path / "chess_mentor_engine-1.0.0-py3-none-any.whl"
     sdist = tmp_path / "chess_mentor_engine-1.0.0.tar.gz"
     _write_wheel(wheel)
     _write_sdist(sdist)
 
-    qualify_distributions(wheel, sdist, expected_version="1.0.0")
+    qualifier.qualify_distributions(wheel, sdist, expected_version="1.0.0")
 
 
 def test_wheel_rejects_wrong_release_version(tmp_path: Path) -> None:
+    qualifier = _release_qualification()
     wheel = tmp_path / "chess_mentor_engine-0.1.0-py3-none-any.whl"
     _write_wheel(wheel, version="0.1.0")
 
-    with pytest.raises(DistributionQualificationError, match="wheel version"):
-        qualify_wheel(wheel, expected_version="1.0.0")
+    with pytest.raises(qualifier.DistributionQualificationError, match="wheel version"):
+        qualifier.qualify_wheel(wheel, expected_version="1.0.0")
 
 
 @pytest.mark.parametrize(
@@ -102,36 +124,41 @@ def test_wheel_rejects_missing_promised_console_script(
     tmp_path: Path,
     script_name: str,
 ) -> None:
+    qualifier = _release_qualification()
     wheel = tmp_path / "chess_mentor_engine-1.0.0-py3-none-any.whl"
     _write_wheel(wheel, omitted_script=script_name)
 
-    with pytest.raises(DistributionQualificationError, match=script_name):
-        qualify_wheel(wheel, expected_version="1.0.0")
+    with pytest.raises(qualifier.DistributionQualificationError, match=script_name):
+        qualifier.qualify_wheel(wheel, expected_version="1.0.0")
 
 
 @pytest.mark.parametrize(
     "package_file",
-    [
-        "chess_mentor_engine/py.typed",
-        "chess_mentor_engine/chess_knowledge/data/ontology.v1.json",
-        "chess_mentor_engine/chess_knowledge/data/strategy.v1.json",
-    ],
+    list(EXPECTED_PACKAGE_FILES),
 )
 def test_wheel_rejects_missing_required_package_data(
     tmp_path: Path,
     package_file: str,
 ) -> None:
+    qualifier = _release_qualification()
     wheel = tmp_path / "chess_mentor_engine-1.0.0-py3-none-any.whl"
     _write_wheel(wheel, omitted_package_file=package_file)
 
-    with pytest.raises(DistributionQualificationError, match=Path(package_file).name):
-        qualify_wheel(wheel, expected_version="1.0.0")
+    with pytest.raises(
+        qualifier.DistributionQualificationError,
+        match=Path(package_file).name,
+    ):
+        qualifier.qualify_wheel(wheel, expected_version="1.0.0")
 
 
 def test_sdist_rejects_missing_required_package_data(tmp_path: Path) -> None:
+    qualifier = _release_qualification()
     package_file = "chess_mentor_engine/chess_knowledge/data/ontology.v1.json"
     sdist = tmp_path / "chess_mentor_engine-1.0.0.tar.gz"
     _write_sdist(sdist, omitted_package_file=package_file)
 
-    with pytest.raises(DistributionQualificationError, match="ontology.v1.json"):
-        qualify_sdist(sdist, expected_version="1.0.0")
+    with pytest.raises(
+        qualifier.DistributionQualificationError,
+        match="ontology.v1.json",
+    ):
+        qualifier.qualify_sdist(sdist, expected_version="1.0.0")
