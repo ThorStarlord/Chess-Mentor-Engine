@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "chess-mentor-engine"
-version = "0.1.0"
+version = "1.0.0"
 description = "Persistent AI chess tutor that learns how you think, diagnoses recurring mistakes, and turns game evidence into personalized training."
 readme = "README.md"
 requires-python = ">=3.11"
