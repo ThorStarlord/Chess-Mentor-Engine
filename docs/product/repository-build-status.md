@@ -1,7 +1,7 @@
 # Chess Mentor Engine — Current Build Status
 
 **Status authority:** current implementation and qualification boundary.  
-**Current main baseline:** `8e3abf063b2af7d09a46495f5e35c85c86d58f01`.  
+**V1 implementation baseline:** `8e3abf063b2af7d09a46495f5e35c85c86d58f01`.  
 **Version 1.0 state:** `INTEGRATED / CURRENT-MAIN AUTHORITY`.  
 **Release identity:** `chess-mentor-engine==1.0.0`.  
 **Contiguous numbered milestone boundary:** M34.  
@@ -55,7 +55,8 @@ Their absence does not make Version 1.0 incomplete.
 | Authority reconciliation | #95 | `f12758c52de3e13468774d13c324510d48e6d7d7` | `c41fda2f1c3c2002a4c960270b38ef3cce1ad144` | exact candidate source + Stockfish jobs PASS |
 | Release/distribution | #96 | `4b5512a1b5d67ad0df43000898b5d371701d832c` | `8e3abf063b2af7d09a46495f5e35c85c86d58f01` | PR run `34673791962` PASS; post-merge main run `34673834249` PASS |
 
-The final Package 3 candidate and resulting `main` both passed all package-defined jobs:
+The final Package 3 candidate and resulting integration commit both passed all
+package-defined jobs:
 
 ```text
 test-and-lint          PASS
@@ -207,8 +208,8 @@ repository release qualification != hosted-product approval
 
 ## Version 1.0 readiness
 
-`VERSION_1_REPOSITORY_READY` is established for current `main` by the integrated Package
-3 release/distribution contract plus successful exact-candidate and post-merge CI.
+`VERSION_1_REPOSITORY_READY` is established for the `main` lineage by the integrated
+Package 3 release/distribution contract plus successful exact-candidate and post-merge CI.
 There is no remaining repository-resolvable Version 1.0 package.
 
 Future work begins a new milestone and must be justified by a concrete post-V1 product,

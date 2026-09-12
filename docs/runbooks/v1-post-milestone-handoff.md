@@ -10,11 +10,11 @@ claim ceiling future engineers must preserve.
 ## Authority snapshot
 
 ```text
-milestone state:  INTEGRATED / CURRENT-MAIN AUTHORITY
-repository:       ThorStarlord/Chess-Mentor-Engine
-main commit:      8e3abf063b2af7d09a46495f5e35c85c86d58f01
-release identity: chess-mentor-engine==1.0.0
-repository state: VERSION_1_REPOSITORY_READY
+milestone state:          INTEGRATED / CURRENT-MAIN AUTHORITY
+repository:               ThorStarlord/Chess-Mentor-Engine
+V1 implementation merge: 8e3abf063b2af7d09a46495f5e35c85c86d58f01
+release identity:         chess-mentor-engine==1.0.0
+repository state:         VERSION_1_REPOSITORY_READY
 ```
 
 Version 1.0 closed three packages:
@@ -30,13 +30,13 @@ Version 1.0 closed three packages:
 The final implementation package was:
 
 ```text
-PR:           #96 — V1: qualify release distributions
-branch:       work/v1-release-distribution
-final head:   4b5512a1b5d67ad0df43000898b5d371701d832c
-merged:       yes
-merge commit: 8e3abf063b2af7d09a46495f5e35c85c86d58f01
-PR CI run:    34673791962 — success
-main CI run:  34673834249 — success
+PR:                      #96 — V1: qualify release distributions
+branch:                  work/v1-release-distribution
+final head:              4b5512a1b5d67ad0df43000898b5d371701d832c
+merged:                  yes
+V1 implementation merge: 8e3abf063b2af7d09a46495f5e35c85c86d58f01
+PR CI run:               34673791962 — success
+post-merge CI run:       34673834249 — success
 ```
 
 PR #96 added:
@@ -85,9 +85,9 @@ canonical module form. The exact corrected head then passed all three jobs and m
 During the post-milestone audit, the connected GitHub App could not read the classic
 `main` branch-protection endpoint. The repository-level ruleset list was empty. Treat
 required-check configuration as an integration-platform concern to re-check if merge
-policy changes; do not infer branch-protection state from this runbook. The current V1
+policy changes; do not infer branch-protection state from this runbook. The V1
 integration itself is unambiguous because PR #96 is merged and both its final candidate
-and resulting `main` commit have green CI evidence.
+and integrated implementation commit have green CI evidence.
 
 ## Development setup
 
@@ -296,8 +296,9 @@ intervention-caused learning or mastery is established
 ## Restart procedure for the next milestone
 
 1. Read `STATUS.md` and `docs/product/repository-build-status.md`.
-2. Confirm live `main` has not moved beyond the recorded baseline without corresponding
-   handoff reconciliation.
+2. Confirm live `main` still contains the recorded V1 implementation baseline; if later
+   work has landed, reconcile that newer repository reality rather than resetting to the
+   baseline SHA.
 3. Re-run the relevant qualification gate for any code area you intend to modify.
 4. Ask what concrete post-V1 problem is now being solved: release operations, hosted
    productization, real-user validation, or a demonstrated product capability gap.

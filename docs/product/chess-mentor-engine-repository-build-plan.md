@@ -35,7 +35,7 @@ qualified work includes K0-K7 and M36/M39/M40/M41/M42/M43/M44/M45/M46.
 Version 1.0 adds the integrated local tutor composition and a qualified `1.0.0`
 release/distribution contract.
 
-Current main authority is merge commit
+The V1 implementation baseline is merge commit
 `8e3abf063b2af7d09a46495f5e35c85c86d58f01` from PR #96.
 
 ## 3. Durable authority principles
@@ -125,9 +125,9 @@ synchronize package/runtime identity at 1.0.0
 -> preserve full pytest/Ruff/compileall/independent Stockfish gate
 ```
 
-The exact final candidate passed PR CI run `34673791962`. The merged main commit passed
-post-merge run `34673834249` with `test-and-lint`, `release-distribution`, and
-`stockfish-integration` all green.
+The exact final candidate passed PR CI run `34673791962`. The integrated implementation
+commit passed post-merge run `34673834249` with `test-and-lint`,
+`release-distribution`, and `stockfish-integration` all green.
 
 ## 8. Version 1.0 terminal state
 

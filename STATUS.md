@@ -2,7 +2,7 @@
 
 **Prepared:** 2026-09-12  
 **Milestone state:** `INTEGRATED / CURRENT-MAIN AUTHORITY`  
-**Current main:** `8e3abf063b2af7d09a46495f5e35c85c86d58f01`  
+**V1 implementation baseline:** `8e3abf063b2af7d09a46495f5e35c85c86d58f01`  
 **Release identity:** `chess-mentor-engine==1.0.0`  
 **Version 1.0 status:** `VERSION_1_REPOSITORY_READY`
 
@@ -18,7 +18,7 @@ for the release-artifact contract.
 
 ## Current V1 state
 
-All three bounded Version 1.0 packages are integrated:
+All three bounded Version 1.0 packages are integrated on the `main` lineage:
 
 ```text
 [x] Package 1 — Qualify & Integrate V1 Local Tutor Vertical Slice
@@ -58,7 +58,7 @@ qualification the sole remaining repository-resolvable V1 package at that point.
 **Implementation PR:** #96 — `V1: qualify release distributions`  
 **Branch:** `work/v1-release-distribution`  
 **Final head:** `4b5512a1b5d67ad0df43000898b5d371701d832c`  
-**Merge commit / current-main authority:** `8e3abf063b2af7d09a46495f5e35c85c86d58f01`  
+**V1 implementation merge commit:** `8e3abf063b2af7d09a46495f5e35c85c86d58f01`  
 **PR candidate CI:** run `34673791962` — PASS  
 **Post-merge main CI:** run `34673834249` — PASS
 
@@ -68,7 +68,7 @@ wheel/sdist contract validation and rejection tests, added an independent
 smoked all promised installed commands and package data, and preserved full source and
 independent Stockfish qualification.
 
-Exact successful gate on the final candidate and again on merged `main`:
+Exact successful gate on the final candidate and again after integration to `main`:
 
 ```text
 test-and-lint          PASS
@@ -98,7 +98,7 @@ then passed every required package-defined job and merged.
 The connected GitHub App cannot read the classic `main` branch-protection endpoint; the
 repository-level ruleset list was empty during this handoff audit. That uncertainty does
 not affect the integration claim: PR #96 is merged and both its exact final candidate and
-the resulting `main` commit have successful CI evidence.
+the resulting implementation merge commit have successful CI evidence.
 
 ## Current qualified architecture boundary
 
