@@ -29,7 +29,7 @@ EXPECTED_PACKAGE_FILES = (
 def _release_qualification() -> ModuleType:
     try:
         from tools import release_qualification
-    except ModuleNotFoundError:
+    except (ImportError, ModuleNotFoundError):
         pytest.fail("tools.release_qualification is missing")
     return release_qualification
 
