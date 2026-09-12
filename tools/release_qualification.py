@@ -13,9 +13,13 @@ EXPECTED_CONSOLE_SCRIPTS = {
     "cme-candidate-tutor": "chess_mentor_engine.candidate_tutor_cli:main",
     "cme-coach-review": "chess_mentor_engine.coach_review_cli:main",
     "cme-reviewed-coaching": "chess_mentor_engine.reviewed_coaching_cli:main",
-    "cme-reviewed-coaching-ledger": "chess_mentor_engine.reviewed_coaching_ledger_cli:main",
+    "cme-reviewed-coaching-ledger": (
+        "chess_mentor_engine.reviewed_coaching_ledger_cli:main"
+    ),
     "cme-coach-review-reference": "chess_mentor_engine.coach_review_reference_cli:main",
-    "cme-persisted-coach-review-reference": "chess_mentor_engine.persisted_review_reference_cli:main",
+    "cme-persisted-coach-review-reference": (
+        "chess_mentor_engine.persisted_review_reference_cli:main"
+    ),
     "cme-participant-review": "chess_mentor_engine.participant_review_package_cli:main",
     "cme-local-tutor": "chess_mentor_engine.local_tutor_entry:main",
 }
