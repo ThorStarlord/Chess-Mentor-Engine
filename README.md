@@ -9,7 +9,8 @@ language, evaluator judgment, and pedagogy in separate provenance-bearing layers
 > **Latest handoff:** [`STATUS.md`](STATUS.md)  
 > **Architecture:** [`docs/architecture/architecture.md`](docs/architecture/architecture.md)  
 > **Roadmap:** [`docs/product/chess-mentor-engine-repository-build-plan.md`](docs/product/chess-mentor-engine-repository-build-plan.md)  
-> **Latest local-consumer runbook:** [`docs/runbooks/v1-local-tutor-vertical-slice.md`](docs/runbooks/v1-local-tutor-vertical-slice.md)
+> **V1 release runbook:** [`docs/runbooks/v1-release-distribution-qualification.md`](docs/runbooks/v1-release-distribution-qualification.md)  
+> **Local-consumer runbook:** [`docs/runbooks/v1-local-tutor-vertical-slice.md`](docs/runbooks/v1-local-tutor-vertical-slice.md)
 
 ## Current implementation boundary
 
@@ -26,13 +27,15 @@ qualified work includes:
 - **M44** learner-progress local reference surface;
 - **M45** participant-scoped batch mentor queue;
 - **M46** adaptive Socratic tutor action policy;
-- **V1 local tutor composition** via installed `cme-local-tutor start|next`.
+- **V1 local tutor composition** via installed `cme-local-tutor start|next`;
+- **V1 release identity and distribution qualification** for package version `1.0.0`.
 
 The numbering is intentionally non-contiguous. **M35, M37, and M38 are not implied to
 be implemented.** K8 is not an active ontology program.
 
-Version 1.0 is not yet release-qualified: clean distribution/version qualification is
-the remaining repository blocker.
+Version 1.0 repository readiness is commit-scoped: the current candidate must pass the
+full source gate, the independent Stockfish job, and the `release-distribution` clean
+artifact/install job. Publishing or production deployment is not part of that claim.
 
 ## Product thesis
 
@@ -133,7 +136,7 @@ M20 evaluator acceptance != objective chess truth
 
 ## Install
 
-Use Python 3.11 or newer:
+Use Python 3.11 or newer for development:
 
 ```bash
 python3.11 -m venv .venv
@@ -142,6 +145,10 @@ python -m pip install -e ".[dev]"
 cme --help
 cme-local-tutor --help
 ```
+
+The editable install is a development surface, not the V1 release witness. The
+repository separately builds and clean-installs the `1.0.0` wheel under the
+`release-distribution` CI job. See the V1 release runbook for the exact commands.
 
 Stockfish or another UCI engine is an explicitly supplied external executable; no
 engine binary is bundled with the package.
@@ -206,15 +213,17 @@ cme-local-tutor next \
   '<current-session-artifact-id>'
 ```
 
-See the V1 runbook for exact artifact and authority requirements.
+See the local-consumer runbook for exact artifact and authority requirements.
 
 ## Qualification
 
-Focused local-consumer suites:
+Focused local-consumer and release suites:
 
 ```bash
 python -m pytest tests/test_v1_local_tutor_workflow.py -rs
 python -m pytest tests/test_v1_local_tutor_authority_edges.py -rs
+python -m pytest tests/test_v1_release_distribution.py -rs
+python -m pytest tests/test_package.py -rs
 ```
 
 Full repository gate:
@@ -222,29 +231,39 @@ Full repository gate:
 ```bash
 python -m pytest -rs
 python -m ruff check .
-python -m compileall -q src tests
+python -m compileall -q src tests tools
 STOCKFISH_EXECUTABLE=/path/to/stockfish \
   python -m pytest tests/integration/test_stockfish_uci.py -rs
 ```
 
-PR #94 qualified its exact head with **948 passed, 8 intentional regular-job
-Stockfish skips, Ruff PASS, compileall PASS, and 8/8 independent Stockfish tests**.
+The independent `release-distribution` job additionally:
 
-## Next Version 1.0 step
+```text
+builds wheel + sdist
+-> validates version / entry points / packaged data
+-> installs the wheel into a fresh virtual environment with --no-index --no-deps
+-> smokes all promised installed commands
+-> verifies installed metadata and packaged JSON/type-marker assets
+```
 
-The next required repository package is **Release Candidate & Distribution
-Qualification**. It should synchronize release identity/version, build the distribution,
-clean-install it in a fresh environment, smoke the promised entry points/package data,
-and preserve the existing full gate.
+A commit may be called `VERSION_1_REPOSITORY_READY` only when these source, Stockfish,
+and release-distribution gates all pass for that candidate.
 
-Do not replace that remaining V1 release work with M47 or other optional backend/product
-expansion.
+## Version 1.0 boundary
+
+The release-distribution package is the final repository-resolvable V1 package. Do not
+invent M47, generic ontology expansion, hosted infrastructure, or other optional work as
+a prerequisite once the current candidate satisfies the defined gates.
+
+Publishing artifacts, deploying services, production security/privacy approval,
+real-participant usability, and empirical tutoring efficacy remain external-authority or
+post-V1 concerns.
 
 ## Productization boundary
 
 The repository has strong local evidence, semantic, learner-intelligence,
-review-priority, controlled-tutoring, evaluation-fidelity, and local-composition
-contracts. It still does not establish production authentication, privacy/security
-approval, hosted multi-user persistence, production provider/retry policy, production
-frontend quality, causal learner diagnosis, intervention-caused improvement, mastery,
-or empirical tutoring efficacy.
+review-priority, controlled-tutoring, evaluation-fidelity, local-composition, and
+release-artifact contracts. It still does not establish production authentication,
+privacy/security approval, hosted multi-user persistence, production provider/retry
+policy, production frontend quality, causal learner diagnosis, intervention-caused
+improvement, mastery, or empirical tutoring efficacy.
