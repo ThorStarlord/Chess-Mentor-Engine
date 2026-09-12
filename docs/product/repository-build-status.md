@@ -1,13 +1,16 @@
 # Chess Mentor Engine — Current Build Status
 
 **Status authority:** current implementation and qualification boundary.  
-**Current main baseline:** `2fd14c32e81d19222cc3e2f332337c00f8086f5f`.  
+**V1 implementation baseline:** `8e3abf063b2af7d09a46495f5e35c85c86d58f01`.  
+**Version 1.0 state:** `INTEGRATED / CURRENT-MAIN AUTHORITY`.  
+**Release identity:** `chess-mentor-engine==1.0.0`.  
 **Contiguous numbered milestone boundary:** M34.  
 **Qualified semantic program:** Chess Knowledge Ontology K0-K7.  
 **Qualified post-M34 packages:** M36, M39, M40, M41, M42, M43, M44, M45, M46.  
-**Integrated V1 local consumer:** PR #94 / `cme-local-tutor`.
+**Integrated V1 packages:** PR #94 local tutor, PR #95 authority reconciliation, PR #96 release/distribution.
 
-This file is the moving repository authority. `STATUS.md` is the restart handoff. Software qualification is not empirical tutoring efficacy.
+This file is the moving repository authority. `STATUS.md` is the restart handoff. Software
+qualification is not production approval or empirical tutoring efficacy.
 
 ## Qualified capability map
 
@@ -37,22 +40,33 @@ M42      bounded near/far transfer and retest planning before M10 outcomes
 M44      deterministic learner-progress presentation + local reference HTML
 M45      participant-scoped bounded mentor queue over M4D candidates
 M46      adaptive Socratic tutor-action proposal over the exact M8 lifecycle
-V1       deterministic local composition from exact M18/M44/(optional M42)
-         artifacts through M45 -> M23/M8 -> M46 proposal
+V1       local composition + repository-authority reconciliation + qualified
+         1.0.0 wheel/sdist clean-install distribution contract
 ```
 
 **M35, M37, and M38 remain unimplemented labels.** K8 is not an active semantic program.
+Their absence does not make Version 1.0 incomplete.
 
-## Latest integration provenance
+## V1 integration provenance
 
-| Package | Final head | Merge commit | Qualification |
-| --- | --- | --- | --- |
-| M42 / PR #90 | `4df41644b4b5ffdd9abf54d349b7048f0e514078` | `c8af423f37c9ad7a423594ffa5d43f83c2b2d4ab` | run `34623130217`: 925 passed + Ruff/compile/Stockfish PASS |
-| M45 / PR #91 | `0af40490d9a7a70699b1d015d65a53fb86af66f2` | `725de02a27c836e7fe150cc3874482cf45511444` | run `34624375982`: full pytest/Ruff/compile/Stockfish PASS |
-| M46 / PR #92 | `cc89c5cf1402d02cadf76fa0d80c903296d51aea` | `3ec19446b4957d4e8f20ed3865b7d090d55c3cb5` | run `34629592288`: 939 passed + Ruff/compile/Stockfish PASS |
-| V1 local tutor / PR #94 | `9867105509e0f243a7823066d626abe1cad40148` | `2fd14c32e81d19222cc3e2f332337c00f8086f5f` | run `34642933193`: 948 passed, Ruff/compile PASS; independent Stockfish 8/8 |
+| Package | PR | Final head | Merge commit | Qualification |
+| --- | --- | --- | --- | --- |
+| Local tutor vertical slice | #94 | `9867105509e0f243a7823066d626abe1cad40148` | `2fd14c32e81d19222cc3e2f332337c00f8086f5f` | run `34642933193`: 948 passed + Ruff/compile + independent Stockfish 8/8 |
+| Authority reconciliation | #95 | `f12758c52de3e13468774d13c324510d48e6d7d7` | `c41fda2f1c3c2002a4c960270b38ef3cce1ad144` | exact candidate source + Stockfish jobs PASS |
+| Release/distribution | #96 | `4b5512a1b5d67ad0df43000898b5d371701d832c` | `8e3abf063b2af7d09a46495f5e35c85c86d58f01` | PR run `34673791962` PASS; post-merge main run `34673834249` PASS |
 
-A full gate means full repository pytest, Ruff, `compileall`, and the independent Stockfish job on the exact final candidate head. Regular-job Stockfish skips are not the independent-engine witness.
+The final Package 3 candidate and resulting integration commit both passed all
+package-defined jobs:
+
+```text
+test-and-lint          PASS
+release-distribution   PASS
+stockfish-integration  PASS
+```
+
+The final source suite reported **957 passed, 8 intentional regular-job Stockfish skips**,
+then Ruff PASS and compileall PASS. The independent Stockfish job remains the actual
+real-engine witness.
 
 ## Current learner/tutor decision loop
 
@@ -94,18 +108,6 @@ M46 next-action proposal
 existing M8 commands remain execution / exposure / capture / reveal authority
 ```
 
-## V1 local consumer claim ceiling
-
-The local consumer is composition-only. It does not create learner claims from engine evidence, exercise M9 selection, create M10 outcomes, or bypass M8 measurement boundaries.
-
-```text
-orchestration_authority = composition_only
-learner_effect = not_established
-mastery = not_established
-```
-
-Fail-closed coverage includes invalid M18 integrity, tampered/stale M44 identity, participant drift, ambiguous/mismatched M42 plans, declined selection or capture consent, active-session/queue drift, and out-of-scope session artifacts.
-
 ## Current operational surfaces
 
 Installed commands include:
@@ -134,48 +136,56 @@ cme tutor ...
 cme-local-tutor start|next
 ```
 
-M36/M39/M40/M41/M42/M43/M44/M45/M46 remain Python APIs and/or deterministic local reference surfaces. `cme-local-tutor` is the V1 composition surface, not a hosted runtime.
-
 ## Qualification commands
 
-Focused V1 local-consumer suites:
+Focused V1 suites:
 
 ```bash
 python -m pytest tests/test_v1_local_tutor_workflow.py -rs
 python -m pytest tests/test_v1_local_tutor_authority_edges.py -rs
+python -m pytest tests/test_v1_release_distribution.py -rs
+python -m pytest tests/test_package.py -rs
 ```
 
-Full merge gate:
+Full source and independent-engine gate:
 
 ```bash
 python -m pytest -rs
 python -m ruff check .
-python -m compileall -q src tests
+python -m compileall -q src tests tools
 STOCKFISH_EXECUTABLE=/path/to/stockfish \
   python -m pytest tests/integration/test_stockfish_uci.py -rs
 ```
 
-See [`../runbooks/v1-local-tutor-vertical-slice.md`](../runbooks/v1-local-tutor-vertical-slice.md) for the current local-consumer restart path.
+Release distribution qualification:
+
+```bash
+python -m pip install "build>=1.2,<2" "setuptools>=68"
+python -m build --no-isolation --wheel --sdist --outdir dist
+python -m tools.release_qualification \
+  --wheel dist/chess_mentor_engine-1.0.0-py3-none-any.whl \
+  --sdist dist/chess_mentor_engine-1.0.0.tar.gz \
+  --expected-version 1.0.0
+```
+
+See [`../runbooks/v1-post-milestone-handoff.md`](../runbooks/v1-post-milestone-handoff.md)
+for the complete restart and clean-install witness.
 
 ## Current claim ceiling
 
-The repository can represent typed chess concepts, preserve exact engine evaluation semantics, explain current learner state, synthesize support/counterevidence, propose actions, prepare evidence/intervention/transfer candidates, present progress, prioritize bounded participant review, persist controlled tutor state, and deterministically compose those authorities into a local V1 tutor workflow.
+The repository can mechanically establish deterministic local composition,
+provenance/identity checks, authority preservation, engine-to-consumer evaluation
+fidelity, hermetic workflow behavior, and distributable-artifact integrity.
 
 It still does **not** establish:
 
 - causal cognitive diagnosis or permanent learner traits;
-- ontology occurrence as proof of participant perception or learner weakness;
-- automatic M7/M11 mutation from derived artifacts;
-- M43 candidates as M7C classifications;
-- M41 candidates as M9 selections;
-- M42 plans as M10 outcomes or transfer success;
-- M45 rank as learner diagnosis or optimal review order;
-- M46 proposal as tutoring execution or uncontaminated participant evidence;
-- mastery from practice/transfer/real-game evidence;
+- mastery or intervention-caused improvement;
 - empirically optimal tutoring policies;
 - production browser/device/accessibility/usability quality;
-- semantic/pedagogical quality of arbitrary model prose;
-- production provider/vendor, retry/idempotency, privacy/security, auth, hosted persistence, deployment, or empirical tutoring efficacy.
+- production provider/vendor, privacy/security, auth, hosted persistence, or deployment;
+- successful public artifact publication;
+- real-participant usefulness or product approval.
 
 ## Core boundaries to preserve
 
@@ -187,30 +197,21 @@ M36 read model != learner-state mutation authority
 M39 synthesis != M7C recurrence authority
 M40 proposal != execution authority
 M43 evidence candidate != M7C contradiction/refutation
-M41 intervention candidate != M9 applicability mapping or selection
+M41 intervention candidate != M9 selection
 M42 plan != M10 outcome evidence
 M44 rendering != learner inference
-M45 mentor priority != learner diagnosis / M9 selection
+M45 mentor priority != learner diagnosis / implicit consent
 M46 proposal != M8 execution / exposure authority
-V1 composition != upstream authority
-M45 rank one != implicit consent
-assisted response != baseline unassisted evidence
-post-reveal reflection != pre-reveal evidence
 successful evidence case != mastery
-transparent heuristic policy != empirically optimal pedagogy
-M16 deterministic grounding != M19 model prose
-M20 evaluator acceptance != objective truth
+repository release qualification != hosted-product approval
 ```
 
 ## Version 1.0 readiness
 
-The architecture/coherent-local-consumer blocker is resolved. The remaining repository-resolvable V1 blocker is **Release Candidate & Distribution Qualification**:
+`VERSION_1_REPOSITORY_READY` is established for the `main` lineage by the integrated
+Package 3 release/distribution contract plus successful exact-candidate and post-merge CI.
+There is no remaining repository-resolvable Version 1.0 package.
 
-1. synchronize package/repository release identity to the V1 candidate;
-2. build distributable artifact(s);
-3. clean-install into a fresh environment;
-4. smoke promised CLI entry points and packaged ontology/data assets;
-5. add the clean-install witness to release qualification;
-6. preserve full pytest, Ruff, compileall, and independent Stockfish qualification.
-
-Do not claim `VERSION_1_REPOSITORY_READY` until that package is complete. Do not substitute M35/M37/M38/K8/M47 or optional product expansion for this remaining release task.
+Future work begins a new milestone and must be justified by a concrete post-V1 product,
+distribution, external-validation, or productization objective. Do not automatically
+promote M35/M37/M38/K8/M47 or generic expansion into the next queue.
