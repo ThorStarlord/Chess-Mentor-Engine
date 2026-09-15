@@ -14,7 +14,7 @@ The historical Version 1.0 repository boundary is qualified through M34 plus K0-
 
 M35, M37, and M38 remain unimplemented labels. K8 and M47 are not active programs merely because more development is possible.
 
-The active post-V1 candidate is intentionally smaller than "tutor validation":
+The first post-V1 package is now integrated on `main` through PR #98. It is intentionally smaller than "tutor validation":
 
 ```text
 selected exact M8 checkpoint
@@ -25,7 +25,7 @@ selected exact M8 checkpoint
 -> deterministic participant-scoped report
 ```
 
-The candidate claim ceiling is:
+Its claim ceiling is:
 
 ```text
 learning_effect = not_established
@@ -100,7 +100,7 @@ M46 next-action proposal
 existing M8 commands remain execution/exposure authority
 ```
 
-The post-V1 guided `review` surface reuses existing M8 transitions and deliberately stops at baseline freeze. It does not reveal objective evidence or execute M46.
+The integrated post-V1 guided `review` surface reuses existing M8 transitions and deliberately stops at baseline freeze. It does not reveal objective evidence, generate M46, or execute M46. An operator may separately invoke `cme-local-tutor next` to inspect the current M46 proposal.
 
 ## Core authority rules
 
@@ -139,7 +139,7 @@ cme --help
 cme-local-tutor --help
 ```
 
-`1.0.0` is the historical qualified V1 release identity. Post-V1 development uses `1.1.0.dev0`; CI derives the expected artifact identity from `pyproject.toml` and clean-installs the built wheel. This does not imply that a `1.1.0` release has been approved or published.
+`1.0.0` is the historical qualified V1 release identity. Current post-V1 development uses `1.1.0.dev0`; CI derives the expected artifact identity from `pyproject.toml` and clean-installs the built wheel. This does not imply that a `1.1.0` release has been approved or published.
 
 Stockfish or another UCI engine is an explicitly supplied external executable; no engine binary is bundled with the package.
 
@@ -168,7 +168,7 @@ cme artifacts list/show/verify
 cme tutor ...
 ```
 
-The local tutor now exposes:
+The local tutor exposes:
 
 ```text
 cme-local-tutor start      V1 composition and explicit authorization
@@ -190,7 +190,7 @@ cme-local-tutor review \
   '<selected-session-artifact-id>'
 ```
 
-Afterward, the existing `next` command may be used to inspect the M46 proposal for the frozen checkpoint. The guided review itself does not execute it.
+Afterward, the existing `next` command may be used to inspect the M46 proposal for the frozen checkpoint. The guided review itself does not generate or execute it.
 
 Record bounded self-report:
 
@@ -225,8 +225,12 @@ STOCKFISH_EXECUTABLE=/path/to/stockfish \
 
 The independent `release-distribution` job additionally builds wheel + sdist, validates version/entry-points/package data, clean-installs the wheel with `--no-index --no-deps`, smokes the installed commands, and checks installed metadata/assets.
 
+PR #98 final head `35dc40e08fd2b0e006f644b0a0846fef2edb51aa` and merge commit `a28b6b528e2bb823d9e4dfaa50da40f57760c7f5` both passed the repository-defined gates.
+
 ## Version and productization boundaries
 
-`VERSION_1_REPOSITORY_READY` remains the historical V1 claim for the integrated 1.0.0 lineage. Post-V1 development must not reinterpret additional possible improvement as an unfinished V1 blocker.
+`VERSION_1_REPOSITORY_READY` remains the historical V1 claim for the integrated 1.0.0 lineage. The post-V1 product-use observation package is integrated but does not establish real-user usefulness or tutoring efficacy.
 
 The repository still does not establish production authentication, privacy/security approval, hosted multi-user persistence, production provider/retry policy, production frontend quality, causal learner diagnosis, intervention-caused improvement, mastery, or empirical tutoring efficacy.
+
+The next useful evidence should come from repeated local use, not automatic architecture expansion.
