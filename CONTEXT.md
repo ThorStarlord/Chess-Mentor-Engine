@@ -4,7 +4,7 @@
 > [`docs/product/repository-build-status.md`](docs/product/repository-build-status.md)  
 > **Latest handoff:** [`STATUS.md`](STATUS.md)  
 > **Architecture:** [`docs/architecture/architecture.md`](docs/architecture/architecture.md)  
-> **Active post-V1 spec:** [`docs/product/post-v1-local-product-use-observation.md`](docs/product/post-v1-local-product-use-observation.md)
+> **Integrated post-V1 spec:** [`docs/product/post-v1-local-product-use-observation.md`](docs/product/post-v1-local-product-use-observation.md)
 
 ## Product and authority
 
@@ -50,9 +50,10 @@ M45    Participant-Scoped Batch Mentor Queue
 M46    Adaptive Socratic Tutor Action Policy
 V1     Local Tutor Composition (`cme-local-tutor`)
 V1     Release / distribution qualification
+POST-V1 Local Product-Use Observation
 ```
 
-Version 1.0 repository qualification is complete. M35, M37, and M38 remain unimplemented labels, and K8 is not an active program. The active post-V1 repository objective is bounded local product-use observation, not another learner-intelligence layer.
+Version 1.0 repository qualification is complete. The first post-V1 observation package is also integrated through PR #98 at merge commit `a28b6b528e2bb823d9e4dfaa50da40f57760c7f5`. M35, M37, and M38 remain unimplemented labels, and K8/M47 are not active programs by default.
 
 ## Current authority graph
 
@@ -122,7 +123,7 @@ EXACT M18 QUEUE + EXACT M44 VIEW + OPTIONAL EXACT M42 PLAN(S)
        existing M8 EXECUTION / EXPOSURE commands
 ```
 
-Separately, post-V1 local product-use tooling may observe exact persisted M8 checkpoints and user-facing orchestration events. Those observations are descriptive only and do not feed back into M7/M7C, M9, M10, M11, or M46 authority.
+Separately, the integrated post-V1 local product-use layer may observe exact persisted M8 checkpoints and user-facing orchestration events. Those observations are descriptive only and do not feed back into M7/M7C, M9, M10, M11, or M46 authority.
 
 The deterministic feedback/model/review path remains:
 
@@ -172,6 +173,8 @@ M36 reads current state. M39 explains evidence. M40 proposes an action. M43 prep
 
 Post-V1 observation records describe what happened while a local consumer exercised an exact M8 session. They may summarize counts and explicit self-report. They do not establish learner improvement, tutoring efficacy, causal intervention benefit, or mastery.
 
+`cme-local-tutor review` stops at baseline freeze and neither generates nor executes M46. An operator may separately invoke `cme-local-tutor next` to inspect the current proposal for the exact persisted checkpoint.
+
 ## Contracts to preserve
 
 ```text
@@ -191,6 +194,7 @@ M45 queue priority != learner diagnosis or M9 selection
 M46 tutor proposal != M8 execution / exposure authority
 V1 composition != new learner / selection / outcome authority
 post-V1 observation != learner inference / tutor efficacy / mastery
+participant self-report != objective efficacy evidence
 M45 rank one != implicit consent
 assisted follow-up != baseline unassisted evidence
 post-reveal reflection != pre-reveal evidence
@@ -212,23 +216,22 @@ For any package:
 4. define exact inputs/outputs, claim ceiling, and forbidden authority changes;
 5. reuse existing authority systems before adding a subsystem;
 6. include positive and rejection/near-miss/tamper cases;
-7. merge only the exact final head that passes full pytest, Ruff, compileall, and the independent Stockfish job;
+7. merge only the exact final head that passes full pytest, Ruff, compileall, release-distribution, and the independent Stockfish job when those gates apply;
 8. reconcile current documentation after feature packages merge.
 
 ## Current post-V1 decision
 
-Version 1.0 repository qualification is complete at the current historical V1 boundary. Post-V1 development must not reopen completed V1 release work merely because more product development is possible.
-
-The active bounded objective is:
+The repository-resolvable observation package is complete and integrated. Its bounded outcome is:
 
 ```text
 make the local baseline path easier to exercise
 -> preserve exact M8 authority
 -> record descriptive participant-scoped product-use observations
+-> record explicit bounded self-report
 -> summarize those observations without efficacy claims
 -> stop at the external evidence boundary
 ```
 
-The first guided surface stops when baseline evidence is frozen. An operator may separately invoke the existing `cme-local-tutor next` surface to generate the exact M46 proposal for inspection; the guided `review` surface neither generates nor executes that proposal. Real repeated use and participant feedback remain external evidence for a later repository decision.
+The next source of evidence is actual repeated local use, not another automatic repository expansion. Exercise the integrated workflow, inspect the observation reports, and determine the dominant demonstrated bottleneck before creating another package.
 
-Do not substitute M35/M37/M38/K8/M47 or hosted-product work for evidence. Those remain optional or conditional until a fresh, grounded decision warrants them.
+Do not substitute M35/M37/M38/K8/M47, a new learner-intelligence subsystem, browser UI, or hosted-product work for evidence. Those remain optional or conditional until a fresh, grounded decision warrants them.
