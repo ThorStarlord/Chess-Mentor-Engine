@@ -4,7 +4,7 @@
 
 **Goal:** Make the qualified V1 local tutor easier to exercise through the M8 baseline-freeze boundary and persist descriptive product-use observations without claiming learner improvement, tutor efficacy, or mastery.
 
-**Architecture:** Preserve all existing M18/M44/M42/M45/M23/M8/M46 authority owners. Add an append-only observation package backed by `LocalArtifactStore`, a guided baseline consumer that calls existing M8 transitions, and a deterministic participant-scoped usage report. The guided consumer stops before executing an M46 proposal.
+**Architecture:** Preserve all existing M18/M44/M42/M45/M23/M8/M46 authority owners. Add an append-only observation package backed by `LocalArtifactStore`, a guided baseline consumer that calls existing M8 transitions, bounded participant self-report, and a deterministic participant-scoped usage report. The guided consumer stops before executing or generating participant-facing M46 help; the existing `next` command remains the proposal surface after freeze.
 
 **Tech Stack:** Python 3.11+, standard library, existing SQLite artifact store, pytest, Ruff, compileall, Stockfish CI.
 
@@ -16,6 +16,7 @@
 - M45 priority remains proposal-only and never implies consent.
 - M46 remains proposal-only and is not executed by the new guided baseline surface.
 - Observations are descriptive product-use evidence only.
+- Participant feedback remains explicit self-report only.
 - `learning_effect = tutor_efficacy = mastery = not_established`.
 - No new runtime dependency, hosted service, browser UI, M47, or K8.
 - Existing V1 commands remain supported.
@@ -24,7 +25,7 @@
 
 ### Task 1: Reconcile post-V1 authority and release identity
 
-**Files:** `CONTEXT.md`, `STATUS.md`, `docs/architecture/architecture.md`, `docs/product/repository-build-status.md`, `pyproject.toml`, `.github/workflows/ci.yml`, `tools/release_qualification.py`, authority/release tests.
+**Files:** `CONTEXT.md`, `STATUS.md`, `docs/architecture/architecture.md`, `docs/product/repository-build-status.md`, `pyproject.toml`, `.github/workflows/ci.yml`, authority/release tests.
 
 - [ ] Add failing tests proving stale pending-V1 claims are gone and post-V1 development does not ship under the exact `1.0.0` identity.
 - [ ] Observe RED on the candidate PR.
@@ -51,16 +52,18 @@
 - [ ] Implement position presentation, protocol prompt rendering, raw participant response capture, freeze, exact snapshot persistence, and product-use observations.
 - [ ] On EOF/interrupt after session start, preserve M8 history and record descriptive abandonment only.
 - [ ] Add `cme-local-tutor review`; preserve `start` and `next`.
-- [ ] Generate the post-freeze M46 proposal for operator inspection but do not execute or render its prompt as participant tutoring.
+- [ ] Stop `review` at the exact M8 freeze boundary and return `cme-local-tutor next` as the existing M46 proposal authority; do not execute or render an adaptive proposal as participant tutoring.
 - [ ] Run focused and regression tests.
 
-### Task 4: Add deterministic product-use report
+### Task 4: Add bounded feedback and deterministic product-use report
 
-**Files:** `src/chess_mentor_engine/observation/report.py`, `src/chess_mentor_engine/local_tutor_entry.py`, `tests/test_post_v1_product_use_report.py`.
+**Files:** `src/chess_mentor_engine/observation/report.py`, `src/chess_mentor_engine/local_tutor_review_cli.py`, `src/chess_mentor_engine/local_tutor_entry.py`, feedback/report tests.
 
-- [ ] Write failing report tests.
+- [ ] Write failing feedback/report tests.
 - [ ] Observe RED.
-- [ ] Aggregate only participant-scoped counts, action distributions, and explicit self-report metadata.
+- [ ] Add `cme-local-tutor feedback` with 1–5 review-relevance, workflow-clarity, and willingness-to-repeat ratings plus optional note.
+- [ ] Keep feedback explicitly participant-authored self-report.
+- [ ] Aggregate only participant-scoped counts, explicit action names, and self-report metadata.
 - [ ] Add `cme-local-tutor report`.
 - [ ] Keep learning effect, tutor efficacy, and mastery explicitly not established.
 
