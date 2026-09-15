@@ -16,12 +16,17 @@ from test_reasoning_discrepancy_facts import (
 )
 
 from chess_mentor_engine.chess import build_position_context
-from chess_mentor_engine.storage import LocalArtifactStore, load_tutor_session, save_tutor_session
+from chess_mentor_engine.storage import (
+    LocalArtifactStore,
+    load_tutor_session,
+    save_tutor_session,
+)
 from chess_mentor_engine.tutoring import start_tutor_session
 
 
 def _api():
-    assert importlib.util.find_spec("chess_mentor_engine.local_tutor_review") is not None
+    spec = importlib.util.find_spec("chess_mentor_engine.local_tutor_review")
+    assert spec is not None
     from chess_mentor_engine.local_tutor_review import run_guided_baseline_capture
 
     return run_guided_baseline_capture
@@ -73,7 +78,9 @@ def test_guided_baseline_reaches_frozen_without_objective_reveal(tmp_path) -> No
     assert any("What do you think" in line for line in output)
 
 
-def test_guided_baseline_eof_preserves_checkpoint_and_records_abandonment(tmp_path) -> None:
+def test_guided_baseline_eof_preserves_checkpoint_and_records_abandonment(
+    tmp_path,
+) -> None:
     run = _api()
     store, ref, packet = _fixture(tmp_path)
     times = iter((T2, T3, T4))

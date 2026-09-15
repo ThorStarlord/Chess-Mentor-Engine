@@ -54,7 +54,9 @@ def _timestamp(value: str) -> None:
     try:
         parsed = datetime.fromisoformat(value.replace("Z", "+00:00"))
     except ValueError as exc:
-        raise ProductUseObservationError("occurred_at must be an ISO-8601 timestamp") from exc
+        raise ProductUseObservationError(
+            "occurred_at must be an ISO-8601 timestamp"
+        ) from exc
     if parsed.tzinfo is None or parsed.utcoffset() is None:
         raise ProductUseObservationError("occurred_at requires an explicit timezone")
 
@@ -143,7 +145,9 @@ class InteractionObservation:
         keys: list[str] = []
         for item in self.metadata:
             if type(item) is not tuple or len(item) != 2:
-                raise ProductUseObservationError("metadata entries must be key/value pairs")
+                raise ProductUseObservationError(
+                    "metadata entries must be key/value pairs"
+                )
             key, value = item
             _nonempty("metadata key", key)
             if type(value) is not str:
@@ -161,7 +165,9 @@ class InteractionObservation:
             if value is not None:
                 _nonempty(name, value)
         if self.claim_scope != "descriptive_local_product_use_only":
-            raise ProductUseObservationError("invalid product-use observation claim scope")
+            raise ProductUseObservationError(
+                "invalid product-use observation claim scope"
+            )
         if self.learning_effect != "not_established":
             raise ProductUseObservationError(
                 "product-use observation cannot establish learning effect"
@@ -179,9 +185,13 @@ class InteractionObservation:
         payload = self.identity_payload()
         expected = _fingerprint(payload)
         if self.fingerprint != expected:
-            raise ProductUseObservationError("product-use observation fingerprint mismatch")
+            raise ProductUseObservationError(
+                "product-use observation fingerprint mismatch"
+            )
         if self.observation_id != f"product_use_observation_{expected[:20]}":
-            raise ProductUseObservationError("product-use observation identity mismatch")
+            raise ProductUseObservationError(
+                "product-use observation identity mismatch"
+            )
 
     def identity_payload(self) -> dict[str, Any]:
         return _payload(

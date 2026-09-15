@@ -5,14 +5,19 @@ from chess_mentor_engine.storage.tutor import SESSION_KIND
 
 
 def _api():
-    assert importlib.util.find_spec("chess_mentor_engine.observation.report") is not None
+    spec = importlib.util.find_spec("chess_mentor_engine.observation.report")
+    assert spec is not None
     from chess_mentor_engine.observation import (
         build_interaction_observation,
         save_interaction_observation,
     )
     from chess_mentor_engine.observation.report import build_product_use_report
 
-    return build_interaction_observation, save_interaction_observation, build_product_use_report
+    return (
+        build_interaction_observation,
+        save_interaction_observation,
+        build_product_use_report,
+    )
 
 
 def _session(store: LocalArtifactStore, participant: str):

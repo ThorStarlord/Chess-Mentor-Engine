@@ -271,7 +271,9 @@ def run_guided_baseline_capture(
         )
 
     if session.state != "frozen":
-        raise LocalTutorReviewError("guided baseline did not reach the M8 freeze boundary")
+        raise LocalTutorReviewError(
+            "guided baseline did not reach the M8 freeze boundary"
+        )
     return GuidedBaselineResult(
         initial_session_ref=initial_session_ref,
         final_session_ref=current_ref,
