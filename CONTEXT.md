@@ -229,6 +229,6 @@ make the local baseline path easier to exercise
 -> stop at the external evidence boundary
 ```
 
-The first guided surface stops when baseline evidence is frozen. It may generate an M46 proposal for operator inspection, but it does not execute that proposal. Real repeated use and participant feedback remain external evidence for a later repository decision.
+The first guided surface stops when baseline evidence is frozen. An operator may separately invoke the existing `cme-local-tutor next` surface to generate the exact M46 proposal for inspection; the guided `review` surface neither generates nor executes that proposal. Real repeated use and participant feedback remain external evidence for a later repository decision.
 
 Do not substitute M35/M37/M38/K8/M47 or hosted-product work for evidence. Those remain optional or conditional until a fresh, grounded decision warrants them.
