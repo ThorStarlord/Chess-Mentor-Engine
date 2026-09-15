@@ -1,148 +1,90 @@
 # Chess Mentor Engine — Repository Handoff
 
-**Prepared:** 2026-09-12  
-**Milestone state:** `INTEGRATED / CURRENT-MAIN AUTHORITY`  
+**Prepared:** 2026-09-15  
+**Integrated main authority:** `VERSION_1_REPOSITORY_READY`  
 **V1 implementation baseline:** `8e3abf063b2af7d09a46495f5e35c85c86d58f01`  
-**Release identity:** `chess-mentor-engine==1.0.0`  
-**Version 1.0 status:** `VERSION_1_REPOSITORY_READY`
+**Historical V1 release identity:** `chess-mentor-engine==1.0.0`  
+**Post-V1 development identity:** `chess-mentor-engine==1.1.0.dev0`  
+**Active candidate:** PR #98 — `Post-V1 local product-use observation`
 
-This is the current restart handoff for `ThorStarlord/Chess-Mentor-Engine`.
-Use [`docs/product/repository-build-status.md`](docs/product/repository-build-status.md)
-as the moving implementation authority,
-[`docs/runbooks/v1-post-milestone-handoff.md`](docs/runbooks/v1-post-milestone-handoff.md)
-for the Version 1.0 restart/qualification path,
-[`docs/runbooks/v1-local-tutor-vertical-slice.md`](docs/runbooks/v1-local-tutor-vertical-slice.md)
-for the local-consumer contract, and
-[`docs/runbooks/v1-release-distribution-qualification.md`](docs/runbooks/v1-release-distribution-qualification.md)
-for the release-artifact contract.
+This handoff separates the already-integrated Version 1.0 authority from the post-V1 candidate currently under review. PR #98 is not current-main integration authority until its exact final head passes the repository gates and merges.
 
-## Current V1 state
+Use [`docs/product/repository-build-status.md`](docs/product/repository-build-status.md) as the moving implementation authority, [`docs/runbooks/v1-post-milestone-handoff.md`](docs/runbooks/v1-post-milestone-handoff.md) for the historical V1 restart path, and [`docs/runbooks/post-v1-local-product-use-observation.md`](docs/runbooks/post-v1-local-product-use-observation.md) for the active candidate workflow.
 
-All three bounded Version 1.0 packages are integrated on the `main` lineage:
+## Integrated V1 state
+
+All three bounded Version 1.0 packages remain integrated on `main`:
 
 ```text
-[x] Package 1 — Qualify & Integrate V1 Local Tutor Vertical Slice
-[x] Package 2 — Reconcile V1 Architecture & Repository Authorities
-[x] Package 3 — V1 Release Candidate & Distribution Qualification
+[x] Package 1 — V1 local tutor vertical slice
+[x] Package 2 — V1 architecture / authority reconciliation
+[x] Package 3 — V1 release / distribution qualification
 ```
 
-There are no additional repository-resolvable Version 1.0 packages in the queue.
-Do not convert optional or post-V1 ideas into retroactive V1 blockers.
+Historical integration provenance:
 
-## What the milestone delivered
+| Package | PR | Final head | Merge commit | Qualification |
+| --- | --- | --- | --- | --- |
+| Local tutor vertical slice | #94 | `9867105509e0f243a7823066d626abe1cad40148` | `2fd14c32e81d19222cc3e2f332337c00f8086f5f` | run `34642933193`: source + independent Stockfish PASS |
+| Authority reconciliation | #95 | `f12758c52de3e13468774d13c324510d48e6d7d7` | `c41fda2f1c3c2002a4c960270b38ef3cce1ad144` | exact candidate gates PASS |
+| Release/distribution | #96 | `4b5512a1b5d67ad0df43000898b5d371701d832c` | `8e3abf063b2af7d09a46495f5e35c85c86d58f01` | PR run `34673791962` PASS; post-merge run `34673834249` PASS |
 
-### Package 1 — local tutor vertical slice
+The V1 source suite at release qualification reported 957 passed plus 8 intentional regular-job Stockfish skips, followed by Ruff and compileall PASS. The independent Stockfish job separately qualified the real-engine path.
 
-**PR:** #94  
-**Final head:** `9867105509e0f243a7823066d626abe1cad40148`  
-**Merge commit:** `2fd14c32e81d19222cc3e2f332337c00f8086f5f`
+There is no remaining repository-resolvable Version 1.0 package. Do not convert post-V1 work into a retroactive V1 blocker.
 
-Delivered the installed `cme-local-tutor start|next` composition surface over exact,
-already-qualified M18/M44/(optional M42) artifacts, M45 mentor prioritization, explicit
-selection/capture consent, M23/M8 persistence, and bounded M46 next-action proposal.
-The layer remains composition-only: it does not create a second learner model, silently
-select an intervention, execute tutoring, establish transfer, or claim mastery.
+## Active post-V1 candidate — PR #98
 
-### Package 2 — architecture / authority reconciliation
+The candidate deliberately weakens the earlier idea of "learning validation" to **descriptive local product-use observation**.
 
-**PR:** #95  
-**Final head:** `f12758c52de3e13468774d13c324510d48e6d7d7`  
-**Merge commit:** `c41fda2f1c3c2002a4c960270b38ef3cce1ad144`
-
-Reconciled architecture and repository authorities with the integrated local-consumer
-state, preserved the existing authority boundaries, and made release/distribution
-qualification the sole remaining repository-resolvable V1 package at that point.
-
-### Package 3 — release candidate / distribution qualification
-
-**Implementation PR:** #96 — `V1: qualify release distributions`  
-**Branch:** `work/v1-release-distribution`  
-**Final head:** `4b5512a1b5d67ad0df43000898b5d371701d832c`  
-**V1 implementation merge commit:** `8e3abf063b2af7d09a46495f5e35c85c86d58f01`  
-**PR candidate CI:** run `34673791962` — PASS  
-**Post-merge main CI:** run `34673834249` — PASS
-
-Package 3 synchronized package/runtime identity at `1.0.0`, added deterministic
-wheel/sdist contract validation and rejection tests, added an independent
-`release-distribution` CI job, clean-installed the built wheel in a fresh environment,
-smoked all promised installed commands and package data, and preserved full source and
-independent Stockfish qualification.
-
-Exact successful gate on the final candidate and again after integration to `main`:
+Its repository claim is only that CME can make the selected M8 baseline path easier to exercise and can capture bounded facts about that use.
 
 ```text
-test-and-lint          PASS
-release-distribution   PASS
-stockfish-integration  PASS
+claim_scope = descriptive_local_product_use_only
+learning_effect = not_established
+tutor_efficacy = not_established
+mastery = not_established
 ```
 
-The source suite on the final candidate reported **957 passed and 8 intentional regular-job
-Stockfish skips**, followed by Ruff PASS and compileall PASS. The independent Stockfish
-job separately qualified the real-engine path.
-
-## CI failure triage retained for future debugging
-
-An earlier PR #96 candidate, head `80a85b316ef6accaf02043e102020ff41a1002d4`,
-had CI run `34663723350` fail in `test-and-lint` while `release-distribution` and
-`stockfish-integration` both passed.
-
-**Classification:** `IMPLEMENTATION_FAILURE`.
-
-The failing source test invocation used bare `pytest`; the V1 release tests then failed to
-import repository-local `tools.release_qualification` with `ModuleNotFoundError: No module
-named 'tools'`. This was not an API-key failure, not a retired workflow, and not an
-external-service outage. Commit `4b5512a1b5d67ad0df43000898b5d371701d832c`
-aligned CI with the documented full gate, `python -m pytest -rs`. The exact corrected head
-then passed every required package-defined job and merged.
-
-The connected GitHub App cannot read the classic `main` branch-protection endpoint; the
-repository-level ruleset list was empty during this handoff audit. That uncertainty does
-not affect the integration claim: PR #96 is merged and both its exact final candidate and
-the resulting implementation merge commit have successful CI evidence.
-
-## Current qualified architecture boundary
-
-The strongest integrated local path remains:
+Candidate additions:
 
 ```text
-M7 / M7C learner hypothesis + recurrence / contradiction authority
-+ M9 intervention applicability / selection authority
-+ M10 bounded practice / near / far / real-game outcome evidence
-+ M11 longitudinal learner state
-+ optional K7 typed chess semantics
-        |
-        v
-M36 -> M39 -> M40
-        |
-        +-- evidence need --> M43 acquisition candidates
-        +-- teaching need --> M41 intervention candidates
-        +-- transfer need --> M42 bounded transfer/retest plan
-        `-- explanation ----> M44 learner-progress reference surface
-
-exact M18 diagnostic queue
-+ exact M44 learner-progress view
-+ optional exact M42 transfer plan(s)
-        |
-        v
-cme-local-tutor
-        |
-        v
-M45 participant-scoped mentor queue
-        |
-        v
-explicit operator selection + capture consent
-        |
-        v
-M23 -> exact persisted M8 checkpoint
-        |
-        v
-M46 proposed next Socratic action
-        |
-        v
-existing cme tutor commands remain M8 execution / exposure authority
+1.1.0.dev0 development identity
+post-v1.interaction-observation.v1 immutable observation artifacts
+cme-local-tutor review
+cme-local-tutor feedback
+cme-local-tutor report
+parameterized release-distribution identity in CI
+post-V1 product/use spec, architecture boundary, plan, and runbook
 ```
 
-Durable boundaries still include:
+### Guided-review boundary
+
+```text
+exact selected persisted M8 checkpoint
+        |
+        v
+cme-local-tutor review
+        |
+        +-- existing M8 position presentation
+        +-- existing M8 protocol-bound prompt presentation
+        +-- existing M8 participant response capture
+        +-- existing M8 response freeze
+        +-- descriptive immutable observations
+        |
+        v
+exact frozen M8 checkpoint
+```
+
+The command stops at baseline freeze. It does not reveal objective evidence, record comparison/explanation, complete the tutor session, or execute M46. The operator may separately use the established `cme-local-tutor next` command to obtain the current proposal for the exact frozen checkpoint.
+
+### Feedback/report boundary
+
+`feedback` records three bounded 1–5 participant self-report ratings—review relevance, workflow clarity, and willingness to review again—plus an optional note. Self-report remains self-report.
+
+`report` aggregates participant-scoped observation counts, explicit action names when present, and feedback metadata. The summary also keeps learning effect, tutor efficacy, and mastery explicitly `not_established`.
+
+## Durable authority boundaries
 
 ```text
 objective chess truth != participant evidence != learner inference
@@ -155,60 +97,47 @@ M42 transfer plan != M10 transfer evidence
 M44 rendering != learner inference
 M45 mentor priority != learner diagnosis / implicit consent
 M46 tutor proposal != M8 execution / exposure authority
+post-V1 observation != learner inference / tutor efficacy / mastery
 successful evidence case != mastery
-repository release qualification != hosted-product approval
+repository qualification != real-user usefulness or hosted-product approval
 ```
 
-## Operational restart
+## Qualification gate for PR #98
 
-Development and qualification commands are recorded in
-[`docs/runbooks/v1-post-milestone-handoff.md`](docs/runbooks/v1-post-milestone-handoff.md).
-The key gates are:
+The exact final PR head must pass:
 
 ```bash
 python -m pytest -rs
 python -m ruff check .
 python -m compileall -q src tests tools
-STOCKFISH_EXECUTABLE=/path/to/stockfish \
-  python -m pytest tests/integration/test_stockfish_uci.py -rs
 ```
 
-Release-artifact qualification additionally builds wheel + sdist, validates the artifact
-contract with `python -m tools.release_qualification`, clean-installs the wheel, and
-smokes all installed command/package-data surfaces.
+and the independent CI jobs:
 
-## Remaining human / external-authority gates
+```text
+test-and-lint
+release-distribution
+stockfish-integration
+```
 
-Repository-qualified Version 1.0 does **not** establish or require:
+Development artifacts use the version currently declared in `pyproject.toml`; CI no longer hard-codes the historical V1 filename.
+
+## Remaining human / external-authority work
+
+Neither V1 nor PR #98 establishes or requires:
 
 - publication to PyPI or another registry;
-- a GitHub release/tagging policy decision;
+- GitHub tag/release creation;
+- branch-protection/ruleset administration;
 - hosted deployment or production credentials;
 - production authentication, multi-tenancy, privacy/security/compliance approval;
 - production browser/device/accessibility/usability approval;
-- real-participant usefulness or product approval;
-- empirically optimal tutoring policy;
+- real-participant usefulness;
+- empirical tutoring efficacy;
 - intervention-caused learning or mastery.
 
-These are future product/release decisions or external evidence, not hidden repository V1
-work.
+Real repeated sessions and participant feedback are the next external evidence source after the repository candidate is integrated. They should identify the dominant bottleneck before another learner-intelligence subsystem, ontology expansion, browser UI, or hosted productization package is authorized.
 
-## Recommended next milestone priorities
+## Restart instruction
 
-Start the next session by choosing **one concrete post-V1 objective** rather than reviving
-unimplemented labels automatically:
-
-1. **Distribution/release operations** — decide whether `1.0.0` should be tagged,
-   published, or attached to a GitHub Release; publication is an owner/external-authority
-   action, not a repository-readiness prerequisite.
-2. **Hosted-product productization** — only if that is now the product goal, define the
-   smallest explicit auth/privacy/security/persistence/deployment boundary before adding
-   infrastructure.
-3. **Real-user validation** — define participant/usability or pedagogical evidence if the
-   next question is whether the tutor is useful rather than whether the repository is
-   coherent.
-4. **Product evolution** — create M47, K8, provider abstraction, cross-surface work, or
-   other features only when a demonstrated consumer/product bottleneck requires them.
-
-Every future milestone should begin by reconciling live `main`, current product intent,
-and the authority owner for the problem before creating a new package.
+If PR #98 is still open, reconcile its exact head and CI before changing behavior. If it has merged, use the post-V1 runbook to exercise real local sessions and collect descriptive evidence. Do not automatically implement the next feature in the same campaign; first classify the demonstrated bottleneck and its existing authority owner.

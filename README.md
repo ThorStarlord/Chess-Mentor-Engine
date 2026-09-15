@@ -1,41 +1,39 @@
 # Chess Mentor Engine
 
-Chess Mentor Engine is a persistent chess-learning system that keeps objective chess
-evidence, participant evidence, learner inference, tutoring policy, model-authored
-language, evaluator judgment, and pedagogy in separate provenance-bearing layers.
+Chess Mentor Engine is a persistent chess-learning system that keeps objective chess evidence, participant evidence, learner inference, tutoring policy, model-authored language, evaluator judgment, and pedagogy in separate provenance-bearing layers.
 
-> **Current implementation authority:**
-> [`docs/product/repository-build-status.md`](docs/product/repository-build-status.md)  
+> **Current implementation authority:** [`docs/product/repository-build-status.md`](docs/product/repository-build-status.md)  
 > **Latest handoff:** [`STATUS.md`](STATUS.md)  
 > **Architecture:** [`docs/architecture/architecture.md`](docs/architecture/architecture.md)  
-> **Roadmap:** [`docs/product/chess-mentor-engine-repository-build-plan.md`](docs/product/chess-mentor-engine-repository-build-plan.md)  
-> **V1 release runbook:** [`docs/runbooks/v1-release-distribution-qualification.md`](docs/runbooks/v1-release-distribution-qualification.md)  
-> **Local-consumer runbook:** [`docs/runbooks/v1-local-tutor-vertical-slice.md`](docs/runbooks/v1-local-tutor-vertical-slice.md)
+> **V1 local-consumer runbook:** [`docs/runbooks/v1-local-tutor-vertical-slice.md`](docs/runbooks/v1-local-tutor-vertical-slice.md)  
+> **Post-V1 product-use runbook:** [`docs/runbooks/post-v1-local-product-use-observation.md`](docs/runbooks/post-v1-local-product-use-observation.md)
 
 ## Current implementation boundary
 
-The contiguous numbered milestone series remains qualified through **M34**. Additional
-qualified work includes:
+The historical Version 1.0 repository boundary is qualified through M34 plus K0-K7, M36, M39, M40, M41, M42, M43, M44, M45, M46, the V1 local tutor composition, and the `1.0.0` release/distribution contract.
 
-- **K0–K7** Chess Knowledge Ontology;
-- **M36** deterministic learner-state read model;
-- **M39** hypothesis evidence synthesis;
-- **M40** teaching-priority / next-session proposal;
-- **M43** contradiction/control evidence acquisition;
-- **M41** ontology-aware intervention matching;
-- **M42** bounded transfer / retest planning;
-- **M44** learner-progress local reference surface;
-- **M45** participant-scoped batch mentor queue;
-- **M46** adaptive Socratic tutor action policy;
-- **V1 local tutor composition** via installed `cme-local-tutor start|next`;
-- **V1 release identity and distribution qualification** for package version `1.0.0`.
+M35, M37, and M38 remain unimplemented labels. K8 and M47 are not active programs merely because more development is possible.
 
-The numbering is intentionally non-contiguous. **M35, M37, and M38 are not implied to
-be implemented.** K8 is not an active ontology program.
+The active post-V1 candidate is intentionally smaller than "tutor validation":
 
-Version 1.0 repository readiness is commit-scoped: the current candidate must pass the
-full source gate, the independent Stockfish job, and the `release-distribution` clean
-artifact/install job. Publishing or production deployment is not part of that claim.
+```text
+selected exact M8 checkpoint
+-> guided local baseline capture
+-> exact M8 baseline freeze
+-> immutable descriptive product-use observations
+-> explicit participant self-report
+-> deterministic participant-scoped report
+```
+
+The candidate claim ceiling is:
+
+```text
+learning_effect = not_established
+tutor_efficacy = not_established
+mastery = not_established
+```
+
+Real repeated learner use remains external evidence. The repository does not call this package proof that CME works pedagogically.
 
 ## Product thesis
 
@@ -79,7 +77,7 @@ M36 read model -> M39 synthesis -> M40 next-session proposal
         `------------------------------> M44 learner-progress view
 ```
 
-The integrated V1 local tutor composition is:
+The V1 local composition remains:
 
 ```text
 exact M18 diagnostic queue
@@ -87,13 +85,10 @@ exact M18 diagnostic queue
 + optional exact M42 transfer plan(s)
         |
         v
-cme-local-tutor
-        |
-        v
 M45 mentor queue
         |
         v
-explicit operator selection + capture consent
+explicit selection + capture consent
         |
         v
 M23 -> persisted M8 checkpoint
@@ -102,11 +97,10 @@ M23 -> persisted M8 checkpoint
 M46 next-action proposal
         |
         v
-existing cme tutor commands remain M8 execution/exposure authority
+existing M8 commands remain execution/exposure authority
 ```
 
-This composition does not duplicate learner inference, M9 selection, M10 outcomes, M8
-execution, or mastery authority.
+The post-V1 guided `review` surface reuses existing M8 transitions and deliberately stops at baseline freeze. It does not reveal objective evidence or execute M46.
 
 ## Core authority rules
 
@@ -124,13 +118,12 @@ M42 transfer plan != M10 transfer evidence
 M44 rendering != learner inference
 M45 mentor priority != learner diagnosis or intervention selection
 M46 tutor proposal != M8 tutoring execution / exposure authority
-V1 local composition != new inference / selection / outcome authority
+post-V1 product-use observation != learner inference / tutor efficacy / mastery
 M45 rank one != implicit consent
 assisted response != baseline unassisted evidence
 post-reveal reflection != pre-reveal evidence
 successful evidence case != mastery
 transparent heuristic policy != empirically optimal pedagogy
-M16 deterministic grounding != M19 model-authored language
 M20 evaluator acceptance != objective chess truth
 ```
 
@@ -146,12 +139,9 @@ cme --help
 cme-local-tutor --help
 ```
 
-The editable install is a development surface, not the V1 release witness. The
-repository separately builds and clean-installs the `1.0.0` wheel under the
-`release-distribution` CI job. See the V1 release runbook for the exact commands.
+`1.0.0` is the historical qualified V1 release identity. Post-V1 development uses `1.1.0.dev0`; CI derives the expected artifact identity from `pyproject.toml` and clean-installs the built wheel. This does not imply that a `1.1.0` release has been approved or published.
 
-Stockfish or another UCI engine is an explicitly supplied external executable; no
-engine binary is bundled with the package.
+Stockfish or another UCI engine is an explicitly supplied external executable; no engine binary is bundled with the package.
 
 ## Installed commands
 
@@ -178,55 +168,52 @@ cme artifacts list/show/verify
 cme tutor ...
 ```
 
-`cme-local-tutor start|next` is the V1 local composition surface. It consumes exact
-already-qualified structural artifacts and persisted M8 state; it does not replace the
-existing commands that create those authorities.
+The local tutor now exposes:
 
-## V1 local tutor example
-
-Start a bounded review only after explicit selection and capture consent:
-
-```bash
-cme-local-tutor start game.pgn \
-  --diagnostic-json diagnostic.json \
-  --learner-progress-json learner-progress.json \
-  --db ./mentor.sqlite3 \
-  --participant P01 \
-  --protocol-json capture-protocol.json \
-  --prompts-json prompts.json \
-  --selection-decision selected \
-  --capture-consent granted \
-  --recorded-at 2026-09-11T18:00:00-03:00 \
-  --created-at 2026-09-11T18:01:00-03:00 \
-  --create-db
+```text
+cme-local-tutor start      V1 composition and explicit authorization
+cme-local-tutor next       replay exact M8 state and emit current M46 proposal
+cme-local-tutor review     guide an already-selected M8 checkpoint to baseline freeze
+cme-local-tutor feedback   record bounded participant self-report
+cme-local-tutor report     summarize descriptive participant-scoped observations
 ```
 
-Continue after persisted M8 transitions with:
+## Local product-use path
+
+After `start` returns an exact selected M8 checkpoint and the exact position packet is available:
 
 ```bash
-cme-local-tutor next \
-  --diagnostic-json diagnostic.json \
-  --learner-progress-json learner-progress.json \
+cme-local-tutor review \
   --db ./mentor.sqlite3 \
   --participant P01 \
-  --created-at 2026-09-11T18:10:00-03:00 \
-  '<current-session-artifact-id>'
+  --position-json position-context.json \
+  '<selected-session-artifact-id>'
 ```
 
-See the local-consumer runbook for exact artifact and authority requirements.
+Afterward, the existing `next` command may be used to inspect the M46 proposal for the frozen checkpoint. The guided review itself does not execute it.
+
+Record bounded self-report:
+
+```bash
+cme-local-tutor feedback \
+  --db ./mentor.sqlite3 \
+  --participant P01 \
+  --review-relevance 4 \
+  --workflow-clarity 3 \
+  --would-review-again 5 \
+  --note "Useful position; setup still feels technical." \
+  '<session-artifact-id>'
+```
+
+Summarize observations:
+
+```bash
+cme-local-tutor report --db ./mentor.sqlite3 --participant P01
+```
+
+See the post-V1 product-use runbook for the complete boundary and sequence.
 
 ## Qualification
-
-Focused local-consumer and release suites:
-
-```bash
-python -m pytest tests/test_v1_local_tutor_workflow.py -rs
-python -m pytest tests/test_v1_local_tutor_authority_edges.py -rs
-python -m pytest tests/test_v1_release_distribution.py -rs
-python -m pytest tests/test_package.py -rs
-```
-
-Full repository gate:
 
 ```bash
 python -m pytest -rs
@@ -236,34 +223,10 @@ STOCKFISH_EXECUTABLE=/path/to/stockfish \
   python -m pytest tests/integration/test_stockfish_uci.py -rs
 ```
 
-The independent `release-distribution` job additionally:
+The independent `release-distribution` job additionally builds wheel + sdist, validates version/entry-points/package data, clean-installs the wheel with `--no-index --no-deps`, smokes the installed commands, and checks installed metadata/assets.
 
-```text
-builds wheel + sdist
--> validates version / entry points / packaged data
--> installs the wheel into a fresh virtual environment with --no-index --no-deps
--> smokes all promised installed commands
--> verifies installed metadata and packaged JSON/type-marker assets
-```
+## Version and productization boundaries
 
-A commit may be called `VERSION_1_REPOSITORY_READY` only when these source, Stockfish,
-and release-distribution gates all pass for that candidate.
+`VERSION_1_REPOSITORY_READY` remains the historical V1 claim for the integrated 1.0.0 lineage. Post-V1 development must not reinterpret additional possible improvement as an unfinished V1 blocker.
 
-## Version 1.0 boundary
-
-The release-distribution package is the final repository-resolvable V1 package. Do not
-invent M47, generic ontology expansion, hosted infrastructure, or other optional work as
-a prerequisite once the current candidate satisfies the defined gates.
-
-Publishing artifacts, deploying services, production security/privacy approval,
-real-participant usability, and empirical tutoring efficacy remain external-authority or
-post-V1 concerns.
-
-## Productization boundary
-
-The repository has strong local evidence, semantic, learner-intelligence,
-review-priority, controlled-tutoring, evaluation-fidelity, local-composition, and
-release-artifact contracts. It still does not establish production authentication,
-privacy/security approval, hosted multi-user persistence, production provider/retry
-policy, production frontend quality, causal learner diagnosis, intervention-caused
-improvement, mastery, or empirical tutoring efficacy.
+The repository still does not establish production authentication, privacy/security approval, hosted multi-user persistence, production provider/retry policy, production frontend quality, causal learner diagnosis, intervention-caused improvement, mastery, or empirical tutoring efficacy.

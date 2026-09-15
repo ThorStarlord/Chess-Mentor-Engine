@@ -19,9 +19,10 @@ objective chess evidence
 != candidate preparation
 != presentation
 != orchestration composition
+!= descriptive product-use observation
 ```
 
-Composition may bind exact artifacts from several layers, but it does not inherit the authority of those layers.
+Composition may bind exact artifacts from several layers, but it does not inherit the authority of those layers. Observation may describe use of those artifacts, but it does not become learner, outcome, or efficacy authority.
 
 ## Current high-level graph
 
@@ -226,6 +227,21 @@ The composition layer:
 - does not convert M42 plan into M10 evidence;
 - owns no new chess truth, learner inference, pedagogy selection, outcome, or mastery authority.
 
+## Post-V1 local product-use observation
+
+The post-V1 observation layer is downstream of exact persisted M8 checkpoints. It records bounded facts about use of the local consumer and can aggregate explicit participant self-report.
+
+Its claim ceiling is:
+
+```text
+claim_scope = descriptive_local_product_use_only
+learning_effect = not_established
+tutor_efficacy = not_established
+mastery = not_established
+```
+
+The first guided consumer only orchestrates existing M8 position presentation, protocol-bound response capture, and response freeze. It stops at the baseline-freeze boundary. A subsequent M46 proposal may be generated for operator inspection, but the post-V1 consumer does not execute that proposal or reinterpret it as participant evidence.
+
 ## Core invariants
 
 ```text
@@ -243,6 +259,7 @@ M44 rendering != learner inference
 M45 priority != learner diagnosis / M9 selection
 M46 proposal != M8 execution / exposure
 V1 composition != upstream authority
+post-V1 observation != learner inference / efficacy / mastery
 M45 rank one != implicit consent
 assisted response != baseline unassisted evidence
 post-reveal reflection != pre-reveal evidence
@@ -268,14 +285,10 @@ The implemented architecture does not establish:
 
 ## Version 1.0 architecture boundary
 
-The architecture/product-consumption gap identified for V1 is now integrated. The remaining repository V1 task is release/distribution qualification, not another architecture layer:
+Version 1.0 repository qualification is complete. The V1 architecture includes the local composition surface and qualified release/distribution path; post-V1 work must not reinterpret additional possible improvement as an unfinished V1 blocker.
 
-```text
-synchronize release identity/version
--> build distributable artifact
--> clean-install in a fresh environment
--> smoke installed commands and package data
--> preserve full repository + Stockfish qualification
-```
+M35/M37/M38/K8/M47 and hosted-product work remain conditional, optional, post-V1, or external-authority concerns unless fresh evidence establishes a concrete need.
 
-M35/M37/M38/K8/M47 and hosted-product work remain conditional, optional, post-V1, or external-authority concerns unless a fresh repository audit proves otherwise.
+## Active post-V1 architecture boundary
+
+The current bounded extension is descriptive local product-use observation plus a guided baseline consumer. It deliberately reuses M8 storage and transition authority, adds no learner mutation path, and stops before M46 execution. Real repeated use is external evidence for deciding whether a later bottleneck belongs to setup, M45, M7/M7C, M46, ontology coverage, or product UI.

@@ -1,4 +1,4 @@
-"""Installed entry point for the V1 local tutor vertical slice."""
+"""Installed entry point for the V1 local tutor and bounded post-V1 use surface."""
 
 from __future__ import annotations
 
@@ -14,6 +14,7 @@ from chess_mentor_engine.local_tutor_cli import (
     _cmd_local_tutor_next,
     _cmd_local_tutor_start,
 )
+from chess_mentor_engine.local_tutor_review_cli import add_product_use_commands
 from chess_mentor_engine.storage import StorageError
 from chess_mentor_engine.tutoring import TutorSessionError
 
@@ -22,8 +23,8 @@ def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="cme-local-tutor",
         description=(
-            "Exercise the V1 local learner/tutor workflow while preserving M18, "
-            "M45, M8, M46, and M42 authority boundaries."
+            "Exercise the qualified local learner/tutor workflow while preserving "
+            "M18, M45, M8, M46, M42, and post-V1 observation boundaries."
         ),
         allow_abbrev=False,
     )
@@ -70,6 +71,8 @@ def build_parser() -> argparse.ArgumentParser:
         help="Exact persisted M8 session artifact ID from start or cme tutor.",
     )
     next_action.set_defaults(handler=_cmd_local_tutor_next)
+
+    add_product_use_commands(commands)
     return parser
 
 
