@@ -219,6 +219,19 @@ For any package:
 7. merge only the exact final head that passes full pytest, Ruff, compileall, release-distribution, and the independent Stockfish job when those gates apply;
 8. reconcile current documentation after feature packages merge.
 
+## Documentation governance
+
+Repository documentation is durable project authority, not a transcript of exploratory conversations.
+
+Record an output from a chat, coding-agent session, or design discussion only when it has become one of the following:
+
+- an explicitly accepted product, architecture, or governance decision;
+- implemented and qualified repository state or integration provenance;
+- a repeatable workflow or runbook that future contributors should follow;
+- external or empirical evidence that materially changes a decision, claim, or next objective.
+
+Do not turn brainstorming, rejected alternatives, hypothetical features, or ungrounded recommendations into backlog, roadmap, architecture, or product commitments. When a session changes repository reality, update only the relevant authority documents and preserve the applicable evidence and claim boundaries. If an idea has not been accepted, implemented, qualified, or grounded by the required evidence, leave it as exploratory context rather than repository authority.
+
 ## Current post-V1 decision
 
 The repository-resolvable observation package is complete and integrated. Its bounded outcome is:
