@@ -1,18 +1,19 @@
 # Chess Mentor Engine — Current Build Status
 
 **Status authority:** current implementation and qualification boundary.  
-**Integrated main authority:** `VERSION_1_REPOSITORY_READY`.  
+**Historical V1 authority:** `VERSION_1_REPOSITORY_READY`.  
 **V1 implementation baseline:** `8e3abf063b2af7d09a46495f5e35c85c86d58f01`.  
 **Historical V1 release identity:** `chess-mentor-engine==1.0.0`.  
-**Post-V1 development identity:** `chess-mentor-engine==1.1.0.dev0`.  
-**Active development candidate:** PR #98 — local product-use observation.  
+**Current development identity:** `chess-mentor-engine==1.1.0.dev0`.  
+**Integrated post-V1 package:** PR #98 — local product-use observation.  
+**Post-V1 integration commit:** `a28b6b528e2bb823d9e4dfaa50da40f57760c7f5`.  
 **Contiguous numbered milestone boundary:** M34.  
 **Qualified semantic program:** K0-K7.  
 **Qualified learner-intelligence packages:** M36, M39, M40, M41, M42, M43, M44, M45, M46.
 
-`STATUS.md` is the restart handoff. Software qualification is not production approval or empirical tutoring efficacy.
+`STATUS.md` is the restart handoff. Software qualification is not production approval, real-user usefulness, or empirical tutoring efficacy.
 
-## Integrated V1 capability map
+## Qualified capability map
 
 ```text
 M1-M4    canonical chess evidence, deterministic features, engine evidence,
@@ -42,23 +43,26 @@ M45      participant-scoped bounded mentor queue over diagnostic candidates
 M46      adaptive Socratic tutor-action proposal over the exact M8 lifecycle
 V1       local composition + repository-authority reconciliation + qualified
          1.0.0 wheel/sdist clean-install distribution contract
+POST-V1  guided M8 baseline capture + descriptive product-use observation,
+         bounded self-report, deterministic participant-scoped reporting
 ```
 
-M35, M37, and M38 remain unimplemented labels. K8 and M47 are not active programs by default. Their absence does not make Version 1.0 incomplete.
+M35, M37, and M38 remain unimplemented labels. K8 and M47 are not active programs by default. Their absence does not make Version 1.0 or the integrated post-V1 package incomplete.
 
-## Historical V1 provenance
+## Integration provenance
 
 | Package | PR | Final head | Merge commit | Qualification |
 | --- | --- | --- | --- | --- |
 | Local tutor vertical slice | #94 | `9867105509e0f243a7823066d626abe1cad40148` | `2fd14c32e81d19222cc3e2f332337c00f8086f5f` | source + independent Stockfish PASS |
 | Authority reconciliation | #95 | `f12758c52de3e13468774d13c324510d48e6d7d7` | `c41fda2f1c3c2002a4c960270b38ef3cce1ad144` | exact candidate gates PASS |
 | Release/distribution | #96 | `4b5512a1b5d67ad0df43000898b5d371701d832c` | `8e3abf063b2af7d09a46495f5e35c85c86d58f01` | run `34673791962` PASS; post-merge `34673834249` PASS |
+| Local product-use observation | #98 | `35dc40e08fd2b0e006f644b0a0846fef2edb51aa` | `a28b6b528e2bb823d9e4dfaa50da40f57760c7f5` | PR run `34972510189` PASS; post-merge `34979411773` PASS |
 
-The V1 release candidate source suite reported 957 passed and 8 intentional regular-job Stockfish skips, followed by Ruff and compileall PASS. The independent Stockfish job remains the real-engine witness.
+The PR #98 final head reported **974 passed, 8 intentional regular-job Stockfish skips**, then Ruff PASS and compileall PASS. Its release-distribution and independent Stockfish jobs passed, and the post-merge `main` run passed all three jobs again.
 
-## Active post-V1 candidate boundary
+## Integrated post-V1 observation boundary
 
-PR #98 adds a downstream observation/consumer layer without acquiring upstream authority.
+The downstream observation/consumer layer does not acquire upstream authority.
 
 ```text
 exact selected M8 checkpoint
@@ -80,7 +84,7 @@ immutable product-use observation   explicit participant self-report
           deterministic participant-scoped report
 ```
 
-The layer's executable claim ceiling is:
+The executable claim ceiling is:
 
 ```text
 claim_scope = descriptive_local_product_use_only
@@ -99,17 +103,13 @@ post-v1.interaction-observation.v1
 
 Observations are immutable, content-addressed, participant-scoped, timezone-stamped, and depend on an exact M8 session artifact through the existing `LocalArtifactStore` dependency graph.
 
-The bounded event namespace includes review/position/prompt/response/freeze/proposal/abandonment/completion/feedback events. Supporting an event type does not imply every event is automatically produced by every consumer.
-
 ### Guided consumer contract
 
 `cme-local-tutor review` consumes an existing exact selected M8 checkpoint plus an exact structural `PositionContextPacket`. It calls existing M8 transitions for position presentation, protocol-bound prompt presentation, participant response capture, and response freeze.
 
-It stops when the M8 checkpoint is `frozen`.
+It stops when the M8 checkpoint is `frozen`. It does not reveal objective evidence, attach an M6 comparison, attach M7 context, generate an explanation, complete the session, generate M46, or execute M46. The returned payload explicitly reports `m46_execution = not_performed`; an operator may separately use `cme-local-tutor next` to inspect the current M46 proposal.
 
-It does not reveal objective evidence, attach an M6 comparison, attach M7 context, generate an explanation, complete the session, or execute M46. The returned payload explicitly reports `m46_execution = not_performed` and points to the existing `cme-local-tutor next` authority for proposal inspection.
-
-### Self-report contract
+### Self-report and report contracts
 
 `cme-local-tutor feedback` records bounded participant self-report:
 
@@ -121,8 +121,6 @@ note                 optional participant-authored text
 ```
 
 This is descriptive self-report, not learner-state or efficacy evidence.
-
-### Report contract
 
 `cme-local-tutor report` aggregates only the exact participant's observation records and returns event counts, explicit action counts when present, and feedback metadata. Its claim scope is `descriptive_local_product_use_summary_only`, with learning effect, tutor efficacy, and mastery still `not_established`.
 
@@ -142,7 +140,7 @@ cme-persisted-coach-review-reference
 cme-participant-review
 ```
 
-Principal local workflow commands now include:
+Principal local workflow commands include:
 
 ```text
 cme games inspect
@@ -156,7 +154,7 @@ cme-local-tutor start|next|review|feedback|report
 
 ## Version identity and distribution
 
-`1.0.0` remains the historical V1 release identity. Active post-V1 development uses `1.1.0.dev0`.
+`1.0.0` remains the historical V1 release identity. Current post-V1 development uses `1.1.0.dev0`.
 
 The `release-distribution` CI job derives its expected artifact identity from `pyproject.toml`, validates wheel/sdist metadata, entry points and package data, clean-installs the exact built wheel with `--no-index --no-deps`, and smokes the installed command surfaces.
 
@@ -170,14 +168,6 @@ python -m ruff check .
 python -m compileall -q src tests tools
 STOCKFISH_EXECUTABLE=/path/to/stockfish \
   python -m pytest tests/integration/test_stockfish_uci.py -rs
-```
-
-The exact PR candidate also requires:
-
-```text
-test-and-lint          PASS
-release-distribution   PASS
-stockfish-integration  PASS
 ```
 
 ## Claim ceiling
@@ -217,6 +207,6 @@ repository release qualification != hosted-product approval
 
 ## Next boundary
 
-Version 1.0 is already repository-ready. PR #98 is a post-V1 candidate, not a missing V1 package.
+Version 1.0 is repository-ready and the first post-V1 local product-use observation package is integrated. There is no further repository package justified solely by architectural possibility.
 
-After the repository candidate is integrated, the next meaningful evidence must come from actual local use. Do not automatically promote M35/M37/M38/K8/M47, a browser interface, hosted infrastructure, or policy expansion. Reconcile the resulting observations first and select one bounded next objective only if the evidence warrants it.
+The next meaningful evidence must come from actual local use. Exercise repeated sessions, inspect the bounded self-report and deterministic observation reports, then reconcile the demonstrated bottleneck before authorizing one bounded next objective. Do not automatically promote M35/M37/M38/K8/M47, a browser interface, hosted infrastructure, or policy expansion.

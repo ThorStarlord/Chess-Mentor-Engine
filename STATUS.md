@@ -1,15 +1,15 @@
 # Chess Mentor Engine — Repository Handoff
 
 **Prepared:** 2026-09-15  
-**Integrated main authority:** `VERSION_1_REPOSITORY_READY`  
+**Historical V1 authority:** `VERSION_1_REPOSITORY_READY`  
 **V1 implementation baseline:** `8e3abf063b2af7d09a46495f5e35c85c86d58f01`  
 **Historical V1 release identity:** `chess-mentor-engine==1.0.0`  
-**Post-V1 development identity:** `chess-mentor-engine==1.1.0.dev0`  
-**Active candidate:** PR #98 — `Post-V1 local product-use observation`
+**Current development identity:** `chess-mentor-engine==1.1.0.dev0`  
+**Integrated post-V1 package:** PR #98 — `Post-V1 local product-use observation`  
+**Post-V1 merge commit:** `a28b6b528e2bb823d9e4dfaa50da40f57760c7f5`
 
-This handoff separates the already-integrated Version 1.0 authority from the post-V1 candidate currently under review. PR #98 is not current-main integration authority until its exact final head passes the repository gates and merges.
-
-Use [`docs/product/repository-build-status.md`](docs/product/repository-build-status.md) as the moving implementation authority, [`docs/runbooks/v1-post-milestone-handoff.md`](docs/runbooks/v1-post-milestone-handoff.md) for the historical V1 restart path, and [`docs/runbooks/post-v1-local-product-use-observation.md`](docs/runbooks/post-v1-local-product-use-observation.md) for the active candidate workflow.
+This is the current restart handoff for `ThorStarlord/Chess-Mentor-Engine`.
+Use [`docs/product/repository-build-status.md`](docs/product/repository-build-status.md) as the moving implementation authority, [`docs/runbooks/v1-post-milestone-handoff.md`](docs/runbooks/v1-post-milestone-handoff.md) for the historical V1 restart path, and [`docs/runbooks/post-v1-local-product-use-observation.md`](docs/runbooks/post-v1-local-product-use-observation.md) for the integrated post-V1 local product-use workflow.
 
 ## Integrated V1 state
 
@@ -29,13 +29,11 @@ Historical integration provenance:
 | Authority reconciliation | #95 | `f12758c52de3e13468774d13c324510d48e6d7d7` | `c41fda2f1c3c2002a4c960270b38ef3cce1ad144` | exact candidate gates PASS |
 | Release/distribution | #96 | `4b5512a1b5d67ad0df43000898b5d371701d832c` | `8e3abf063b2af7d09a46495f5e35c85c86d58f01` | PR run `34673791962` PASS; post-merge run `34673834249` PASS |
 
-The V1 source suite at release qualification reported 957 passed plus 8 intentional regular-job Stockfish skips, followed by Ruff and compileall PASS. The independent Stockfish job separately qualified the real-engine path.
-
 There is no remaining repository-resolvable Version 1.0 package. Do not convert post-V1 work into a retroactive V1 blocker.
 
-## Active post-V1 candidate — PR #98
+## Integrated post-V1 package — PR #98
 
-The candidate deliberately weakens the earlier idea of "learning validation" to **descriptive local product-use observation**.
+The integrated package deliberately weakens the earlier idea of "learning validation" to **descriptive local product-use observation**.
 
 Its repository claim is only that CME can make the selected M8 baseline path easier to exercise and can capture bounded facts about that use.
 
@@ -46,7 +44,7 @@ tutor_efficacy = not_established
 mastery = not_established
 ```
 
-Candidate additions:
+Integrated additions:
 
 ```text
 1.1.0.dev0 development identity
@@ -57,6 +55,18 @@ cme-local-tutor report
 parameterized release-distribution identity in CI
 post-V1 product/use spec, architecture boundary, plan, and runbook
 ```
+
+### Integration provenance
+
+```text
+PR:                #98
+Final PR head:     35dc40e08fd2b0e006f644b0a0846fef2edb51aa
+Merge commit:      a28b6b528e2bb823d9e4dfaa50da40f57760c7f5
+Exact PR CI:       run 34972510189 — PASS
+Post-merge main:   run 34979411773 — PASS
+```
+
+The exact final PR head reported **974 passed and 8 intentional regular-job Stockfish skips**, followed by Ruff PASS and compileall PASS. The release-distribution and independent Stockfish jobs also passed. The post-merge `main` run passed all three jobs again.
 
 ### Guided-review boundary
 
@@ -76,13 +86,13 @@ cme-local-tutor review
 exact frozen M8 checkpoint
 ```
 
-The command stops at baseline freeze. It does not reveal objective evidence, record comparison/explanation, complete the tutor session, or execute M46. The operator may separately use the established `cme-local-tutor next` command to obtain the current proposal for the exact frozen checkpoint.
+The command stops at baseline freeze. It does not reveal objective evidence, record comparison/explanation, complete the tutor session, generate M46, or execute M46. The operator may separately use the established `cme-local-tutor next` command to obtain the current proposal for the exact frozen checkpoint.
 
 ### Feedback/report boundary
 
 `feedback` records three bounded 1–5 participant self-report ratings—review relevance, workflow clarity, and willingness to review again—plus an optional note. Self-report remains self-report.
 
-`report` aggregates participant-scoped observation counts, explicit action names when present, and feedback metadata. The summary also keeps learning effect, tutor efficacy, and mastery explicitly `not_established`.
+`report` aggregates participant-scoped observation counts, explicit action names when present, and feedback metadata. The summary keeps learning effect, tutor efficacy, and mastery explicitly `not_established`.
 
 ## Durable authority boundaries
 
@@ -98,33 +108,14 @@ M44 rendering != learner inference
 M45 mentor priority != learner diagnosis / implicit consent
 M46 tutor proposal != M8 execution / exposure authority
 post-V1 observation != learner inference / tutor efficacy / mastery
+participant self-report != objective efficacy evidence
 successful evidence case != mastery
 repository qualification != real-user usefulness or hosted-product approval
 ```
 
-## Qualification gate for PR #98
-
-The exact final PR head must pass:
-
-```bash
-python -m pytest -rs
-python -m ruff check .
-python -m compileall -q src tests tools
-```
-
-and the independent CI jobs:
-
-```text
-test-and-lint
-release-distribution
-stockfish-integration
-```
-
-Development artifacts use the version currently declared in `pyproject.toml`; CI no longer hard-codes the historical V1 filename.
-
 ## Remaining human / external-authority work
 
-Neither V1 nor PR #98 establishes or requires:
+The integrated repository still does **not** establish or require:
 
 - publication to PyPI or another registry;
 - GitHub tag/release creation;
@@ -136,8 +127,8 @@ Neither V1 nor PR #98 establishes or requires:
 - empirical tutoring efficacy;
 - intervention-caused learning or mastery.
 
-Real repeated sessions and participant feedback are the next external evidence source after the repository candidate is integrated. They should identify the dominant bottleneck before another learner-intelligence subsystem, ontology expansion, browser UI, or hosted productization package is authorized.
-
 ## Restart instruction
 
-If PR #98 is still open, reconcile its exact head and CI before changing behavior. If it has merged, use the post-V1 runbook to exercise real local sessions and collect descriptive evidence. Do not automatically implement the next feature in the same campaign; first classify the demonstrated bottleneck and its existing authority owner.
+The repository-resolvable post-V1 observation package is integrated and qualified. The next meaningful evidence should come from actual local use: exercise repeated review sessions, record bounded self-report, inspect the deterministic product-use report, and identify the dominant demonstrated bottleneck.
+
+Do **not** automatically implement M35/M37/M38/K8/M47, another learner-intelligence subsystem, browser UI, or hosted productization. Reconcile real observations first, classify the bottleneck and its authority owner, and authorize one bounded next objective only if the evidence warrants it.
