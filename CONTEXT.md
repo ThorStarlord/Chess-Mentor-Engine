@@ -4,7 +4,7 @@
 > [`docs/product/repository-build-status.md`](docs/product/repository-build-status.md)  
 > **Latest handoff:** [`STATUS.md`](STATUS.md)  
 > **Architecture:** [`docs/architecture/architecture.md`](docs/architecture/architecture.md)  
-> **Latest runbook:** [`docs/runbooks/v1-local-tutor-vertical-slice.md`](docs/runbooks/v1-local-tutor-vertical-slice.md)
+> **Active post-V1 spec:** [`docs/product/post-v1-local-product-use-observation.md`](docs/product/post-v1-local-product-use-observation.md)
 
 ## Product and authority
 
@@ -30,6 +30,7 @@ How may M44 present all of that without inventing new claims?
 Which recent review moments may M45 prioritize without diagnosing the learner?
 What may M46 ask/hint/reveal next without bypassing the M8 exposure lifecycle?
 How may the V1 local consumer compose those exact artifacts without acquiring their authority?
+What descriptive product-use evidence may post-V1 tooling record without becoming learner or efficacy authority?
 ```
 
 ## Current implementation boundary
@@ -48,9 +49,10 @@ M44    Learner Progress Reference Surface
 M45    Participant-Scoped Batch Mentor Queue
 M46    Adaptive Socratic Tutor Action Policy
 V1     Local Tutor Composition (`cme-local-tutor`)
+V1     Release / distribution qualification
 ```
 
-M35, M37, and M38 remain unimplemented labels. K8 is not an active program. The remaining repository blocker for Version 1.0 is release/distribution qualification, not another learner-intelligence layer.
+Version 1.0 repository qualification is complete. M35, M37, and M38 remain unimplemented labels, and K8 is not an active program. The active post-V1 repository objective is bounded local product-use observation, not another learner-intelligence layer.
 
 ## Current authority graph
 
@@ -120,7 +122,9 @@ EXACT M18 QUEUE + EXACT M44 VIEW + OPTIONAL EXACT M42 PLAN(S)
        existing M8 EXECUTION / EXPOSURE commands
 ```
 
-Separately, the deterministic feedback/model/review path remains:
+Separately, post-V1 local product-use tooling may observe exact persisted M8 checkpoints and user-facing orchestration events. Those observations are descriptive only and do not feed back into M7/M7C, M9, M10, M11, or M46 authority.
+
+The deterministic feedback/model/review path remains:
 
 ```text
 M15 presentation + M6/M7
@@ -164,6 +168,10 @@ M36 reads current state. M39 explains evidence. M40 proposes an action. M43 prep
 
 `cme-local-tutor` is composition-only. It validates and combines exact already-qualified artifacts, uses M45 rank one only as a review proposal, requires explicit selection and capture consent, persists through the existing M23/M8 path, and surfaces an M46 proposal. It does not execute the M46 action or mint new chess/learner/outcome authority.
 
+### Post-V1 product-use observation
+
+Post-V1 observation records describe what happened while a local consumer exercised an exact M8 session. They may summarize counts and explicit self-report. They do not establish learner improvement, tutoring efficacy, causal intervention benefit, or mastery.
+
 ## Contracts to preserve
 
 ```text
@@ -182,6 +190,7 @@ M44 rendering != learner inference
 M45 queue priority != learner diagnosis or M9 selection
 M46 tutor proposal != M8 execution / exposure authority
 V1 composition != new learner / selection / outcome authority
+post-V1 observation != learner inference / tutor efficacy / mastery
 M45 rank one != implicit consent
 assisted follow-up != baseline unassisted evidence
 post-reveal reflection != pre-reveal evidence
@@ -206,17 +215,20 @@ For any package:
 7. merge only the exact final head that passes full pytest, Ruff, compileall, and the independent Stockfish job;
 8. reconcile current documentation after feature packages merge.
 
-## Current Version 1.0 decision
+## Current post-V1 decision
 
-The local composition gap is closed by PR #94. The next required V1 package is **Release Candidate & Distribution Qualification**:
+Version 1.0 repository qualification is complete at the current historical V1 boundary. Post-V1 development must not reopen completed V1 release work merely because more product development is possible.
+
+The active bounded objective is:
 
 ```text
-current package identity/version
--> build wheel/sdist
--> clean fresh-environment install
--> smoke promised commands and package data
--> preserve full pytest/Ruff/compileall/Stockfish gate
--> repository-qualified V1 candidate
+make the local baseline path easier to exercise
+-> preserve exact M8 authority
+-> record descriptive participant-scoped product-use observations
+-> summarize those observations without efficacy claims
+-> stop at the external evidence boundary
 ```
 
-Do not substitute M35/M37/M38/K8/M47 or hosted-product work for this release task. Those are optional/conditional or external-authority work after the repository V1 boundary is qualified.
+The first guided surface stops when baseline evidence is frozen. It may generate an M46 proposal for operator inspection, but it does not execute that proposal. Real repeated use and participant feedback remain external evidence for a later repository decision.
+
+Do not substitute M35/M37/M38/K8/M47 or hosted-product work for evidence. Those remain optional or conditional until a fresh, grounded decision warrants them.

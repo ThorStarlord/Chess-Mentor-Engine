@@ -52,12 +52,19 @@ jobs:
       - name: Build wheel and source distribution
         run: python -m build --no-isolation --wheel --sdist --outdir dist
 
+      - name: Resolve built artifact identity
+        run: |
+          PROJECT_VERSION="$(python -c 'import tomllib; print(tomllib.load(open("pyproject.toml", "rb"))["project"]["version"])')"
+          echo "PROJECT_VERSION=$PROJECT_VERSION" >> "$GITHUB_ENV"
+          echo "WHEEL_PATH=dist/chess_mentor_engine-${PROJECT_VERSION}-py3-none-any.whl" >> "$GITHUB_ENV"
+          echo "SDIST_PATH=dist/chess_mentor_engine-${PROJECT_VERSION}.tar.gz" >> "$GITHUB_ENV"
+
       - name: Validate built artifact contract
         run: |
           python -m tools.release_qualification \
-            --wheel dist/chess_mentor_engine-1.0.0-py3-none-any.whl \
-            --sdist dist/chess_mentor_engine-1.0.0.tar.gz \
-            --expected-version 1.0.0
+            --wheel "$WHEEL_PATH" \
+            --sdist "$SDIST_PATH" \
+            --expected-version "$PROJECT_VERSION"
 
       - name: Create clean release environment
         run: python -m venv .release-venv
@@ -67,7 +74,7 @@ jobs:
           .release-venv/bin/python -m pip install \
             --no-index \
             --no-deps \
-            dist/chess_mentor_engine-1.0.0-py3-none-any.whl
+            "$WHEEL_PATH"
 
       - name: Smoke installed console entry points
         run: |
@@ -89,10 +96,11 @@ jobs:
         run: |
           .release-venv/bin/python - <<'PY'
           import json
+          import os
           from importlib.metadata import version
           from importlib.resources import files
 
-          assert version("chess-mentor-engine") == "1.0.0"
+          assert version("chess-mentor-engine") == os.environ["PROJECT_VERSION"]
           package_root = files("chess_mentor_engine")
           assert package_root.joinpath("py.typed").is_file()
           data_root = package_root.joinpath("chess_knowledge", "data")
