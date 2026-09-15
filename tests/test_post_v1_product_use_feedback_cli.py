@@ -1,7 +1,13 @@
 import json
 
 import pytest
-from test_reasoning_discrepancy_facts import T1, _a1_prompt, _a2_prompt, _protocol, _upstream
+from test_reasoning_discrepancy_facts import (
+    T1,
+    _a1_prompt,
+    _a2_prompt,
+    _protocol,
+    _upstream,
+)
 
 from chess_mentor_engine.local_tutor_entry import main as local_main
 from chess_mentor_engine.storage import LocalArtifactStore, save_tutor_session
