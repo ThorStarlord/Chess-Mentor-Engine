@@ -96,7 +96,11 @@ def add_product_use_commands(commands) -> None:
             "capture and freeze without executing M46."
         ),
     )
-    review.add_argument("--db", required=True, help="Existing SQLite artifact database.")
+    review.add_argument(
+        "--db",
+        required=True,
+        help="Existing SQLite artifact database.",
+    )
     review.add_argument("--participant", required=True)
     review.add_argument(
         "--position-json",
@@ -116,6 +120,10 @@ def add_product_use_commands(commands) -> None:
             "observations without learner or efficacy claims."
         ),
     )
-    report.add_argument("--db", required=True, help="Existing SQLite artifact database.")
+    report.add_argument(
+        "--db",
+        required=True,
+        help="Existing SQLite artifact database.",
+    )
     report.add_argument("--participant", required=True)
     report.set_defaults(handler=_cmd_product_use_report)
