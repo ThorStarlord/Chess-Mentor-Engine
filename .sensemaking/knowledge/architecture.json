@@ -1,0 +1,519 @@
+{
+  "schema_version": 1,
+  "source_revision": "16c38160db3793947f3e6d24f6c4bdd89cbd63fd",
+  "claims": [
+    {
+      "id": "comp:chess",
+      "kind": "component",
+      "statement": "Own deterministic chess rules core (no third-party chess library), PGN, FEN, features and position context packet",
+      "authority_kind": "code",
+      "authority_ref": "src/chess_mentor_engine/chess/_core.py",
+      "evidence_refs": [
+        "file:src/chess_mentor_engine/chess/_core.py",
+        "file:docs/decisions/0001-chess-rules-provider-boundary.md"
+      ],
+      "epistemic_status": "observed"
+    },
+    {
+      "id": "comp:analysis",
+      "kind": "component",
+      "statement": "UCI engine adapter, precomputed analysis and engine-evidence provenance (M3)",
+      "authority_kind": "code",
+      "authority_ref": "src/chess_mentor_engine/analysis/uci.py",
+      "evidence_refs": [
+        "file:src/chess_mentor_engine/analysis/uci.py",
+        "file:docs/decisions/0002-engine-evidence-contract.md"
+      ],
+      "epistemic_status": "observed"
+    },
+    {
+      "id": "comp:selection",
+      "kind": "component",
+      "statement": "Played-decision comparison and diagnostic candidate/control selection (M4/M18)",
+      "authority_kind": "code",
+      "authority_ref": "src/chess_mentor_engine/selection/comparison.py",
+      "evidence_refs": [
+        "file:src/chess_mentor_engine/selection/comparison.py",
+        "file:docs/decisions/0003-diagnostic-position-selection-contract.md"
+      ],
+      "epistemic_status": "observed"
+    },
+    {
+      "id": "comp:evidence",
+      "kind": "component",
+      "statement": "Player decision evidence capture (M5)",
+      "authority_kind": "code",
+      "authority_ref": "src/chess_mentor_engine/evidence/capture.py",
+      "evidence_refs": [
+        "file:src/chess_mentor_engine/evidence/capture.py",
+        "file:docs/decisions/0004-player-decision-evidence-contract.md"
+      ],
+      "epistemic_status": "observed"
+    },
+    {
+      "id": "comp:learning",
+      "kind": "component",
+      "statement": "Reasoning discrepancy facts/assessment and learner hypothesis ledger/recurrence (M6/M7/M7C)",
+      "authority_kind": "code",
+      "authority_ref": "src/chess_mentor_engine/learning/hypothesis_recurrence.py",
+      "evidence_refs": [
+        "file:src/chess_mentor_engine/learning/hypothesis_recurrence.py",
+        "file:docs/decisions/0006-learner-hypothesis-ledger-contract.md"
+      ],
+      "epistemic_status": "observed"
+    },
+    {
+      "id": "comp:tutoring",
+      "kind": "component",
+      "statement": "M8 tutor session lifecycle and M46 adaptive Socratic proposal policy",
+      "authority_kind": "code",
+      "authority_ref": "src/chess_mentor_engine/tutoring/session.py",
+      "evidence_refs": [
+        "file:src/chess_mentor_engine/tutoring/session.py",
+        "file:docs/decisions/0007-evidence-aware-tutor-session-contract.md"
+      ],
+      "epistemic_status": "observed"
+    },
+    {
+      "id": "comp:training",
+      "kind": "component",
+      "statement": "Intervention registry and selection (M9)",
+      "authority_kind": "code",
+      "authority_ref": "src/chess_mentor_engine/training/registry.py",
+      "evidence_refs": [
+        "file:src/chess_mentor_engine/training/registry.py",
+        "file:docs/decisions/0008-training-intervention-registry-contract.md"
+      ],
+      "epistemic_status": "observed"
+    },
+    {
+      "id": "comp:evaluation",
+      "kind": "component",
+      "statement": "Outcome/transfer evidence (M10)",
+      "authority_kind": "code",
+      "authority_ref": "src/chess_mentor_engine/evaluation/workflow.py",
+      "evidence_refs": [
+        "file:src/chess_mentor_engine/evaluation/workflow.py",
+        "file:docs/decisions/0009-outcome-transfer-evidence-contract.md"
+      ],
+      "epistemic_status": "observed"
+    },
+    {
+      "id": "comp:longitudinal",
+      "kind": "component",
+      "statement": "Append-only longitudinal learner state (M11)",
+      "authority_kind": "code",
+      "authority_ref": "src/chess_mentor_engine/longitudinal/workflow.py",
+      "evidence_refs": [
+        "file:src/chess_mentor_engine/longitudinal/workflow.py",
+        "file:docs/decisions/0010-longitudinal-learner-state-contract.md"
+      ],
+      "epistemic_status": "observed"
+    },
+    {
+      "id": "comp:storage",
+      "kind": "component",
+      "statement": "SQLite content-addressed LocalArtifactStore with dependency graph and replay verification",
+      "authority_kind": "code",
+      "authority_ref": "src/chess_mentor_engine/storage/store.py",
+      "evidence_refs": [
+        "file:src/chess_mentor_engine/storage/store.py",
+        "file:docs/architecture/durable-artifacts-and-replay.md"
+      ],
+      "epistemic_status": "observed"
+    },
+    {
+      "id": "comp:chess_knowledge",
+      "kind": "component",
+      "statement": "K0-K7 ontology, assertions, detectors, Lichess mapping and learner projection",
+      "authority_kind": "code",
+      "authority_ref": "src/chess_mentor_engine/chess_knowledge/registry.py",
+      "evidence_refs": [
+        "file:src/chess_mentor_engine/chess_knowledge/registry.py",
+        "file:docs/decisions/0012-chess-knowledge-ontology-contract.md"
+      ],
+      "epistemic_status": "observed"
+    },
+    {
+      "id": "comp:learner_intelligence",
+      "kind": "component",
+      "statement": "M36 read model, M39 synthesis, M40 proposal, M41-M43 candidates/plans, M44 progress view, M45 mentor queue",
+      "authority_kind": "code",
+      "authority_ref": "src/chess_mentor_engine/learner_intelligence/mentor_queue.py",
+      "evidence_refs": [
+        "file:src/chess_mentor_engine/learner_intelligence/mentor_queue.py",
+        "file:docs/architecture/m36-learner-state-read-model.md"
+      ],
+      "epistemic_status": "observed"
+    },
+    {
+      "id": "comp:coaching",
+      "kind": "component",
+      "statement": "Model-coaching provider Protocol, provenance binding, evaluator judgment and conformance (M19/M20/M24); no concrete LLM provider shipped",
+      "authority_kind": "code",
+      "authority_ref": "src/chess_mentor_engine/coaching/model.py",
+      "evidence_refs": [
+        "file:src/chess_mentor_engine/coaching/model.py",
+        "file:docs/runbooks/m19-provenance-bound-model-coaching.md"
+      ],
+      "epistemic_status": "observed"
+    },
+    {
+      "id": "comp:reviewed_coaching_and_review",
+      "kind": "component",
+      "statement": "Persistent reviewed-coaching runtime, ledger, review read models, delivery, trace and recovery (M23-M34)",
+      "authority_kind": "code",
+      "authority_ref": "src/chess_mentor_engine/reviewed_coaching.py",
+      "evidence_refs": [
+        "file:src/chess_mentor_engine/reviewed_coaching.py",
+        "file:docs/runbooks/m32-m34-milestone-runbook.md"
+      ],
+      "epistemic_status": "observed"
+    },
+    {
+      "id": "comp:local_tutor",
+      "kind": "component",
+      "statement": "V1 composition cme-local-tutor start/next/review/feedback/report",
+      "authority_kind": "code",
+      "authority_ref": "src/chess_mentor_engine/local_tutor.py",
+      "evidence_refs": [
+        "file:src/chess_mentor_engine/local_tutor.py",
+        "file:docs/runbooks/v1-local-tutor-vertical-slice.md"
+      ],
+      "epistemic_status": "observed"
+    },
+    {
+      "id": "comp:observation",
+      "kind": "component",
+      "statement": "Post-V1 immutable product-use observations and participant report",
+      "authority_kind": "code",
+      "authority_ref": "src/chess_mentor_engine/observation/report.py",
+      "evidence_refs": [
+        "file:src/chess_mentor_engine/observation/report.py",
+        "file:docs/product/post-v1-local-product-use-observation.md"
+      ],
+      "epistemic_status": "observed"
+    },
+    {
+      "id": "dec:adr-0001",
+      "kind": "decision",
+      "statement": "ADR 0001: Chess rules provider boundary (status Accepted per document)",
+      "authority_kind": "document",
+      "authority_ref": "docs/decisions/0001-chess-rules-provider-boundary.md",
+      "evidence_refs": [
+        "file:docs/decisions/0001-chess-rules-provider-boundary.md"
+      ],
+      "epistemic_status": "declared"
+    },
+    {
+      "id": "dec:adr-0002",
+      "kind": "decision",
+      "statement": "ADR 0002: Engine evidence contract (status Accepted per document)",
+      "authority_kind": "document",
+      "authority_ref": "docs/decisions/0002-engine-evidence-contract.md",
+      "evidence_refs": [
+        "file:docs/decisions/0002-engine-evidence-contract.md"
+      ],
+      "epistemic_status": "declared"
+    },
+    {
+      "id": "dec:adr-0003",
+      "kind": "decision",
+      "statement": "ADR 0003: Diagnostic position selection contract (status Accepted per document)",
+      "authority_kind": "document",
+      "authority_ref": "docs/decisions/0003-diagnostic-position-selection-contract.md",
+      "evidence_refs": [
+        "file:docs/decisions/0003-diagnostic-position-selection-contract.md"
+      ],
+      "epistemic_status": "declared"
+    },
+    {
+      "id": "dec:adr-0004",
+      "kind": "decision",
+      "statement": "ADR 0004: Player decision evidence contract (status Accepted per document)",
+      "authority_kind": "document",
+      "authority_ref": "docs/decisions/0004-player-decision-evidence-contract.md",
+      "evidence_refs": [
+        "file:docs/decisions/0004-player-decision-evidence-contract.md"
+      ],
+      "epistemic_status": "declared"
+    },
+    {
+      "id": "dec:adr-0005",
+      "kind": "decision",
+      "statement": "ADR 0005: Reasoning discrepancy contract (status Accepted per document)",
+      "authority_kind": "document",
+      "authority_ref": "docs/decisions/0005-reasoning-discrepancy-contract.md",
+      "evidence_refs": [
+        "file:docs/decisions/0005-reasoning-discrepancy-contract.md"
+      ],
+      "epistemic_status": "declared"
+    },
+    {
+      "id": "dec:adr-0006",
+      "kind": "decision",
+      "statement": "ADR 0006: Learner hypothesis ledger contract (status Accepted per document)",
+      "authority_kind": "document",
+      "authority_ref": "docs/decisions/0006-learner-hypothesis-ledger-contract.md",
+      "evidence_refs": [
+        "file:docs/decisions/0006-learner-hypothesis-ledger-contract.md"
+      ],
+      "epistemic_status": "declared"
+    },
+    {
+      "id": "dec:adr-0007",
+      "kind": "decision",
+      "statement": "ADR 0007: Evidence-aware tutor session contract (status Accepted per document)",
+      "authority_kind": "document",
+      "authority_ref": "docs/decisions/0007-evidence-aware-tutor-session-contract.md",
+      "evidence_refs": [
+        "file:docs/decisions/0007-evidence-aware-tutor-session-contract.md"
+      ],
+      "epistemic_status": "declared"
+    },
+    {
+      "id": "dec:adr-0008",
+      "kind": "decision",
+      "statement": "ADR 0008: Training intervention registry contract (status Accepted per document)",
+      "authority_kind": "document",
+      "authority_ref": "docs/decisions/0008-training-intervention-registry-contract.md",
+      "evidence_refs": [
+        "file:docs/decisions/0008-training-intervention-registry-contract.md"
+      ],
+      "epistemic_status": "declared"
+    },
+    {
+      "id": "dec:adr-0009",
+      "kind": "decision",
+      "statement": "ADR 0009: Outcome and transfer evidence contract (status Accepted per document)",
+      "authority_kind": "document",
+      "authority_ref": "docs/decisions/0009-outcome-transfer-evidence-contract.md",
+      "evidence_refs": [
+        "file:docs/decisions/0009-outcome-transfer-evidence-contract.md"
+      ],
+      "epistemic_status": "declared"
+    },
+    {
+      "id": "dec:adr-0010",
+      "kind": "decision",
+      "statement": "ADR 0010: Longitudinal learner-state contract (status Accepted per document)",
+      "authority_kind": "document",
+      "authority_ref": "docs/decisions/0010-longitudinal-learner-state-contract.md",
+      "evidence_refs": [
+        "file:docs/decisions/0010-longitudinal-learner-state-contract.md"
+      ],
+      "epistemic_status": "declared"
+    },
+    {
+      "id": "dec:adr-0011",
+      "kind": "decision",
+      "statement": "ADR 0011: Local evidence CLI contract (status Accepted per document)",
+      "authority_kind": "document",
+      "authority_ref": "docs/decisions/0011-local-evidence-cli-contract.md",
+      "evidence_refs": [
+        "file:docs/decisions/0011-local-evidence-cli-contract.md"
+      ],
+      "epistemic_status": "declared"
+    },
+    {
+      "id": "dec:adr-0012",
+      "kind": "decision",
+      "statement": "ADR 0012: Chess knowledge ontology authority contract (status Accepted per document)",
+      "authority_kind": "document",
+      "authority_ref": "docs/decisions/0012-chess-knowledge-ontology-contract.md",
+      "evidence_refs": [
+        "file:docs/decisions/0012-chess-knowledge-ontology-contract.md"
+      ],
+      "epistemic_status": "declared"
+    },
+    {
+      "id": "dec:post-v1-evidence-first",
+      "kind": "decision",
+      "statement": "Post-V1 decision: next evidence must come from actual repeated local use; reconcile the demonstrated bottleneck before authorizing one bounded next objective",
+      "authority_kind": "document",
+      "authority_ref": "STATUS.md",
+      "evidence_refs": [
+        "file:STATUS.md",
+        "file:docs/product/repository-build-status.md",
+        "file:CONTEXT.md"
+      ],
+      "epistemic_status": "declared"
+    },
+    {
+      "id": "cap:guided-baseline-review",
+      "kind": "capability",
+      "statement": "Guide an already-selected persisted M8 checkpoint through position/prompt presentation, response capture and freeze, recording observations; stops before reveal",
+      "authority_kind": "code",
+      "authority_ref": "src/chess_mentor_engine/local_tutor_review.py",
+      "evidence_refs": [
+        "file:src/chess_mentor_engine/local_tutor_review.py",
+        "file:tests/test_local_tutor_guided_baseline.py"
+      ],
+      "epistemic_status": "observed"
+    },
+    {
+      "id": "cap:diagnostic-queue",
+      "kind": "capability",
+      "statement": "Analyze a bounded PGN game window with a supplied UCI engine and build a deterministic candidate/control diagnostic queue (cme diagnose)",
+      "authority_kind": "code",
+      "authority_ref": "src/chess_mentor_engine/diagnostic_cli.py",
+      "evidence_refs": [
+        "file:src/chess_mentor_engine/diagnostic_cli.py",
+        "file:src/chess_mentor_engine/cli.py"
+      ],
+      "epistemic_status": "observed"
+    },
+    {
+      "id": "obs:start-requires-hand-built-inputs",
+      "kind": "observation",
+      "statement": "cme-local-tutor start requires --learner-progress-json (M44 view), --protocol-json and --prompts-json; no installed command emits an M44 LearnerProgressView, protocol or prompts JSON (probed at 16c3816)",
+      "authority_kind": "code",
+      "authority_ref": "src/chess_mentor_engine/local_tutor_cli.py",
+      "evidence_refs": [
+        "file:src/chess_mentor_engine/local_tutor_cli.py",
+        "file:src/chess_mentor_engine/cli.py",
+        "file:src/chess_mentor_engine/learner_intelligence/progress_model.py",
+        "file:pyproject.toml"
+      ],
+      "epistemic_status": "observed"
+    },
+    {
+      "id": "obs:tests-bypass-start",
+      "kind": "observation",
+      "statement": "Guided-review tests build the M8 session programmatically from synthetic upstream fixtures rather than from installed commands on a real PGN",
+      "authority_kind": "code",
+      "authority_ref": "tests/test_local_tutor_guided_baseline.py",
+      "evidence_refs": [
+        "file:tests/test_local_tutor_guided_baseline.py"
+      ],
+      "epistemic_status": "observed"
+    },
+    {
+      "id": "obs:no-real-use-evidence",
+      "kind": "observation",
+      "statement": "No real post-V1 product-use observations are recorded in the repository; FPV-PILOT-003 and -004 are designed but not executed (B01 awaits P01 responses)",
+      "authority_kind": "document",
+      "authority_ref": "docs/research/first-product-validation/pilots/FPV-PILOT-004/batches/B01/README.md",
+      "evidence_refs": [
+        "file:docs/research/first-product-validation/pilots/FPV-PILOT-004/batches/B01/README.md",
+        "file:docs/research/first-product-validation/pilots/FPV-PILOT-003/README.md"
+      ],
+      "epistemic_status": "observed"
+    },
+    {
+      "id": "obs:pilot-board-context",
+      "kind": "observation",
+      "statement": "FPV-PILOT-001 participant found analysis unhelpful for lack of board context; PILOT-002 found board context aided explanation and frozen player reasoning narrowed interpretation (N=1, exploratory)",
+      "authority_kind": "document",
+      "authority_ref": "docs/research/first-product-validation/pilots/FPV-PILOT-002/result.md",
+      "evidence_refs": [
+        "file:docs/research/first-product-validation/pilots/FPV-PILOT-001/result.md",
+        "file:docs/research/first-product-validation/pilots/FPV-PILOT-002/result.md"
+      ],
+      "epistemic_status": "observed"
+    },
+    {
+      "id": "hyp:onboarding-blocks-use-evidence",
+      "kind": "hypothesis",
+      "statement": "The evidence-first decision is self-blocking: a real learner cannot reach guided review from their own games through installed commands, so repeated-use evidence cannot accrue",
+      "authority_kind": "hypothesis",
+      "authority_ref": "docs/runbooks/post-v1-local-product-use-observation.md",
+      "evidence_refs": [
+        "file:src/chess_mentor_engine/local_tutor_cli.py",
+        "file:docs/runbooks/post-v1-local-product-use-observation.md",
+        "file:STATUS.md"
+      ],
+      "epistemic_status": "hypothetical"
+    },
+    {
+      "id": "hyp:cold-start-unsupported",
+      "kind": "hypothesis",
+      "statement": "A first-time learner has no M7 hypotheses, so the M44/M45 inputs that start requires may be empty or fail closed; not verified by running",
+      "authority_kind": "hypothesis",
+      "authority_ref": "src/chess_mentor_engine/learner_intelligence/mentor_queue.py",
+      "evidence_refs": [
+        "file:src/chess_mentor_engine/learner_intelligence/mentor_queue.py",
+        "file:src/chess_mentor_engine/local_tutor.py"
+      ],
+      "epistemic_status": "hypothetical"
+    },
+    {
+      "id": "hyp:review-lacks-payoff",
+      "kind": "hypothesis",
+      "statement": "The guided review stops at baseline freeze, so a participant receives no chess feedback in that command; low would_review_again may reflect this boundary rather than product value",
+      "authority_kind": "hypothesis",
+      "authority_ref": "docs/product/repository-build-status.md",
+      "evidence_refs": [
+        "file:docs/product/repository-build-status.md",
+        "file:src/chess_mentor_engine/local_tutor_review.py"
+      ],
+      "epistemic_status": "hypothetical"
+    }
+  ],
+  "relations": [
+    {
+      "subject": "cap:guided-baseline-review",
+      "predicate": "implemented_by",
+      "object": "comp:local_tutor",
+      "attributes": {
+        "establishment": "observed"
+      }
+    },
+    {
+      "subject": "cap:diagnostic-queue",
+      "predicate": "implemented_by",
+      "object": "comp:selection",
+      "attributes": {
+        "establishment": "observed"
+      }
+    },
+    {
+      "subject": "comp:tutoring",
+      "predicate": "decided_by",
+      "object": "dec:adr-0007",
+      "attributes": {
+        "establishment": "ratified"
+      }
+    },
+    {
+      "subject": "comp:chess",
+      "predicate": "decided_by",
+      "object": "dec:adr-0001",
+      "attributes": {
+        "establishment": "ratified"
+      }
+    },
+    {
+      "subject": "comp:analysis",
+      "predicate": "decided_by",
+      "object": "dec:adr-0002",
+      "attributes": {
+        "establishment": "ratified"
+      }
+    },
+    {
+      "subject": "comp:chess_knowledge",
+      "predicate": "decided_by",
+      "object": "dec:adr-0012",
+      "attributes": {
+        "establishment": "ratified"
+      }
+    },
+    {
+      "subject": "hyp:onboarding-blocks-use-evidence",
+      "predicate": "references",
+      "object": "obs:start-requires-hand-built-inputs",
+      "attributes": {
+        "establishment": "inferred"
+      }
+    },
+    {
+      "subject": "hyp:onboarding-blocks-use-evidence",
+      "predicate": "references",
+      "object": "dec:post-v1-evidence-first",
+      "attributes": {
+        "establishment": "inferred"
+      }
+    }
+  ]
+}

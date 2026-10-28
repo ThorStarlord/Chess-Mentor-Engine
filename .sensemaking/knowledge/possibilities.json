@@ -1,0 +1,262 @@
+{
+  "schema_version": 1,
+  "source_revision": "16c38160db3793947f3e6d24f6c4bdd89cbd63fd",
+  "claims": [
+    {
+      "id": "poss:cold-start-local-session",
+      "kind": "opportunity",
+      "statement": "One command from a learner's own PGN (plus engine) to a consented, frozen baseline with no hand-authored structural JSON",
+      "authority_kind": "hypothesis",
+      "authority_ref": ".sensemaking/analyses/2026-10-28-strategic-repository-analysis.md",
+      "evidence_refs": [
+        "file:src/chess_mentor_engine/local_tutor_cli.py",
+        "file:STATUS.md"
+      ],
+      "epistemic_status": "hypothetical",
+      "attributes": {
+        "concept": "ProductPossibility",
+        "alignment": "high",
+        "horizon": "near",
+        "analysis_ref": ".sensemaking/analyses/2026-10-28-strategic-repository-analysis.md",
+        "disposition_history": [
+          {
+            "date": "2026-10-28",
+            "disposition": "recommended_for_owner_decision",
+            "by": "agent"
+          }
+        ]
+      }
+    },
+    {
+      "id": "poss:closed-loop-review-payoff",
+      "kind": "opportunity",
+      "statement": "Extend the guided path past freeze to reveal objective evidence with board context and a deterministic grounded explanation via existing M8 transitions",
+      "authority_kind": "hypothesis",
+      "authority_ref": ".sensemaking/analyses/2026-10-28-strategic-repository-analysis.md",
+      "evidence_refs": [
+        "file:docs/research/first-product-validation/pilots/FPV-PILOT-002/result.md",
+        "file:src/chess_mentor_engine/tutor_cli.py"
+      ],
+      "epistemic_status": "hypothetical",
+      "attributes": {
+        "concept": "ProductPossibility",
+        "alignment": "high",
+        "horizon": "near",
+        "analysis_ref": ".sensemaking/analyses/2026-10-28-strategic-repository-analysis.md",
+        "disposition_history": [
+          {
+            "date": "2026-10-28",
+            "disposition": "retained",
+            "by": "agent"
+          }
+        ]
+      }
+    },
+    {
+      "id": "poss:execute-frozen-pilots",
+      "kind": "opportunity",
+      "statement": "Run FPV-PILOT-004 B01 with P01 (designed, frozen, awaiting responses) as cheapest real evidence",
+      "authority_kind": "hypothesis",
+      "authority_ref": ".sensemaking/analyses/2026-10-28-strategic-repository-analysis.md",
+      "evidence_refs": [
+        "file:docs/research/first-product-validation/pilots/FPV-PILOT-004/batches/B01/README.md"
+      ],
+      "epistemic_status": "hypothetical",
+      "attributes": {
+        "concept": "ProductPossibility",
+        "alignment": "high",
+        "horizon": "immediate",
+        "analysis_ref": ".sensemaking/analyses/2026-10-28-strategic-repository-analysis.md",
+        "disposition_history": [
+          {
+            "date": "2026-10-28",
+            "disposition": "retained",
+            "by": "agent"
+          }
+        ]
+      }
+    },
+    {
+      "id": "poss:deterministic-tactical-context",
+      "kind": "opportunity",
+      "statement": "Deterministic attacked/defended and forcing-move summaries in the position packet to cut PV reconstruction burden",
+      "authority_kind": "hypothesis",
+      "authority_ref": ".sensemaking/analyses/2026-10-28-strategic-repository-analysis.md",
+      "evidence_refs": [
+        "file:docs/research/first-product-validation/pilots/FPV-PILOT-002/result.md",
+        "file:src/chess_mentor_engine/chess_knowledge/detectors/position.py"
+      ],
+      "epistemic_status": "hypothetical",
+      "attributes": {
+        "concept": "ProductPossibility",
+        "alignment": "medium",
+        "horizon": "near",
+        "analysis_ref": ".sensemaking/analyses/2026-10-28-strategic-repository-analysis.md",
+        "disposition_history": [
+          {
+            "date": "2026-10-28",
+            "disposition": "retained",
+            "by": "agent"
+          }
+        ]
+      }
+    },
+    {
+      "id": "poss:concrete-model-provider",
+      "kind": "opportunity",
+      "statement": "Ship one concrete provider behind the M19 ModelCoachProvider Protocol for grounded explanation prose",
+      "authority_kind": "hypothesis",
+      "authority_ref": ".sensemaking/analyses/2026-10-28-strategic-repository-analysis.md",
+      "evidence_refs": [
+        "file:src/chess_mentor_engine/coaching/model.py"
+      ],
+      "epistemic_status": "hypothetical",
+      "attributes": {
+        "concept": "ProductPossibility",
+        "alignment": "medium",
+        "horizon": "mid",
+        "analysis_ref": ".sensemaking/analyses/2026-10-28-strategic-repository-analysis.md",
+        "disposition_history": [
+          {
+            "date": "2026-10-28",
+            "disposition": "retained",
+            "by": "agent"
+          }
+        ]
+      }
+    },
+    {
+      "id": "poss:game-import",
+      "kind": "opportunity",
+      "statement": "Import recent games from Lichess/Chess.com accounts instead of manual PGN",
+      "authority_kind": "hypothesis",
+      "authority_ref": ".sensemaking/analyses/2026-10-28-strategic-repository-analysis.md",
+      "evidence_refs": [
+        "file:src/chess_mentor_engine/chess_knowledge/mappings/lichess.py",
+        "file:docs/product/product-definition.md"
+      ],
+      "epistemic_status": "hypothetical",
+      "attributes": {
+        "concept": "ProductPossibility",
+        "alignment": "medium",
+        "horizon": "mid",
+        "analysis_ref": ".sensemaking/analyses/2026-10-28-strategic-repository-analysis.md",
+        "disposition_history": [
+          {
+            "date": "2026-10-28",
+            "disposition": "retained",
+            "by": "agent"
+          }
+        ]
+      }
+    },
+    {
+      "id": "poss:surface-consolidation",
+      "kind": "opportunity",
+      "statement": "Consolidate nine installed CLIs and milestone-shaped layers behind one learner-facing workflow",
+      "authority_kind": "hypothesis",
+      "authority_ref": ".sensemaking/analyses/2026-10-28-strategic-repository-analysis.md",
+      "evidence_refs": [
+        "file:pyproject.toml",
+        "file:README.md"
+      ],
+      "epistemic_status": "hypothetical",
+      "attributes": {
+        "concept": "ProductPossibility",
+        "alignment": "medium",
+        "horizon": "mid",
+        "analysis_ref": ".sensemaking/analyses/2026-10-28-strategic-repository-analysis.md",
+        "disposition_history": [
+          {
+            "date": "2026-10-28",
+            "disposition": "retained",
+            "by": "agent"
+          }
+        ]
+      }
+    },
+    {
+      "id": "poss:browser-or-hosted",
+      "kind": "opportunity",
+      "statement": "Browser UI or hosted multi-user product",
+      "authority_kind": "hypothesis",
+      "authority_ref": ".sensemaking/analyses/2026-10-28-strategic-repository-analysis.md",
+      "evidence_refs": [
+        "file:STATUS.md"
+      ],
+      "epistemic_status": "hypothetical",
+      "attributes": {
+        "concept": "ProductPossibility",
+        "alignment": "low",
+        "horizon": "far",
+        "analysis_ref": ".sensemaking/analyses/2026-10-28-strategic-repository-analysis.md",
+        "disposition_history": [
+          {
+            "date": "2026-10-28",
+            "disposition": "deferred_by_governing_decision",
+            "by": "agent"
+          }
+        ]
+      }
+    },
+    {
+      "id": "poss:new-learner-intelligence-layer",
+      "kind": "opportunity",
+      "statement": "Further learner-intelligence subsystems (M35/M37/M38/K8/M47)",
+      "authority_kind": "hypothesis",
+      "authority_ref": ".sensemaking/analyses/2026-10-28-strategic-repository-analysis.md",
+      "evidence_refs": [
+        "file:STATUS.md",
+        "file:CONTEXT.md"
+      ],
+      "epistemic_status": "hypothetical",
+      "attributes": {
+        "concept": "ProductPossibility",
+        "alignment": "low",
+        "horizon": "far",
+        "analysis_ref": ".sensemaking/analyses/2026-10-28-strategic-repository-analysis.md",
+        "disposition_history": [
+          {
+            "date": "2026-10-28",
+            "disposition": "deferred_by_governing_decision",
+            "by": "agent"
+          }
+        ]
+      }
+    }
+  ],
+  "relations": [
+    {
+      "subject": "poss:cold-start-local-session",
+      "predicate": "references",
+      "object": "hyp:onboarding-blocks-use-evidence",
+      "attributes": {
+        "establishment": "inferred"
+      }
+    },
+    {
+      "subject": "poss:closed-loop-review-payoff",
+      "predicate": "references",
+      "object": "hyp:review-lacks-payoff",
+      "attributes": {
+        "establishment": "inferred"
+      }
+    },
+    {
+      "subject": "poss:browser-or-hosted",
+      "predicate": "contradicts",
+      "object": "nongoal:auto-expansion",
+      "attributes": {
+        "establishment": "ratified"
+      }
+    },
+    {
+      "subject": "poss:new-learner-intelligence-layer",
+      "predicate": "contradicts",
+      "object": "nongoal:auto-expansion",
+      "attributes": {
+        "establishment": "ratified"
+      }
+    }
+  ]
+}

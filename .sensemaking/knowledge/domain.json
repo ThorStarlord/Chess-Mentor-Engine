@@ -1,0 +1,230 @@
+{
+  "schema_version": 1,
+  "source_revision": "16c38160db3793947f3e6d24f6c4bdd89cbd63fd",
+  "claims": [
+    {
+      "id": "goal:persistent-learner-model",
+      "kind": "goal",
+      "statement": "Turn longitudinal chess evidence into a persistent, participant-specific learner model and use it to choose personalized teaching interventions",
+      "authority_kind": "document",
+      "authority_ref": "docs/product/product-definition.md",
+      "evidence_refs": [
+        "file:docs/product/product-definition.md",
+        "file:README.md"
+      ],
+      "epistemic_status": "declared"
+    },
+    {
+      "id": "goal:separate-truth-layers",
+      "kind": "goal",
+      "statement": "Keep objective chess truth, participant evidence, learner inference, tutoring policy, model language, evaluator judgment and pedagogy in separate provenance-bearing authority layers",
+      "authority_kind": "document",
+      "authority_ref": "CONTEXT.md",
+      "evidence_refs": [
+        "file:CONTEXT.md",
+        "file:README.md"
+      ],
+      "epistemic_status": "declared"
+    },
+    {
+      "id": "nongoal:replace-engine",
+      "kind": "non_goal",
+      "statement": "Not replacing Stockfish or another engine; the UCI engine is an explicitly supplied external executable",
+      "authority_kind": "document",
+      "authority_ref": "docs/product/product-definition.md",
+      "evidence_refs": [
+        "file:docs/product/product-definition.md",
+        "file:README.md"
+      ],
+      "epistemic_status": "declared"
+    },
+    {
+      "id": "nongoal:training-platform-before-thesis",
+      "kind": "non_goal",
+      "statement": "Not implementing a full training platform before validating the tutoring thesis",
+      "authority_kind": "document",
+      "authority_ref": "docs/product/product-definition.md",
+      "evidence_refs": [
+        "file:docs/product/product-definition.md"
+      ],
+      "epistemic_status": "declared"
+    },
+    {
+      "id": "nongoal:auto-expansion",
+      "kind": "non_goal",
+      "statement": "Do not automatically implement M35/M37/M38/K8/M47, another learner-intelligence subsystem, browser UI or hosted productization without fresh grounded evidence",
+      "authority_kind": "document",
+      "authority_ref": "STATUS.md",
+      "evidence_refs": [
+        "file:STATUS.md",
+        "file:CONTEXT.md",
+        "file:docs/product/repository-build-status.md"
+      ],
+      "epistemic_status": "declared"
+    },
+    {
+      "id": "dc:objective-chess-evidence",
+      "kind": "domain_concept",
+      "statement": "Objective chess evidence: canonical position, legal moves, deterministic features and provenance-bound engine evaluations (M1-M4, M14-M18)",
+      "authority_kind": "document",
+      "authority_ref": "CONTEXT.md",
+      "evidence_refs": [
+        "file:CONTEXT.md",
+        "file:docs/architecture/chess-evidence-substrate.md"
+      ],
+      "epistemic_status": "declared"
+    },
+    {
+      "id": "dc:participant-evidence",
+      "kind": "domain_concept",
+      "statement": "Participant evidence: player-reported reasoning captured and frozen before any objective reveal (M5/M8)",
+      "authority_kind": "document",
+      "authority_ref": "CONTEXT.md",
+      "evidence_refs": [
+        "file:CONTEXT.md",
+        "file:docs/decisions/0004-player-decision-evidence-contract.md"
+      ],
+      "epistemic_status": "declared"
+    },
+    {
+      "id": "dc:reasoning-discrepancy",
+      "kind": "domain_concept",
+      "statement": "Reasoning discrepancy (M6): a position-local mismatch between participant reasoning and objective evidence; never itself a recurrence or trait",
+      "authority_kind": "document",
+      "authority_ref": "CONTEXT.md",
+      "evidence_refs": [
+        "file:CONTEXT.md",
+        "file:docs/decisions/0005-reasoning-discrepancy-contract.md"
+      ],
+      "epistemic_status": "declared"
+    },
+    {
+      "id": "dc:learner-hypothesis",
+      "kind": "domain_concept",
+      "statement": "Learner hypothesis (M7/M7C): participant-specific recurring-pattern claim with support/challenge/contradiction evidence and recurrence status",
+      "authority_kind": "document",
+      "authority_ref": "CONTEXT.md",
+      "evidence_refs": [
+        "file:CONTEXT.md",
+        "file:docs/decisions/0006-learner-hypothesis-ledger-contract.md"
+      ],
+      "epistemic_status": "declared"
+    },
+    {
+      "id": "dc:tutor-session",
+      "kind": "domain_concept",
+      "statement": "M8 tutor session: persisted checkpoint lifecycle (present, respond, freeze, reveal, compare, attach-hypothesis, explain, complete) that owns exposure/execution authority",
+      "authority_kind": "document",
+      "authority_ref": "docs/decisions/0007-evidence-aware-tutor-session-contract.md",
+      "evidence_refs": [
+        "file:docs/decisions/0007-evidence-aware-tutor-session-contract.md",
+        "file:src/chess_mentor_engine/tutor_cli.py"
+      ],
+      "epistemic_status": "declared"
+    },
+    {
+      "id": "dc:proposal-vs-execution",
+      "kind": "domain_concept",
+      "statement": "Downstream learner-intelligence layers (M36-M46) only read, synthesize, propose or rank; none inherits mutation, selection, outcome or execution authority",
+      "authority_kind": "document",
+      "authority_ref": "CONTEXT.md",
+      "evidence_refs": [
+        "file:CONTEXT.md"
+      ],
+      "epistemic_status": "declared"
+    },
+    {
+      "id": "dc:chess-semantics",
+      "kind": "domain_concept",
+      "statement": "K0-K7 typed chess knowledge: ontology identities, provenance-bound assertions and conservative detectors; concept occurrence is not learner weakness",
+      "authority_kind": "document",
+      "authority_ref": "docs/decisions/0012-chess-knowledge-ontology-contract.md",
+      "evidence_refs": [
+        "file:docs/decisions/0012-chess-knowledge-ontology-contract.md",
+        "file:src/chess_mentor_engine/chess_knowledge/data/ontology.v1.json"
+      ],
+      "epistemic_status": "declared"
+    },
+    {
+      "id": "dc:product-use-observation",
+      "kind": "domain_concept",
+      "statement": "Post-V1 product-use observation: immutable descriptive record of local use plus bounded 1-5 self-report; never learner, efficacy or mastery evidence",
+      "authority_kind": "document",
+      "authority_ref": "docs/product/repository-build-status.md",
+      "evidence_refs": [
+        "file:docs/product/repository-build-status.md",
+        "file:src/chess_mentor_engine/observation/model.py"
+      ],
+      "epistemic_status": "declared"
+    },
+    {
+      "id": "inv:freeze-before-reveal",
+      "kind": "invariant",
+      "statement": "Participant baseline reasoning is frozen before objective evidence is revealed; post-reveal reflection is never pre-reveal evidence",
+      "authority_kind": "document",
+      "authority_ref": "CONTEXT.md",
+      "evidence_refs": [
+        "file:CONTEXT.md",
+        "file:docs/research/first-product-validation/pilots/FPV-PILOT-002/result.md"
+      ],
+      "epistemic_status": "declared"
+    },
+    {
+      "id": "inv:claim-ceiling",
+      "kind": "invariant",
+      "statement": "Repository qualification does not establish real-user usefulness, tutoring efficacy, learning effect or mastery; these remain not_established",
+      "authority_kind": "document",
+      "authority_ref": "docs/product/repository-build-status.md",
+      "evidence_refs": [
+        "file:docs/product/repository-build-status.md",
+        "file:STATUS.md"
+      ],
+      "epistemic_status": "declared"
+    },
+    {
+      "id": "inv:explicit-consent",
+      "kind": "invariant",
+      "statement": "M45 rank one is never implicit consent; selection and capture consent are separate explicit decisions before an M8 session is created",
+      "authority_kind": "document",
+      "authority_ref": "CONTEXT.md",
+      "evidence_refs": [
+        "file:CONTEXT.md",
+        "file:docs/runbooks/v1-local-tutor-vertical-slice.md"
+      ],
+      "epistemic_status": "declared"
+    },
+    {
+      "id": "con:docs-governance",
+      "kind": "constraint",
+      "statement": "Repository documentation records only accepted decisions, qualified state, repeatable runbooks or decision-changing evidence; brainstorming is not roadmap",
+      "authority_kind": "document",
+      "authority_ref": "CONTEXT.md",
+      "evidence_refs": [
+        "file:CONTEXT.md"
+      ],
+      "epistemic_status": "declared"
+    },
+    {
+      "id": "con:qualification-gates",
+      "kind": "constraint",
+      "statement": "Merge only an exact head passing pytest, Ruff, compileall, release-distribution and (when applicable) the independent Stockfish job",
+      "authority_kind": "document",
+      "authority_ref": "CONTEXT.md",
+      "evidence_refs": [
+        "file:CONTEXT.md",
+        "file:.github/workflows/ci.yml"
+      ],
+      "epistemic_status": "declared"
+    }
+  ],
+  "relations": [
+    {
+      "subject": "goal:separate-truth-layers",
+      "predicate": "serves_goal",
+      "object": "goal:persistent-learner-model",
+      "attributes": {
+        "establishment": "ratified"
+      }
+    }
+  ]
+}
