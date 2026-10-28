@@ -1,0 +1,1375 @@
+# Artifact Contracts: Sensemaking Pipeline
+
+artifacts:
+  - id: user_intent
+    path: "artifacts/user_intent.md"
+    produced_by: workflow-runtime
+    consumed_by:
+      - problem-framer
+      - unknowns-mapper
+      - repo-sensemaker
+      - workflow-planner
+      - docs-aligner
+      - to-prd
+      - to-issues
+      - triage
+      - handoff
+    required_sections:
+      - raw_intent
+      - scope_mode
+      - intent_source
+      - constraints
+      - non_goals
+      - machine_readable_intent
+    required_machine_fields:
+      - artifact_id
+      - intent_source
+      - scope_mode
+      - raw_problem_statement
+      - created_at
+      - immutable
+    verification:
+      generic_validator: "python scripts/validate-artifact.py user_intent {artifact_path}"
+      specialized_validators:
+        - "python scripts/validate-user-intent.py {artifact_path}"
+      required_for_modes:
+        - plan_only
+        - prompt_chain
+        - guided_execution
+        - autonomous_execution
+        - yolo_execution
+
+  - id: user_intent_amendment
+    path: "artifacts/user_intent_amendment.md"
+    produced_by: orchestration-runner
+    consumed_by:
+      - workflow-planner
+      - repo-sensemaker
+      - prompt-handoff
+    required_sections:
+      - clarification
+    required_machine_fields:
+      - artifact_id
+      - amends_intent_ref
+      - clarification_type
+      - requires_reroute
+      - created_at
+      - created_by
+    verification:
+      generic_validator: "python scripts/validate-artifact.py user_intent_amendment {artifact_path}"
+      specialized_validators:
+        - "python scripts/validate-user-intent-amendment.py {artifact_path}"
+      required_for_modes:
+        - guided_execution
+        - autonomous_execution
+        - yolo_execution
+
+  - id: problem_frame
+    path: "artifacts/problem_frame.md"
+    produced_by: problem-framer
+    consumed_by:
+      - unknowns-mapper
+      - repo-sensemaker
+    required_sections:
+      - raw_fog
+      - problem_under_the_problem
+      - object_under_pressure
+      - failure_mode
+      - success_condition
+      - what_must_be_true
+      - next_artifact
+    verification:
+      generic_validator: "python scripts/validate-artifact.py problem_frame {artifact_path}"
+      specialized_validators:
+        - "python scripts/validate-alignment.py {artifact_path}"
+      required_for_modes:
+        - guided_execution
+        - autonomous_execution
+        - yolo_execution
+
+  - id: unknowns_map
+    path: "artifacts/unknowns_map.md"
+    produced_by: unknowns-mapper
+    consumed_by:
+      - repo-sensemaker
+      - prompt-handoff
+    required_sections:
+      - knowns
+      - unknowns
+      - assumptions
+      - risks
+      - research_paths
+      - stopping_rule
+    required_machine_fields:
+      - clarity_assessment
+      - unknowns_count
+      - assumptions_count
+      - research_needed
+    verification:
+      generic_validator: "python scripts/validate-artifact.py unknowns_map {artifact_path}"
+      specialized_validators:
+        - "python scripts/validate-unknowns-map.py {artifact_path}"
+      required_for_modes:
+        - guided_execution
+        - autonomous_execution
+        - yolo_execution
+
+  - id: repository_sensemaking_brief
+    path: "artifacts/repository_sensemaking_brief.md"
+    produced_by: repo-sensemaker
+    consumed_by:
+      - workflow-planner
+      - prompt-handoff
+      - sensemaking-docs-reconciler
+      - output-reconciler
+    description: "Phase 1 diagnostic artifact: fog type classification and handoff to workflow-planner"
+    required_sections:
+      - evidence
+      - recommended_workflow
+    required_machine_fields:
+      - artifact_id
+      - primary_fog_type
+      - evidence
+      - created_at
+      - immutable
+    recommended_machine_fields:
+      - source_intent_ref
+      - user_implied_fog_type
+      - diagnosis_conflict
+      - escalation_recommended
+      - escalation_target
+      - escalation_reason
+      - auto_escalation_allowed
+      - weakness_type
+      - weakness_type_explanation
+      # directive #23/#28: recommended_workflow_id is required for ACTION briefs
+      # but is authoritatively optional under an EXPLICIT outcome =
+      # NO_REPOSITORY_CHANGE_WARRANTED (validated by validate-brief.py, NOT the
+      # generic validate-artifact.py which must not universally require it).
+      - recommended_workflow_id
+      # directive #23/#25/#28: representation_sufficiency + outcome are
+      # programmatically consumed by the MODEL_WARRANT seam and the NO_CHANGE
+      # terminal path, respectively. Declared here (per ADR 0015: any field a
+      # downstream consumer parses programmatically belongs in the declared
+      # machine contract) as OPTIONAL/ADDITIVE -- absent/invalid fails closed
+      # (INCONCLUSIVE / normal-action) and is not a generic-validator failure.
+      - representation_sufficiency
+      - outcome
+      # Issue #171 / evidence-rules Rule 7: REQUIRED (blocking) when the
+      # brief recommends renumbering/deduplicating a colliding ID. Value is
+      # the direction decision with reference counts per candidate, prior
+      # dedup intent, and grep result incl. handoffs.
+      - collision_dedup_direction
+      # Section 15 "extended_analysis" fields (ADR 0024, ACCEPTED): classified
+      # per ADR 0015 as "model, constrained" (same class as weakness_type),
+      # all OPTIONAL, all non-blocking -- a stronger guarantee than
+      # weakness_type's "required but non-blocking" (D2). Live in a single
+      # Section 15 `extended_analysis:` YAML mapping (`## 15. Extended
+      # analysis`), not Section 13. Absence changes nothing; presence never
+      # fails validate-brief.py.
+      - extended_analysis.domain
+      - extended_analysis.consequential_boundary
+      - extended_analysis.uncertainty
+      - extended_analysis.owner_intent_state
+    notes:
+      - "Validation results are NOT stored in this artifact. See validators/run_log.md for validation output."
+      - "PATH B (transient validation): validation_status field is NOT present."
+      - "Phase 1 diagnostic scope: brief prepares handoff to workflow-planner for Phase 2 implementation."
+      - "weakness_type (issue #80): structured taxonomy field in Section 13. Allowed values are the 7 registered types in skills/repo-sensemaker/references/weakness-types.md plus 'Other'. Required metadata but non-blocking (D2) -- missing/unrecognized values are validator warnings, never errors. weakness_type_explanation is required only when weakness_type is 'Other' (D4); its absence there is also a non-blocking warning that must be resolved before human final-approval."
+      - "user_implied_fog_type (Goal A PF-1): recommended, optional. Legal values are the four fog types PLUS 'unknown' (intent is fog-neutral) -- declared in docs/canonical-vocabulary.yaml routing_fields, the single source of truth both validate-artifact.py and validate-fog-type-normalization.py read. Distinct from primary_fog_type (the diagnosis), which is always one of the four and never 'unknown'. validate-brief.py does not enum-check this field."
+      - "extended_analysis (Section 15, ADR 0024 ACCEPTED): optional, non-blocking, model-constrained. Not read by workflow-runtime.py's routing (_WORKFLOW_ID_FIELDS / _FOG_TYPE_FIELDS) -- see tests/test_field_contract_agreement.py, whose guard this deliberately does not need to touch. Any future promotion to drive real routing requires a new owner decision per field."
+      - "recommended_workflow_id (no-match semantics, ADR 0014): while downstream routing is deferred, the Brief may truthfully carry no workflow recommendation by emitting `recommended_workflow_id: null` together with `escalation_recommended: true`. A null value is valid only in that combination; otherwise the field must name a valid registry workflow id (validate-brief.py enforces this). This documents the no-match state; it does not ratify routing or ADR 0018."
+    verification:
+      generic_validator: "python scripts/validate-artifact.py repository_sensemaking_brief {artifact_path}"
+      specialized_validators:
+        - "python scripts/validate-brief.py {artifact_path}"
+      required_for_modes:
+        - guided_execution
+        - autonomous_execution
+        - yolo_execution
+
+  - id: strategic_repository_analysis
+    path: "artifacts/strategic_repository_analysis.md"
+    produced_by: strategic-repository-analysis
+    consumed_by:
+      - user
+      - workflow-planner
+      - prompt-handoff
+      - architectural-review
+    description: "Level-3 repository evolution analysis: current system model, capability state, construction paths, qualitative comparison, decision-changing uncertainty, and strategic disposition"
+    required_sections:
+      - governing_intent_and_scope
+      - current_system_model
+      - capability_and_limitation_map
+      - strategic_frontier
+      - candidate_construction_paths
+      - qualitative_path_comparison
+      - decision_changing_uncertainty
+      - strategic_synthesis
+      - warranted_direction
+      - authority_and_claim_boundaries
+      - evidence
+      - machine_readable_summary
+    required_machine_fields:
+      - artifact_id
+      - target_repository
+      - target_source_identity
+      - governing_intent
+      - capability_states
+      - strategic_frontier
+      - construction_paths
+      - path_comparison
+      - decision_changing_uncertainty
+      - strategic_disposition
+      - selected_path_id
+      - candidate_repository_responsibility
+      - smallest_warranted_intervention
+      - implementation_authority_established_by_artifact
+      - semantic_truth_established
+      - created_at
+      - immutable
+    recommended_machine_fields:
+      - schema_version
+      - analysis_ref
+      - continuity
+      - decision_assumptions
+      - governing_authority_refs
+      - candidate_path_transition_ref
+    notes:
+      - "Strategic analysis is semantic-agent output; the validator does not choose, score, rank, or authorize a path."
+      - "New canonical strategic_repository_analysis artifacts use schema_version: 2; missing schema_version means legacy v1 and remains valid without mutation."
+      - "v2 Strategic Frontier entries declare evidence_refs, affected_capability_ids, and strategic_consequence; v2 paths declare frontier_refs, why_plausible, builds_on_capability_ids, and required_capability_ids."
+      - "v2 comparison uses nine strategic lenses; smallest_warranted_intervention is derived after strategic disposition/path selection rather than used as a path-selection lens."
+      - "analysis_ref, continuity, decision_assumptions, governing_authority_refs, path_transitions, and candidate_path_transition_ref are additive Strategic Continuity fields; existing qualified analyses remain valid without them."
+      - "continuity is semantic-agent authored; deterministic commands may project or compare it but may not infer it."
+      - "Construction paths are coherent repository-evolution trajectories, not backlogs."
+      - "Optional path_transitions are stable conceptual transition references for reconstruction; they are not roadmap tasks, schedules, progress fields, or automatic next actions."
+      - "Optional prospective links: top-level architecture_synthesis_refs cites architectural_synthesis artifacts; per-path possibility_refs (poss: ids) and architecture_option_refs (arch: ids) record a path's basis. Citing an option on a path does not select or authorize it."
+      - "Prospective links are prefix-checked only: resolve possibility_refs and architecture_option_refs through the cited synthesis or knowledge-query explain; strategy drift checks architecture_synthesis_refs paths for presence and change."
+      - "construction_paths may contain 0-5 real paths; zero is valid for non-BUILD dispositions when no coherent construction trajectory is currently warranted/representable. BUILD still requires a selected real path."
+      - "Numeric path scores/weights/ranking fields are forbidden; comparison is qualitative."
+      - "implementation_authority_established_by_artifact and semantic_truth_established must remain false."
+    verification:
+      generic_validator: "python scripts/validate-artifact.py strategic_repository_analysis {artifact_path}"
+      specialized_validators:
+        - "python scripts/validate-strategic-repository-analysis.py {artifact_path}"
+      required_for_modes:
+        - guided_execution
+        - autonomous_execution
+        - yolo_execution
+
+  - id: strategic_reconciliation
+    path: "artifacts/strategic_reconciliation.md"
+    produced_by: strategic-repository-reconciliation
+    consumed_by:
+      - user
+      - strategic-repository-analysis
+      - owner-decision-capsule
+      - thesis-review-packet
+    description: "Semantic reconciliation of returned evidence against a prior strategic repository analysis"
+    required_sections:
+      - prior_decision_and_scope
+      - returned_evidence
+      - claim_updates
+      - assumption_updates
+      - path_continuation
+      - strategic_implication
+      - authority_and_claim_boundaries
+      - evidence
+      - machine_readable_summary
+    required_machine_fields:
+      - artifact_id
+      - target_repository
+      - prior_analysis_ref
+      - current_source_identity
+      - returned_evidence
+      - claim_updates
+      - assumption_updates
+      - path_disposition
+      - prior_path_id
+      - current_path_id
+      - strategic_effect
+      - candidate_next_responsibility
+      - implementation_authority_established_by_artifact
+      - semantic_truth_established
+      - created_at
+      - immutable
+    notes:
+      - "Returned evidence is semantically interpreted by the active agent; the validator never mutates strategy."
+      - "Optional path_transition_effect may reconcile a declared conceptual transition without turning it into project status."
+      - "candidate_next_responsibility does not establish implementation authority."
+    verification:
+      generic_validator: "python scripts/validate-artifact.py strategic_reconciliation {artifact_path}"
+      specialized_validators:
+        - "python scripts/validate-strategic-companion.py {artifact_path}"
+      required_for_modes:
+        - guided_execution
+        - autonomous_execution
+        - yolo_execution
+
+  - id: owner_decision_capsule
+    path: "artifacts/owner_decision_capsule.md"
+    produced_by: owner-decision-capsule
+    consumed_by:
+      - user
+      - strategic-repository-analysis
+    description: "Owner-reserved decision packet with credible options, tradeoffs, reversibility, deferral, and authority consequences"
+    required_sections:
+      - decision_needed
+      - why_repository_evidence_cannot_resolve_it
+      - credible_options
+      - tradeoffs_reversibility_and_deferral
+      - authority_effects
+      - evidence
+      - machine_readable_summary
+    required_machine_fields:
+      - artifact_id
+      - decision_id
+      - target_repository
+      - decision_statement
+      - repository_can_resolve
+      - options
+      - owner_decision_made_by_artifact
+      - implementation_authority_established_by_artifact
+      - created_at
+      - immutable
+    notes:
+      - "The capsule presents an owner-reserved decision and does not select an option."
+      - "owner_decision_made_by_artifact and implementation_authority_established_by_artifact must remain false."
+    verification:
+      generic_validator: "python scripts/validate-artifact.py owner_decision_capsule {artifact_path}"
+      specialized_validators:
+        - "python scripts/validate-strategic-companion.py {artifact_path}"
+      required_for_modes:
+        - guided_execution
+        - autonomous_execution
+        - yolo_execution
+
+  - id: thesis_review_packet
+    path: "artifacts/thesis_review_packet.md"
+    produced_by: thesis-review-packet
+    consumed_by:
+      - user
+      - strategic-repository-analysis
+    description: "Level-4 review packet for a challenged governing product commitment without ratifying the thesis transition"
+    required_sections:
+      - challenged_commitment
+      - thesis_tension
+      - evidence
+      - affected_level3_work
+      - candidate_level4_dispositions
+      - downstream_reconciliation
+      - authority_boundary
+      - machine_readable_summary
+    required_machine_fields:
+      - artifact_id
+      - target_repository
+      - level4_commitment_ref
+      - challenge_statement
+      - evidence_refs
+      - affected_responsibilities
+      - candidate_dispositions
+      - downstream_reconciliation
+      - owner_ratification_required
+      - thesis_revision_ratified_by_artifact
+      - implementation_authority_established_by_artifact
+      - created_at
+      - immutable
+    notes:
+      - "The packet supports Level-4 review; it cannot ratify REAFFIRM/REINTERPRET/REVISE/RETIRE/SUPERSEDE."
+    verification:
+      generic_validator: "python scripts/validate-artifact.py thesis_review_packet {artifact_path}"
+      specialized_validators:
+        - "python scripts/validate-strategic-companion.py {artifact_path}"
+      required_for_modes:
+        - guided_execution
+        - autonomous_execution
+        - yolo_execution
+
+  - id: external_evidence_packet
+    path: "artifacts/external_evidence_packet.md"
+    produced_by: external-evidence-packet
+    consumed_by:
+      - user
+      - repo-sensemaker
+      - strategic-repository-analysis
+      - strategic-repository-reconciliation
+    description: "Bounded provenance and currentness packet for decision-relevant evidence outside repository authority"
+    required_sections:
+      - question_and_scope
+      - sources
+      - claims_supported
+      - currentness_limits
+      - provenance
+      - authority_and_claim_boundaries
+      - machine_readable_summary
+    required_machine_fields:
+      - artifact_id
+      - target_decision_ref
+      - retrieved_at
+      - sources
+      - claims
+      - repository_fact_established_by_artifact
+      - semantic_truth_established
+      - implementation_authority_established_by_artifact
+      - created_at
+      - immutable
+    notes:
+      - "External evidence does not become repository fact or timeless semantic truth."
+      - "The packet does not perform external retrieval itself; the active agent uses authorized source surfaces."
+    verification:
+      generic_validator: "python scripts/validate-artifact.py external_evidence_packet {artifact_path}"
+      specialized_validators:
+        - "python scripts/validate-strategic-companion.py {artifact_path}"
+      required_for_modes:
+        - guided_execution
+        - autonomous_execution
+        - yolo_execution
+
+  - id: multi_repository_strategic_analysis
+    path: "artifacts/multi_repository_strategic_analysis.md"
+    produced_by: multi-repository-strategic-analysis
+    consumed_by:
+      - user
+      - workflow-planner
+      - prompt-handoff
+      - strategic-repository-reconciliation
+    description: "Level-3 strategic analysis of an explicitly selected repository set, including capability ownership, boundary tensions, coherent allocation/construction paths, qualitative comparison, and disposition"
+    required_sections:
+      - governing_intent_scope_and_authority
+      - current_multi_repository_system_model
+      - capability_ownership_and_overlap_map
+      - explicit_relationships_and_cross_repository_evidence
+      - boundary_tensions
+      - candidate_boundary_allocation_paths
+      - qualitative_path_comparison
+      - decision_changing_uncertainty
+      - strategic_synthesis_and_warranted_direction
+      - authority_and_claim_boundaries
+      - evidence
+      - machine_readable_summary
+    required_machine_fields:
+      - artifact_id
+      - analysis_ref
+      - governing_intent
+      - target_repositories
+      - explicit_relations
+      - capability_ownership
+      - boundary_tensions
+      - construction_paths
+      - path_comparison
+      - decision_changing_uncertainty
+      - strategic_disposition
+      - selected_path_id
+      - candidate_repository_responsibility
+      - affected_target_aliases
+      - automatic_repository_discovery_performed
+      - target_scope_expanded_by_artifact
+      - implementation_authority_established_by_artifact
+      - semantic_truth_established
+      - created_at
+      - immutable
+    notes:
+      - "Every repository in scope must be explicitly selected and represented in target_repositories."
+      - "Existing Campaign relation classes may be reused as evidence, but this artifact does not mutate multi-target state."
+      - "Capability overlap is not mechanically classified as a defect."
+      - "Construction/allocation paths are qualitative strategic alternatives, not backlogs or transaction plans."
+      - "automatic_repository_discovery_performed, target_scope_expanded_by_artifact, implementation_authority_established_by_artifact, and semantic_truth_established must remain false."
+    verification:
+      generic_validator: "python scripts/validate-artifact.py multi_repository_strategic_analysis {artifact_path}"
+      specialized_validators:
+        - "python scripts/validate-multi-repository-strategic-analysis.py {artifact_path}"
+      required_for_modes:
+        - guided_execution
+        - autonomous_execution
+        - yolo_execution
+
+  - id: change_impact_analysis
+    path: "artifacts/change_impact_analysis.md"
+    produced_by: change-impact-analysis
+    consumed_by:
+      - user
+      - workflow-planner
+      - prompt-handoff
+      - output-reconciler
+      - repair-verifier
+      - strategic-repository-reconciliation
+    description: "Evidence-grounded affected-surface analysis around a bounded contemplated or completed change, including verification/reconciliation/authority consequences and bounded follow-up responsibilities"
+    required_sections:
+      - change_scope_and_authority
+      - impact_evidence
+      - affected_surfaces
+      - cross_repository_impact
+      - claim_and_verification_consequences
+      - bounded_follow_up_responsibilities
+      - closure_effect
+      - authority_and_claim_boundaries
+      - machine_readable_summary
+    required_machine_fields:
+      - artifact_id
+      - analysis_ref
+      - target_repository
+      - target_source_identity
+      - change
+      - impact_items
+      - cross_repository_impacts
+      - claim_consequences
+      - followup_responsibilities
+      - closure_effect
+      - automatic_repository_discovery_performed
+      - change_authorized_by_artifact
+      - followup_execution_authorized_by_artifact
+      - semantic_truth_established
+      - created_at
+      - immutable
+    notes:
+      - "Impact materiality is semantic-agent judgment; reference occurrence does not establish material impact."
+      - "The artifact may nominate bounded follow-up responsibilities but does not create a backlog or grant execution authority."
+      - "Cross-repository impacts may cover only explicitly selected/authorized scope; automatic_repository_discovery_performed must remain false."
+      - "change_authorized_by_artifact, followup_execution_authorized_by_artifact, and semantic_truth_established must remain false."
+    verification:
+      generic_validator: "python scripts/validate-artifact.py change_impact_analysis {artifact_path}"
+      specialized_validators:
+        - "python scripts/validate-change-impact-analysis.py {artifact_path}"
+      required_for_modes:
+        - guided_execution
+        - autonomous_execution
+        - yolo_execution
+
+  # Prospective reasoning (docs/semantic-architecture/prospective-reasoning-ontology.md).
+  # Authored under the Steward's architecture-exploration procedure when a
+  # multi-option comparison must outlive the session; no separate Skill.
+  - id: architectural_synthesis
+    path: "artifacts/architectural_synthesis.md"
+    produced_by: repository-semantic-steward
+    consumed_by:
+      - user
+      - repository-semantic-steward
+      - strategic-repository-analysis
+    description: "Source-grounded comparison of materially different architectural options for target product possibilities: current architecture, proposed structures and transitions, assumptions, conditional consequences, qualitative comparison, an optional provisional preference with its feedback, and decision-changing uncertainty"
+    required_sections:
+      - governing_intent_and_scope
+      - target_possibilities
+      - current_architecture
+      - architecture_options
+      - option_comparison
+      - consequence_exploration
+      - provisional_preference_and_feedback
+      - unresolved_questions
+      - authority_and_claim_boundaries
+      - evidence
+      - machine_readable_summary
+    required_machine_fields:
+      - artifact_id
+      - schema_version
+      - target_repository
+      - target_source_identity
+      - governing_intent_refs
+      - target_possibility_refs
+      - current_architecture_refs
+      - architecture_options
+      - option_comparison
+      - provisional_preference
+      - unresolved_questions
+      - implementation_authority_established_by_artifact
+      - semantic_truth_established
+      - created_at
+      - immutable
+    recommended_machine_fields:
+      - analysis_ref
+      - preference_feedback
+      - derived_possibility_refs
+      - candidate_responsibility
+      - reconsideration_conditions
+    notes:
+      - "Authoring template: skills/repository-semantic-steward/references/architectural-synthesis-template.md."
+      - "A synthesis compares at least two materially different options; a single concrete proposal goes to architectural-review as a proposed_direction, whose input/output contract is unchanged."
+      - "Options are proposals: proposed_transitions name what would change (target_ref, change), never what has changed."
+      - "provisional_preference is null (state no_preference_reason) or status PROVISIONAL with attribution; it is never a selection or decision, and exactly the preferred option carries comparison_outcome PROVISIONALLY_PREFERRED."
+      - "preference_feedback links a conditional consequence (conseq: id cited by an option) to a feedback outcome; outcomes are analysis results, not dispositions."
+      - "Optional conditional_consequences type each cited consequence (category benefit/risk/constraint/opportunity/mixed, effect, assumption_refs kept apart from observed_premise_refs, would_change_decision_if); when present, option refs and entries must match one to one. Optional consequence_stop_reason records why depth stopped."
+      - "Consequences are predictions. Observed effects of a built change belong to steward RECONCILE or change_impact_analysis, never back in the synthesis. No standalone consequence artifact exists: consequences have no authorship, reuse or consumer apart from their synthesis."
+      - "Numeric score/weight/rank fields are forbidden; comparison is qualitative and attributed."
+      - "Ids and paths that leave the artifact are shape-checked only; --resolve-references reports which are defined in the artifact, recorded in reviewed knowledge (JSON records and ADR files), existing paths, or unresolved, and never changes validity."
+      - "Reviewed knowledge records for options and consequences remain optional and follow the knowledge contract's prospective reasoning convention."
+      - "implementation_authority_established_by_artifact and semantic_truth_established must remain false."
+    verification:
+      generic_validator: "python scripts/validate-artifact.py architectural_synthesis {artifact_path}"
+      specialized_validators:
+        - "python scripts/validate-architectural-synthesis.py {artifact_path}"
+      required_for_modes:
+        - guided_execution
+        - autonomous_execution
+        - yolo_execution
+
+  # Session receipts (proposed ADR 0032). Whole-file YAML records, not
+  # Markdown documents: they live in the TARGET repository under
+  # .sensemaking/receipts/ (never ingested by the semantic knowledge index) and
+  # survive only when committed/pushed or uploaded by the host. Schema and
+  # field caps: the reference docs named in `schema_reference`; every rule is
+  # enforced by scripts/validate-receipt.py, the single validator for both ids.
+  - id: sensemaking_session_receipt
+    path: ".sensemaking/receipts/{session_id}.session.yaml"
+    produced_by: using-sensemaking
+    consumed_by:
+      - using-sensemaking
+      - strategic-sensemaking-loop
+      - handoff
+      - user
+    description: "Typed flight-recorder record of one control-loop session: goal, delegated authority, responsibilities run, consequential findings, open questions, stop disposition and next warranted responsibility"
+    format: yaml
+    schema_reference: skills/using-sensemaking/references/session-receipt-v1.md
+    required_machine_fields:
+      - artifact_id
+      - schema_version
+      - session_ref
+      - state
+      - created_at
+      - updated_at
+      - target_repository
+      - source_identity
+      - skill_identity
+      - goal
+      - delegation
+      - continuity
+      - responsibilities
+      - findings
+      - open_questions
+      - stop
+      - next
+      - persistence
+      - claim_ceiling
+      - action_authorized_by_receipt
+      - immutable
+    notes:
+      - "Opened in_progress once goal and authority are established, updated at checkpoints, finalized (immutable) at stop; a later session never edits a final receipt."
+      - "Read at session start through scripts/summarize-receipts.py (unfinished sessions, open questions, next responsibility, pending/repeated knowledge misses)."
+      - "Records authority; never grants it. action_authorized_by_receipt must remain false."
+      - "Text fields are capped (300/120 characters): the receipt carries facts and repository-relative pointers, never narrative or reasoning."
+    verification:
+      generic_validator: "python scripts/validate-receipt.py {artifact_path}"
+      required_for_modes:
+        - guided_execution
+        - autonomous_execution
+
+  - id: semantic_query_receipt
+    path: ".sensemaking/receipts/{session_id}.query.yaml"
+    produced_by: repository-semantic-steward
+    consumed_by:
+      - repository-semantic-steward
+      - using-sensemaking
+      - user
+    description: "Typed record of one session's semantic knowledge operations: pinned index/CLI identity, queries asked and their outcomes, source checks, recorded misses (negative knowledge) and RECONCILE dispositions"
+    format: yaml
+    schema_reference: skills/repository-semantic-steward/references/query-receipt.md
+    required_machine_fields:
+      - artifact_id
+      - schema_version
+      - session_ref
+      - state
+      - created_at
+      - updated_at
+      - target_repository
+      - modes
+      - decision
+      - cli_identity
+      - index
+      - queries
+      - source_checks
+      - misses
+      - reconcile
+      - persistence
+      - action_authorized
+      - semantic_truth_established
+      - immutable
+    notes:
+      - "Every decision-relevant query with outcome MISS or NOT_ASSESSED must have a misses entry; NO_MODEL_CHANGE is recorded, not omitted."
+      - "Never indexed as knowledge; a recorded miss becomes knowledge only through RECONCILE ADD and normal review."
+      - "action_authorized and semantic_truth_established must remain false."
+    verification:
+      generic_validator: "python scripts/validate-receipt.py {artifact_path}"
+      required_for_modes:
+        - guided_execution
+        - autonomous_execution
+
+  - id: discovery_findings
+    path: "artifacts/discovery_findings.md"
+    produced_by: discovery
+    consumed_by:
+      - opportunity-tree
+      - prompt-handoff
+    verification:
+      generic_validator: "python scripts/validate-artifact.py discovery_findings {artifact_path}"
+      required_for_modes:
+        - guided_execution
+        - autonomous_execution
+        - yolo_execution
+
+  - id: domain_alignment_report
+    path: "artifacts/domain_alignment_report.md"
+    produced_by: docs-aligner
+    consumed_by:
+      - to-prd
+      - prompt-handoff
+    verification:
+      generic_validator: "python scripts/validate-artifact.py domain_alignment_report {artifact_path}"
+      required_for_modes:
+        - guided_execution
+        - autonomous_execution
+        - yolo_execution
+
+  - id: prd
+    path: "artifacts/prd.md"
+    produced_by: to-prd
+    consumed_by:
+      - to-issues
+      - prompt-handoff
+    required_sections:
+      - executive_summary
+      - user_goal
+      - goal_preservation_and_expansion
+      - features
+      - out_of_scope
+      - acceptance_criteria
+      - non_functional_requirements
+      - machine_readable_handoff
+    required_machine_fields:
+      - source_intent_ref
+      - user_goal_preserved_as
+      - scope_expansion_proposed
+      - scope_expansion_requires_approval
+    recommended_machine_fields:
+      - scope_expansion_status
+      - scope_expansion_details
+      - scope_expansion_approvals
+    verification:
+      generic_validator: "python scripts/validate-artifact.py prd {artifact_path}"
+      specialized_validators:
+        - "python scripts/validate-prd.py {artifact_path}"
+      required_for_modes:
+        - guided_execution
+        - autonomous_execution
+        - yolo_execution
+
+  - id: issue_list
+    path: "artifacts/issue_list.md"
+    produced_by: to-issues
+    consumed_by:
+      - triage
+    required_machine_fields:
+      - source_intent_ref
+      - user_goal_preserved_as
+      - scope_expansion_proposed
+      - scope_expansion_status
+    recommended_machine_fields:
+      - escalation_required
+      - escalation_reason
+      - escalation_options
+    verification:
+      generic_validator: "python scripts/validate-artifact.py issue_list {artifact_path}"
+      required_for_modes:
+        - guided_execution
+        - autonomous_execution
+        - yolo_execution
+
+  - id: agent_brief
+    path: "artifacts/agent_brief.md"
+    produced_by: triage
+    consumed_by:
+      - tdd
+    required_machine_fields:
+      - source_intent_ref
+    verification:
+      generic_validator: "python scripts/validate-artifact.py agent_brief {artifact_path}"
+      required_for_modes:
+        - guided_execution
+        - autonomous_execution
+        - yolo_execution
+
+  - id: code_patch
+    path: "artifacts/code_patch.md"
+    produced_by: tdd
+    consumed_by:
+      - handoff
+    verification:
+      generic_validator: "python scripts/validate-artifact.py code_patch {artifact_path}"
+      required_for_modes:
+        - guided_execution
+        - autonomous_execution
+        - yolo_execution
+
+  - id: session_summary
+    path: "artifacts/session_summary.md"
+    produced_by: handoff
+    consumed_by:
+      - workflow-planner
+    required_machine_fields:
+      - source_intent_ref
+    verification:
+      generic_validator: "python scripts/validate-artifact.py session_summary {artifact_path}"
+      required_for_modes:
+        - guided_execution
+        - autonomous_execution
+        - yolo_execution
+
+  - id: okr_list
+    path: "artifacts/okr_list.md"
+    produced_by: okr
+    consumed_by:
+      - roadmap
+    verification:
+      generic_validator: "python scripts/validate-artifact.py okr_list {artifact_path}"
+      required_for_modes:
+        - guided_execution
+        - autonomous_execution
+        - yolo_execution
+
+  - id: roadmap
+    path: "artifacts/roadmap.md"
+    produced_by: roadmap
+    consumed_by:
+      - stakeholder-update
+      - prompt-handoff
+    verification:
+      generic_validator: "python scripts/validate-artifact.py roadmap {artifact_path}"
+      required_for_modes:
+        - guided_execution
+        - autonomous_execution
+        - yolo_execution
+
+  - id: stakeholder_update
+    path: "artifacts/stakeholder_update.md"
+    produced_by: stakeholder-update
+    consumed_by:
+      - workflow-planner
+    verification:
+      generic_validator: "python scripts/validate-artifact.py stakeholder_update {artifact_path}"
+      required_for_modes:
+        - guided_execution
+        - autonomous_execution
+        - yolo_execution
+
+  - id: business_canvas
+    path: "artifacts/business_canvas.md"
+    produced_by: lean-canvas
+    consumed_by:
+      - product-manager
+    verification:
+      generic_validator: "python scripts/validate-artifact.py business_canvas {artifact_path}"
+      required_for_modes:
+        - guided_execution
+        - autonomous_execution
+        - yolo_execution
+
+  - id: north_star_metric
+    path: "artifacts/north_star_metric.md"
+    produced_by: north-star
+    consumed_by:
+      - okr
+    verification:
+      generic_validator: "python scripts/validate-artifact.py north_star_metric {artifact_path}"
+      required_for_modes:
+        - guided_execution
+        - autonomous_execution
+        - yolo_execution
+
+  - id: persona_definition
+    path: "artifacts/persona_definition.md"
+    produced_by: persona
+    consumed_by:
+      - discovery
+      - customer-journey
+    verification:
+      generic_validator: "python scripts/validate-artifact.py persona_definition {artifact_path}"
+      required_for_modes:
+        - guided_execution
+        - autonomous_execution
+        - yolo_execution
+
+  - id: synthesis_report
+    path: "artifacts/synthesis_report.md"
+    produced_by: interview-synthesis
+    consumed_by:
+      - opportunity-tree
+    verification:
+      generic_validator: "python scripts/validate-artifact.py synthesis_report {artifact_path}"
+      required_for_modes:
+        - guided_execution
+        - autonomous_execution
+        - yolo_execution
+
+  - id: market_analysis
+    path: "artifacts/market_analysis.md"
+    produced_by: competitive-analysis
+    consumed_by:
+      - pricing
+      - battlecard
+    verification:
+      generic_validator: "python scripts/validate-artifact.py market_analysis {artifact_path}"
+      required_for_modes:
+        - guided_execution
+        - autonomous_execution
+        - yolo_execution
+
+  - id: opportunity_map
+    path: "artifacts/opportunity_map.md"
+    produced_by: opportunity-tree
+    consumed_by:
+      - hypothesis
+    verification:
+      generic_validator: "python scripts/validate-artifact.py opportunity_map {artifact_path}"
+      required_for_modes:
+        - guided_execution
+        - autonomous_execution
+        - yolo_execution
+
+  - id: hypothesis_statement
+    path: "artifacts/hypothesis_statement.md"
+    produced_by: hypothesis
+    consumed_by:
+      - experiment-design
+      - prd
+    verification:
+      generic_validator: "python scripts/validate-artifact.py hypothesis_statement {artifact_path}"
+      required_for_modes:
+        - guided_execution
+        - autonomous_execution
+        - yolo_execution
+
+  - id: journey_map
+    path: "artifacts/journey_map.md"
+    produced_by: customer-journey
+    consumed_by:
+      - product-manager
+    verification:
+      generic_validator: "python scripts/validate-artifact.py journey_map {artifact_path}"
+      required_for_modes:
+        - guided_execution
+        - autonomous_execution
+        - yolo_execution
+
+  - id: story_list
+    path: "artifacts/story_list.md"
+    produced_by: user-stories
+    consumed_by:
+      - acceptance-criteria
+      - prioritize
+    verification:
+      generic_validator: "python scripts/validate-artifact.py story_list {artifact_path}"
+      required_for_modes:
+        - guided_execution
+        - autonomous_execution
+        - yolo_execution
+
+  - id: criteria_list
+    path: "artifacts/criteria_list.md"
+    produced_by: acceptance-criteria
+    consumed_by:
+      - prompt-handoff
+    verification:
+      generic_validator: "python scripts/validate-artifact.py criteria_list {artifact_path}"
+      required_for_modes:
+        - guided_execution
+        - autonomous_execution
+        - yolo_execution
+
+  - id: workflow_orchestration_plan
+    path: "artifacts/plan_{workflow_id}.md"
+    produced_by: workflow-planner
+    consumed_by:
+      - user
+      - agents (autonomous_execution)
+    description: "Phase 1 diagnostic plan: workflow routing and step definition for agent execution"
+    required_sections:
+      - brief_consumed
+      - chosen_workflow
+      - why_this_workflow
+      - workflow_steps_definition
+      - machine_readable_plan
+    required_machine_fields:
+      - artifact_id
+      - primary_fog_type
+      - chosen_workflow_id
+      - routing_decision_method
+      - workflow_steps
+      - created_at
+    recommended_machine_fields:
+      # The plan may carry the diagnosed fog type so routing/validation can read it
+      # directly from the plan (ADR 0005). If absent, the runtime falls back to the
+      # repository_sensemaking_brief (primary_fog_type / user_implied_fog_type).
+      - source_intent_ref
+      - execution_mode
+      - system_recommended_workflow
+      - selected_workflow
+      - routing_divergence
+      - escalation_recommended
+      - auto_escalation_allowed
+      - approval_gates
+      - gate_behavior
+      - stop_conditions
+      - subset_run
+      - subset_reason
+      - included_steps
+      - excluded_steps
+    notes:
+      - "Validation results are NOT stored in this artifact. See validators/run_log.md for validation output."
+      - "PATH B (transient validation): validation_status field is NOT present."
+      - "Phase 1 diagnostic scope: plan prepares agent for Phase 2 implementation workflow execution."
+      - "workflow_steps is a structured array defining skill sequence: [{step_id, skill, input_artifact, output_artifact, gate, description}, ...]"
+      - "ADR 0025 two-stage lifecycle: the runtime's generate_plan() emits a PROVISIONAL execution skeleton (flagged `plan_stage: provisional`) at Phase 2 before the repository_sensemaking_brief exists; it is NOT the canonical contract-valid plan and may omit primary_fog_type / workflow_steps / created_at. The canonical plan exists only after finalize_plan(brief_path) consumes the brief's real primary_fog_type. Only the finalized plan is required to satisfy validate-plan.py / validate-artifact.py."
+    verification:
+      generic_validator: "python scripts/validate-artifact.py workflow_orchestration_plan {artifact_path}"
+      specialized_validators:
+        - "python scripts/validate-plan.py {artifact_path}"
+      required_for_modes:
+        - guided_execution
+        - autonomous_execution
+        - yolo_execution
+
+  - id: prompt_handoff
+    path: "artifacts/prompt_handoff.md"
+    produced_by: 
+      - prompt-handoff
+      - handoff
+    consumed_by:
+      - external_agent
+    required_sections:
+      - target_skill
+      - context_to_preserve
+      - task
+      - constraints
+      - inputs
+      - expected_output
+      - stop_condition
+      - ready_to_copy_prompt
+    verification:
+      generic_validator: "python scripts/validate-artifact.py prompt_handoff {artifact_path}"
+      specialized_validators:
+        - "python scripts/validate-prompt-handoff.py {artifact_path}"
+      required_for_modes:
+        - guided_execution
+        - autonomous_execution
+        - yolo_execution
+
+  - id: docs_contract_reconciliation_report
+    path: "artifacts/docs_contract_reconciliation_report.md"
+    produced_by: sensemaking-docs-reconciler
+    consumed_by:
+      - prompt-handoff
+    required_sections:
+      - drift_diagnosis
+      - weakest_boundary
+      - missing_instructions
+      - missing_examples
+      - validator_blind_spots
+      - ambiguous_artifact_names
+      - drift_risks
+      - recommended_patches
+      - mismatches_found
+      - changes_required
+      - patches_proposed
+      - validation_result
+      - next_handoff
+    verification:
+      generic_validator: "python scripts/validate-artifact.py docs_contract_reconciliation_report {artifact_path}"
+      required_for_modes:
+        - guided_execution
+        - autonomous_execution
+        - yolo_execution
+
+  - id: usage_research_report
+    path: "artifacts/usage_research_report.md"
+    produced_by: user
+    consumed_by:
+      - workflow-planner
+    required_sections:
+      - scenario_tested
+      - expected_behavior
+      - actual_behavior
+      - what_worked
+      - friction_points
+      - handoff_quality
+      - routing_quality
+      - recommended_skill_edits
+      - next_test
+    verification:
+      generic_validator: "python scripts/validate-artifact.py usage_research_report {artifact_path}"
+      specialized_validators:
+        - "python scripts/validate-usage-research-report.py {artifact_path}"
+      required_for_modes:
+        - guided_execution
+        - autonomous_execution
+        - yolo_execution
+
+  - id: skill_improvement_plan
+    path: "artifacts/skill_improvement_plan.md"
+    produced_by: skill-maintainer
+    consumed_by:
+      - workflow-planner
+    required_sections:
+      - diagnosis
+      - evidence
+      - proposed_edits
+      - impact_assessment
+      - verification_plan
+    verification:
+      generic_validator: "python scripts/validate-artifact.py skill_improvement_plan {artifact_path}"
+      specialized_validators:
+        - "python scripts/validate-skill-improvement-plan.py {artifact_path}"
+      required_for_modes:
+        - guided_execution
+        - autonomous_execution
+        - yolo_execution
+
+  - id: ui_flows
+    path: "artifacts/ui_flows.md"
+    produced_by: ui-flow
+    consumed_by:
+      - ui-screen-spec
+    required_sections:
+      - user_journeys
+      - interaction_flows
+    verification:
+      generic_validator: "python scripts/validate-artifact.py ui_flows {artifact_path}"
+      required_for_modes:
+        - guided_execution
+        - autonomous_execution
+
+  - id: screen_specs
+    path: "artifacts/screen_specs.md"
+    produced_by: ui-screen-spec
+    consumed_by:
+      - to-issues
+      - tdd
+    required_sections:
+      - screen_inventory
+      - interactions
+      - states
+    verification:
+      generic_validator: "python scripts/validate-artifact.py screen_specs {artifact_path}"
+      required_for_modes:
+        - guided_execution
+        - autonomous_execution
+
+  - id: ui_specification
+    path: "artifacts/ui_specification.md"
+    produced_by: ui-brief
+    consumed_by:
+      - ui-flow
+    required_sections:
+      - overview
+      - screens
+      - design_system
+      - interactions
+    verification:
+      generic_validator: "python scripts/validate-artifact.py ui_specification {artifact_path}"
+      required_for_modes:
+        - guided_execution
+        - autonomous_execution
+        - plan_only
+
+  - id: architectural_review_recommendation
+    path: "artifacts/architectural_review_recommendation.md"
+    produced_by: architectural-review
+    consumed_by:
+      - workflow-planner
+    required_sections:
+      - summary
+      - analysis
+      - recommendation
+      - machine_readable_decision
+    required_machine_fields:
+      - artifact_id
+      - decision
+      - confidence
+      - created_at
+      - created_by
+    verification:
+      generic_validator: "python scripts/validate-artifact.py architectural_review_recommendation {artifact_path}"
+      specialized_validators:
+        - "python scripts/validate-architectural-review-recommendation.py {artifact_path}"
+      required_for_modes:
+        - guided_execution
+        - autonomous_execution
+
+  - id: proposed_direction
+    path: "artifacts/proposed_direction.md"
+    produced_by: user
+    consumed_by:
+      - architectural-review
+    required_sections:
+      - summary
+      - proposed_response
+      - success_criteria
+    required_machine_fields:
+      - artifact_id
+      - created_at
+      - created_by
+    verification:
+      generic_validator: "python scripts/validate-artifact.py proposed_direction {artifact_path}"
+      required_for_modes:
+        - guided_execution
+        - autonomous_execution
+
+  - id: work_claim
+    path: "artifacts/work_claim.md"
+    produced_by: task-requester
+    consumed_by:
+      - output-reconciler
+    description: "The handoff/task summary whose claims are being audited: a falsifiable statement of what was allegedly done (docs/reviews/*, docs/handoffs/*, an evidence record, or a pasted task summary). Produced outside the pipeline and promoted to this artifact so output-reconciler can cite it."
+    required_sections:
+      - source
+      - claims
+    required_machine_fields:
+      - artifact_id
+      - source
+      - claims
+      - created_at
+      - immutable
+    verification:
+      generic_validator: "python scripts/validate-artifact.py work_claim {artifact_path}"
+      required_for_modes:
+        - plan_only
+        - guided_execution
+
+  - id: reconciliation_report
+    path: "artifacts/reconciliation_report.md"
+    produced_by: output-reconciler
+    consumed_by:
+      - to-issues
+      - handoff
+    description: "Verdict of an artifact-reconciliation run: each claim of the audited work_claim classified verified/disputed/omitted against durable repository artifacts, plus findings, lessons, and actionable recommendations. Prototype: experiments/evidence/0018-auteur-docs-contract-reconciliation-analysis."
+    required_sections:
+      - claims
+      - findings
+      - recommendations
+    required_machine_fields:
+      - artifact_id
+      - source_claim_ref
+      - claims
+      - findings
+      - recommendations
+      - created_at
+      - immutable
+    verification:
+      generic_validator: "python scripts/validate-artifact.py reconciliation_report {artifact_path}"
+      required_for_modes:
+        - guided_execution
+        - autonomous_execution
+
+  - id: repair_verification_report
+    path: "artifacts/repair_verification_report.md"
+    produced_by: repair-verifier
+    consumed_by:
+      - handoff
+    description: "Post-repair verification of a docs-contract-reconciliation run: the original brief's findings re-checked against a fresh probe report, each marked closed or remaining. The brief is the acceptance criteria, consumed by its own verification."
+    required_sections:
+      - findings_closed
+      - findings_remaining
+      - probe_summary
+    required_machine_fields:
+      - artifact_id
+      - verified_brief_ref
+      - findings_closed
+      - findings_remaining
+      - created_at
+      - immutable
+    verification:
+      generic_validator: "python scripts/validate-artifact.py repair_verification_report {artifact_path}"
+      required_for_modes:
+        - guided_execution
+
+  # Product-management artifacts are intentionally represented here even when
+  # their native-harness execution is not yet qualified. This keeps the
+  # registry and manifest contracts closed without implying semantic validity.
+  - id: strategy_doc
+    path: "artifacts/strategy_doc.md"
+    produced_by: strategy
+    consumed_by: [roadmap, okr]
+    verification:
+      generic_validator: "python scripts/validate-and-report.py strategy_doc {artifact_path}"
+      required_for_modes: [guided_execution]
+  - id: ideal_customer_profile
+    path: "artifacts/ideal_customer_profile.md"
+    produced_by: ideal-customer-profile
+    consumed_by: []
+    verification:
+      generic_validator: "python scripts/validate-and-report.py ideal_customer_profile {artifact_path}"
+      required_for_modes: [guided_execution]
+  - id: prioritized_list
+    path: "artifacts/prioritized_list.md"
+    produced_by: prioritize
+    consumed_by: []
+    verification:
+      generic_validator: "python scripts/validate-and-report.py prioritized_list {artifact_path}"
+      required_for_modes: [guided_execution]
+  - id: pricing_model
+    path: "artifacts/pricing_model.md"
+    produced_by: pricing
+    consumed_by: []
+    verification:
+      generic_validator: "python scripts/validate-and-report.py pricing_model {artifact_path}"
+      required_for_modes: [guided_execution]
+  - id: experiment_plan
+    path: "artifacts/experiment_plan.md"
+    produced_by: experiment-design
+    consumed_by: [ab-test-analysis]
+    verification:
+      generic_validator: "python scripts/validate-and-report.py experiment_plan {artifact_path}"
+      required_for_modes: [guided_execution]
+  - id: pmf_report
+    path: "artifacts/pmf_report.md"
+    produced_by: measure-pmf
+    consumed_by: []
+    verification:
+      generic_validator: "python scripts/validate-and-report.py pmf_report {artifact_path}"
+      required_for_modes: [guided_execution]
+  - id: test_results
+    path: "artifacts/test_results.md"
+    produced_by: ab-test-analysis
+    consumed_by: []
+    verification:
+      generic_validator: "python scripts/validate-and-report.py test_results {artifact_path}"
+      required_for_modes: [guided_execution]
+  - id: risk_analysis
+    path: "artifacts/risk_analysis.md"
+    produced_by: pre-mortem
+    consumed_by: []
+    verification:
+      generic_validator: "python scripts/validate-and-report.py risk_analysis {artifact_path}"
+      required_for_modes: [guided_execution]
+  - id: readiness_report
+    path: "artifacts/readiness_report.md"
+    produced_by: launch-checklist
+    consumed_by: []
+    verification:
+      generic_validator: "python scripts/validate-and-report.py readiness_report {artifact_path}"
+      required_for_modes: [guided_execution]
+  - id: feature_announcement
+    path: "artifacts/feature_announcement.md"
+    produced_by: release-notes
+    consumed_by: []
+    verification:
+      generic_validator: "python scripts/validate-and-report.py feature_announcement {artifact_path}"
+      required_for_modes: [guided_execution]
+  - id: gtm_plan
+    path: "artifacts/gtm_plan.md"
+    produced_by: gtm
+    consumed_by: []
+    verification:
+      generic_validator: "python scripts/validate-and-report.py gtm_plan {artifact_path}"
+      required_for_modes: [guided_execution]
+  - id: battlecard
+    path: "artifacts/battlecard.md"
+    produced_by: battlecard
+    consumed_by: []
+    verification:
+      generic_validator: "python scripts/validate-and-report.py battlecard {artifact_path}"
+      required_for_modes: [guided_execution]
+  - id: setup_report
+    path: "artifacts/setup_report.md"
+    produced_by: setup-sensemaking-skills
+    consumed_by: []
+    verification:
+      generic_validator: "python scripts/validate-and-report.py setup_report {artifact_path}"
+      required_for_modes: [guided_execution]
