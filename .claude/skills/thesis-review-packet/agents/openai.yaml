@@ -1,0 +1,15 @@
+interface:
+  display_name: Thesis Review Packet
+  short_description: Prepare a Level-4 product-thesis review without ratifying it.
+  icon: 🧭
+  color: purple
+
+instructions: >
+  Produce the thesis_review_packet defined in SKILL.md. Ground the challenged
+  Level-4 commitment and candidate dispositions in evidence while preserving
+  owner ratification and mandatory downstream Level-3 reconciliation.
+
+tools:
+  - web_search
+  - read_local_files
+  - search_local_files
