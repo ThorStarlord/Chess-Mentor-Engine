@@ -1,0 +1,443 @@
+{
+  "schema_version": 2,
+  "claims": [
+    {
+      "id": "obs:qualification-reproduces",
+      "kind": "observation",
+      "statement": "At afbdf775 the full suite reproduces the handoff claim locally: 974 passed, 8 skipped (Stockfish integration), Python 3.13, ~17s. Source ~44k lines, tests ~28k lines, zero runtime dependencies.",
+      "authority_kind": "code",
+      "authority_ref": "pyproject.toml",
+      "evidence_refs": [
+        "file:pyproject.toml",
+        "file:STATUS.md"
+      ],
+      "epistemic_status": "observed",
+      "attributes": {
+        "review_status": "reviewed",
+        "observed_at": "2026-10-28",
+        "observed_by_session": "2026-10-28-repository-bootstrap"
+      }
+    },
+    {
+      "id": "obs:build-cadence",
+      "kind": "observation",
+      "statement": "Git history: 332 commits, almost all dated 2026-09-10..2026-09-15, built as numbered milestone packages (M1-M46, K0-K7, V1, post-V1) with heavy runbook/ADR documentation.",
+      "authority_kind": "code",
+      "authority_ref": "STATUS.md",
+      "evidence_refs": [
+        "file:STATUS.md",
+        "file:docs/product/repository-build-status.md"
+      ],
+      "epistemic_status": "observed",
+      "attributes": {
+        "review_status": "reviewed",
+        "staleness": "re-check with git log when new commits land"
+      }
+    },
+    {
+      "id": "obs:external-evidence-one-participant",
+      "kind": "observation",
+      "statement": "Real-user evidence is one participant (P01) across two manual pilots, both Mixed: Pilot 001 analysis judged not helpful for lack of board context; Pilot 002 found board context and pre-reveal reasoning add information. Pilot 003 is blocked on an unexposed P02; Pilot 004 Batch 1 awaits P01 responses; the 6-8 participant first-validation protocol has not been run.",
+      "authority_kind": "document",
+      "authority_ref": "docs/research/first-product-validation/README.md",
+      "evidence_refs": [
+        "file:docs/research/first-product-validation/pilots/FPV-PILOT-001/result.md",
+        "file:docs/research/first-product-validation/pilots/FPV-PILOT-002/result.md",
+        "file:docs/research/first-product-validation/pilots/FPV-PILOT-004/batches/B01/README.md",
+        "file:docs/research/first-product-validation/pilots/FPV-PILOT-003/README.md"
+      ],
+      "epistemic_status": "observed",
+      "attributes": {
+        "review_status": "reviewed"
+      }
+    },
+    {
+      "id": "obs:local-loop-requires-fixture-inputs",
+      "kind": "observation",
+      "statement": "cme-local-tutor start/next require --learner-progress-json (an M44 LearnerProgressView), --protocol-json and --prompts-json; cme diagnose requires a SelectionPolicy JSON; review requires a position packet JSON. No installed command produces the M44 view, protocol or prompts; the CLI tests build them from other tests' fixture helpers (_challenge_view, _protocol, _a1_prompt).",
+      "authority_kind": "code",
+      "authority_ref": "src/chess_mentor_engine/local_tutor_cli.py",
+      "evidence_refs": [
+        "file:src/chess_mentor_engine/local_tutor_cli.py",
+        "file:src/chess_mentor_engine/local_tutor_entry.py",
+        "file:tests/test_v1_local_tutor_workflow.py",
+        "file:src/chess_mentor_engine/diagnostic_cli.py",
+        "file:docs/runbooks/post-v1-local-product-use-observation.md"
+      ],
+      "epistemic_status": "observed",
+      "attributes": {
+        "review_status": "reviewed",
+        "decision_relevance": "The governing next step (repeated local use) cannot start for a new learner without hand-built structural JSON."
+      }
+    },
+    {
+      "id": "obs:learner-state-not-persisted",
+      "kind": "observation",
+      "statement": "No store writer exists for M6/M7/M9/M10/M11/M36-M44 artifacts: LocalArtifactStore.put call sites are limited to analysis, diagnostic queue, candidate-tutor authorization, tutor sessions/prompts, observations and review ledgers. M11 is documented as a Python API, not a user command; M7 context enters M8 only via attach-hypothesis --bundle-json.",
+      "authority_kind": "code",
+      "authority_ref": "src/chess_mentor_engine/storage/store.py",
+      "evidence_refs": [
+        "file:src/chess_mentor_engine/storage/store.py",
+        "file:src/chess_mentor_engine/storage/tutor.py",
+        "file:docs/runbooks/m11-longitudinal-learner-state.md",
+        "file:src/chess_mentor_engine/tutor_cli.py"
+      ],
+      "epistemic_status": "observed",
+      "attributes": {
+        "review_status": "reviewed",
+        "method": "grep of store.put/.put( call sites at afbdf775",
+        "decision_relevance": "The persistent learner loop (session -> discrepancy -> hypothesis -> state -> next review) is not closed in the operable product."
+      }
+    },
+    {
+      "id": "obs:no-model-provider-shipped",
+      "kind": "observation",
+      "statement": "M19 ModelCoachProvider is a Protocol; no vendor/LLM implementation ships and no network client is imported. Tutor-facing language today is deterministic M16 output or operator-authored text (tutor explain --content-file).",
+      "authority_kind": "code",
+      "authority_ref": "src/chess_mentor_engine/coaching/model.py",
+      "evidence_refs": [
+        "file:src/chess_mentor_engine/coaching/model.py",
+        "file:src/chess_mentor_engine/tutor_cli.py"
+      ],
+      "epistemic_status": "observed",
+      "attributes": {
+        "review_status": "reviewed"
+      }
+    },
+    {
+      "id": "obs:cold-start-wall",
+      "kind": "observation",
+      "statement": "M40 build_next_session_plan raises 'M40 requires at least one active learner hypothesis' and build_learner_progress_view requires a NextSessionPlan, so no M44 view (hence no cme-local-tutor start/next, M45 or M46) exists for a learner without an active M7 hypothesis. Baseline capture can still start via cme-candidate-tutor (M18 queue + candidate id, no M44) and cme-local-tutor review.",
+      "authority_kind": "code",
+      "authority_ref": "src/chess_mentor_engine/learner_intelligence/next_session.py",
+      "evidence_refs": [
+        "file:src/chess_mentor_engine/learner_intelligence/next_session.py",
+        "file:src/chess_mentor_engine/learner_intelligence/progress_model.py",
+        "file:src/chess_mentor_engine/candidate_tutor_cli.py",
+        "file:src/chess_mentor_engine/local_tutor_review_cli.py"
+      ],
+      "epistemic_status": "observed",
+      "attributes": {
+        "review_status": "reviewed",
+        "observed_by_session": "2026-10-28-repository-bootstrap",
+        "decision_relevance": "The session-to-hypothesis bridge, not setup alone, gates the learner loop for real users."
+      }
+    },
+    {
+      "id": "hyp:goal-fit-gap",
+      "kind": "hypothesis",
+      "statement": "Goal-fit gap: package description promises a 'persistent AI chess tutor that learns how you think'; the declared first-value moment is ~10 games -> one recurring diagnosis; the operable path is single-game diagnosis -> one-position baseline capture with fixture-supplied learner context. Repository qualification (complete) is a milestone, not the product first-value state (unreached by an end user).",
+      "authority_kind": "hypothesis",
+      "authority_ref": ".sensemaking/analyses/strategic_repository_analysis.md",
+      "evidence_refs": [
+        "file:pyproject.toml",
+        "file:docs/product/product-discovery.md",
+        "file:src/chess_mentor_engine/diagnostic_cli.py"
+      ],
+      "epistemic_status": "hypothetical",
+      "attributes": {
+        "review_status": "reviewed"
+      }
+    },
+    {
+      "id": "poss:operable-cold-start-loop",
+      "kind": "opportunity",
+      "statement": "A new learner can go from their own PGN(s) and an engine path to a first guided baseline review (diagnose -> cme-candidate-tutor -> review -> feedback/report) using shipped default selection policy, capture protocol and prompts, without hand-authored JSON. A zero-hypothesis M44 view is NOT part of this route (M40 rejects it).",
+      "authority_kind": "hypothesis",
+      "authority_ref": ".sensemaking/analyses/strategic_repository_analysis.md",
+      "evidence_refs": [
+        "file:.sensemaking/analyses/strategic_repository_analysis.md",
+        "file:src/chess_mentor_engine/local_tutor_cli.py"
+      ],
+      "epistemic_status": "hypothetical",
+      "attributes": {
+        "concept": "ProductPossibility",
+        "review_status": "reviewed",
+        "alignment": "directly serves goal:post-v1-evidence-from-local-use",
+        "ambition": "low",
+        "horizon": "near",
+        "realization": "composition of existing builders; no new authority",
+        "disposition_history": [
+          {
+            "at": "2026-10-28",
+            "disposition": "recommended (PATH-1/T1)",
+            "by": "2026-10-28-repository-bootstrap"
+          }
+        ]
+      }
+    },
+    {
+      "id": "poss:closed-persistent-learner-loop",
+      "kind": "opportunity",
+      "statement": "Compared sessions persist M6 discrepancies; an owner-sanctioned step creates/revises M7 hypotheses from them; M11 is persisted and M36->M44 re-derived from the store, so each review updates the learner model and unlocks start/next (M45/M46) for a real learner.",
+      "authority_kind": "hypothesis",
+      "authority_ref": ".sensemaking/analyses/strategic_repository_analysis.md",
+      "evidence_refs": [
+        "file:.sensemaking/analyses/strategic_repository_analysis.md",
+        "file:src/chess_mentor_engine/storage/store.py"
+      ],
+      "epistemic_status": "hypothetical",
+      "attributes": {
+        "concept": "ProductPossibility",
+        "review_status": "reviewed",
+        "alignment": "goal:persistent-learner-model",
+        "ambition": "medium",
+        "horizon": "near-mid",
+        "realization": "persistence + orchestration over existing M6/M7/M11/M36-M44 APIs; M7 creation needs an explicit authority decision",
+        "disposition_history": [
+          {
+            "at": "2026-10-28",
+            "disposition": "candidate (PATH-1/T2)",
+            "by": "2026-10-28-repository-bootstrap"
+          }
+        ]
+      }
+    },
+    {
+      "id": "poss:multi-game-first-value",
+      "kind": "opportunity",
+      "statement": "Batch diagnosis over 10-30 recent games (file or Lichess/Chess.com import) producing one cautious recurring-pattern candidate or explicit insufficient-evidence, matching the declared first-value moment.",
+      "authority_kind": "hypothesis",
+      "authority_ref": ".sensemaking/analyses/strategic_repository_analysis.md",
+      "evidence_refs": [
+        "file:docs/product/product-discovery.md",
+        "file:src/chess_mentor_engine/diagnostic_cli.py"
+      ],
+      "epistemic_status": "hypothetical",
+      "attributes": {
+        "concept": "ProductPossibility",
+        "review_status": "reviewed",
+        "ambition": "medium",
+        "horizon": "mid",
+        "disposition_history": [
+          {
+            "at": "2026-10-28",
+            "disposition": "retained, not selected",
+            "by": "2026-10-28-repository-bootstrap"
+          }
+        ]
+      }
+    },
+    {
+      "id": "poss:model-rendered-socratic-tutor",
+      "kind": "opportunity",
+      "statement": "A concrete M19 provider (e.g. a Claude model) renders M16-grounded explanations and Socratic prompts under M20 evaluation and the existing language-only authority rule.",
+      "authority_kind": "hypothesis",
+      "authority_ref": ".sensemaking/analyses/strategic_repository_analysis.md",
+      "evidence_refs": [
+        "file:src/chess_mentor_engine/coaching/model.py"
+      ],
+      "epistemic_status": "hypothetical",
+      "attributes": {
+        "concept": "ProductPossibility",
+        "review_status": "reviewed",
+        "ambition": "medium",
+        "horizon": "mid",
+        "note": "Adds a runtime dependency and network/secrets authority; conflicts with nothing declared but is outside the local-only posture.",
+        "disposition_history": [
+          {
+            "at": "2026-10-28",
+            "disposition": "deferred",
+            "by": "2026-10-28-repository-bootstrap"
+          }
+        ]
+      }
+    },
+    {
+      "id": "poss:board-visual-review-surface",
+      "kind": "opportunity",
+      "statement": "A visual board review surface (local HTML or browser) for position presentation and reveal, addressing Pilot 001's missing-board-context finding.",
+      "authority_kind": "hypothesis",
+      "authority_ref": ".sensemaking/analyses/strategic_repository_analysis.md",
+      "evidence_refs": [
+        "file:docs/research/first-product-validation/pilots/FPV-PILOT-001/result.md"
+      ],
+      "epistemic_status": "hypothetical",
+      "attributes": {
+        "concept": "ProductPossibility",
+        "review_status": "reviewed",
+        "disposition_history": [
+          {
+            "at": "2026-10-28",
+            "disposition": "deferred; governed as non-goal until local-use evidence pulls it",
+            "by": "2026-10-28-repository-bootstrap"
+          }
+        ]
+      }
+    },
+    {
+      "id": "poss:coach-mediated-product",
+      "kind": "opportunity",
+      "statement": "Reposition CME as a tool a human coach uses to prepare evidence-bound diagnosis packets for students, reusing the M25-M30 review/reference surfaces and the semi-manual analysis the discovery doc already prescribes.",
+      "authority_kind": "hypothesis",
+      "authority_ref": ".sensemaking/analyses/strategic_repository_analysis.md",
+      "evidence_refs": [
+        "file:docs/product/product-discovery.md",
+        "file:src/chess_mentor_engine/coach_review_reference.py"
+      ],
+      "epistemic_status": "hypothetical",
+      "attributes": {
+        "concept": "ProductPossibility",
+        "review_status": "reviewed",
+        "note": "Changes the design customer; owner decision.",
+        "disposition_history": [
+          {
+            "at": "2026-10-28",
+            "disposition": "retained as counterfactual",
+            "by": "2026-10-28-repository-bootstrap"
+          }
+        ]
+      }
+    },
+    {
+      "id": "poss:chess-cognition-research-instrument",
+      "kind": "opportunity",
+      "statement": "CME as a protocol-driven chess-cognition research instrument (freeze-before-reveal, exposure ledger, contamination policy) rather than a consumer tutor.",
+      "authority_kind": "hypothesis",
+      "authority_ref": ".sensemaking/analyses/strategic_repository_analysis.md",
+      "evidence_refs": [
+        "file:docs/research/first-product-validation/protocol.md"
+      ],
+      "epistemic_status": "hypothetical",
+      "attributes": {
+        "concept": "ProductPossibility",
+        "review_status": "reviewed",
+        "disposition_history": [
+          {
+            "at": "2026-10-28",
+            "disposition": "retained as counterfactual",
+            "by": "2026-10-28-repository-bootstrap"
+          }
+        ]
+      }
+    },
+    {
+      "id": "hyp:setup-is-dominant-bottleneck",
+      "kind": "hypothesis",
+      "statement": "Premise shared by PATH-1: the dominant bottleneck to the owner's chosen evidence (repeated local use) is setup/operability, not M45/M46 policy or ontology coverage.",
+      "authority_kind": "hypothesis",
+      "authority_ref": ".sensemaking/analyses/strategic_repository_analysis.md",
+      "evidence_refs": [
+        "file:src/chess_mentor_engine/local_tutor_cli.py",
+        "file:README.md"
+      ],
+      "epistemic_status": "hypothetical",
+      "attributes": {
+        "review_status": "reviewed",
+        "would_change_if": "the owner already operates the loop through a private harness that builds M44/protocol/prompts"
+      }
+    }
+  ],
+  "relations": [
+    {
+      "id": "rel:cold-start-references-premise",
+      "subject": "poss:operable-cold-start-loop",
+      "predicate": "references",
+      "object": "hyp:setup-is-dominant-bottleneck",
+      "evidence_refs": [
+        "file:.sensemaking/analyses/strategic_repository_analysis.md"
+      ],
+      "attributes": {
+        "conceptual_relation": "dependsOnPremise",
+        "establishment": "inferred"
+      }
+    },
+    {
+      "id": "rel:cold-start-from-obs",
+      "subject": "poss:operable-cold-start-loop",
+      "predicate": "derived_from",
+      "object": "obs:local-loop-requires-fixture-inputs",
+      "evidence_refs": [
+        "file:src/chess_mentor_engine/local_tutor_cli.py"
+      ],
+      "attributes": {
+        "establishment": "inferred"
+      }
+    },
+    {
+      "id": "rel:closed-loop-from-obs",
+      "subject": "poss:closed-persistent-learner-loop",
+      "predicate": "derived_from",
+      "object": "obs:learner-state-not-persisted",
+      "evidence_refs": [
+        "file:src/chess_mentor_engine/storage/store.py"
+      ],
+      "attributes": {
+        "establishment": "inferred"
+      }
+    },
+    {
+      "id": "rel:closed-loop-extends-cold-start",
+      "subject": "poss:closed-persistent-learner-loop",
+      "predicate": "references",
+      "object": "poss:operable-cold-start-loop",
+      "evidence_refs": [
+        "file:.sensemaking/analyses/strategic_repository_analysis.md"
+      ],
+      "attributes": {
+        "conceptual_relation": "extends",
+        "establishment": "inferred"
+      }
+    },
+    {
+      "id": "rel:closed-loop-requires-lib",
+      "subject": "poss:closed-persistent-learner-loop",
+      "predicate": "requires_capability",
+      "object": "cap:learner-model-library",
+      "evidence_refs": [
+        "file:src/chess_mentor_engine/learner_intelligence/progress_model.py"
+      ]
+    },
+    {
+      "id": "rel:cold-start-requires-review",
+      "subject": "poss:operable-cold-start-loop",
+      "predicate": "requires_capability",
+      "object": "cap:guided-baseline-review",
+      "evidence_refs": [
+        "file:src/chess_mentor_engine/local_tutor_review_cli.py"
+      ]
+    },
+    {
+      "id": "rel:board-surface-contradicts-nongoal",
+      "subject": "poss:board-visual-review-surface",
+      "predicate": "contradicts",
+      "object": "nongoal:post-v1-auto-expansion",
+      "evidence_refs": [
+        "file:CONTEXT.md"
+      ],
+      "attributes": {
+        "establishment": "inferred"
+      }
+    },
+    {
+      "id": "rel:multigame-serves-first-value",
+      "subject": "poss:multi-game-first-value",
+      "predicate": "candidate_opportunity_for",
+      "object": "goal:first-value-ten-games",
+      "evidence_refs": [
+        "file:docs/product/product-discovery.md"
+      ]
+    },
+    {
+      "id": "rel:cold-start-serves-local-use",
+      "subject": "poss:operable-cold-start-loop",
+      "predicate": "candidate_opportunity_for",
+      "object": "goal:post-v1-evidence-from-local-use",
+      "evidence_refs": [
+        "file:CONTEXT.md"
+      ]
+    },
+    {
+      "id": "rel:closed-loop-from-wall",
+      "subject": "poss:closed-persistent-learner-loop",
+      "predicate": "derived_from",
+      "object": "obs:cold-start-wall",
+      "evidence_refs": [
+        "file:src/chess_mentor_engine/learner_intelligence/next_session.py"
+      ],
+      "attributes": {
+        "establishment": "inferred"
+      }
+    }
+  ]
+}

@@ -1,0 +1,225 @@
+{
+  "schema_version": 2,
+  "claims": [
+    {
+      "id": "goal:recurring-decision-diagnosis",
+      "kind": "goal",
+      "statement": "Help a player discover the recurring decision problems ordinary engine review does not show, with evidence from their own games, and choose one thing to practice next.",
+      "authority_kind": "document",
+      "authority_ref": "docs/product/product-discovery.md",
+      "evidence_refs": ["file:docs/product/product-discovery.md", "file:docs/product/product-definition.md"],
+      "epistemic_status": "declared",
+      "attributes": {"review_status": "reviewed", "source_section": "product-discovery.md sections 1, 3, 4"}
+    },
+    {
+      "id": "goal:persistent-learner-model",
+      "kind": "goal",
+      "statement": "Transform longitudinal chess evidence into a persistent learner model and use it to choose personalized teaching interventions; persistence belongs inside the first validated slice.",
+      "authority_kind": "document",
+      "authority_ref": "docs/product/product-definition.md",
+      "evidence_refs": ["file:docs/product/product-definition.md", "file:docs/product/product-discovery.md"],
+      "epistemic_status": "declared",
+      "attributes": {"review_status": "reviewed"}
+    },
+    {
+      "id": "goal:first-value-ten-games",
+      "kind": "goal",
+      "statement": "First-value moment: from about 10 recent imported games, produce one cautious recurring-pattern diagnosis (or explicit insufficient evidence), concrete examples, one recommendation and a way for the player to respond.",
+      "authority_kind": "document",
+      "authority_ref": "docs/product/product-discovery.md",
+      "evidence_refs": ["file:docs/product/product-discovery.md"],
+      "epistemic_status": "declared",
+      "attributes": {"review_status": "reviewed", "decided_in": "product-discovery.md section 4 and 15"}
+    },
+    {
+      "id": "goal:post-v1-evidence-from-local-use",
+      "kind": "goal",
+      "statement": "Current governing post-V1 decision: the next evidence must come from actual repeated local use; reconcile the demonstrated bottleneck before authorizing one bounded next objective.",
+      "authority_kind": "document",
+      "authority_ref": "CONTEXT.md",
+      "evidence_refs": ["file:CONTEXT.md", "file:STATUS.md", "file:docs/product/repository-build-status.md"],
+      "epistemic_status": "declared",
+      "attributes": {"review_status": "reviewed", "as_of": "afbdf775356483f08a5ea979b34dbb36cbafb2f3"}
+    },
+    {
+      "id": "nongoal:replace-engine",
+      "kind": "non_goal",
+      "statement": "Not replacing Stockfish/engines, not a general chess database, not reproducing Chess.com/Lichess, not generic content volume, not presenting model chess judgments as objective truth, not a full training platform before the thesis is validated.",
+      "authority_kind": "document",
+      "authority_ref": "docs/product/product-definition.md",
+      "evidence_refs": ["file:docs/product/product-definition.md", "file:docs/product/product-discovery.md"],
+      "epistemic_status": "declared",
+      "attributes": {"review_status": "reviewed"}
+    },
+    {
+      "id": "nongoal:post-v1-auto-expansion",
+      "kind": "non_goal",
+      "statement": "Do not automatically implement M35/M37/M38/K8/M47, another learner-intelligence subsystem, browser UI or hosted productization in place of local-use evidence.",
+      "authority_kind": "document",
+      "authority_ref": "CONTEXT.md",
+      "evidence_refs": ["file:CONTEXT.md", "file:STATUS.md"],
+      "epistemic_status": "declared",
+      "attributes": {"review_status": "reviewed"}
+    },
+    {
+      "id": "concept:objective-chess-evidence",
+      "kind": "domain_concept",
+      "statement": "Canonical board/position state, deterministic features and provenance-bound engine evidence (score/bound/mate semantics). Owned by chess/, analysis/, selection/ (M1-M4, M14-M18).",
+      "authority_kind": "document",
+      "authority_ref": "CONTEXT.md",
+      "evidence_refs": ["file:CONTEXT.md", "file:docs/decisions/0002-engine-evidence-contract.md"],
+      "epistemic_status": "declared",
+      "attributes": {"review_status": "reviewed"}
+    },
+    {
+      "id": "concept:participant-evidence",
+      "kind": "domain_concept",
+      "statement": "Participant-reported reasoning (noticed, considered, expected) captured and frozen under an explicit exposure/consent protocol (M5/M8). Self-report is evidence, not chess truth.",
+      "authority_kind": "document",
+      "authority_ref": "docs/decisions/0004-player-decision-evidence-contract.md",
+      "evidence_refs": ["file:docs/decisions/0004-player-decision-evidence-contract.md", "file:CONTEXT.md"],
+      "epistemic_status": "declared",
+      "attributes": {"review_status": "reviewed"}
+    },
+    {
+      "id": "concept:reasoning-discrepancy",
+      "kind": "domain_concept",
+      "statement": "M6 position-local comparison between what the participant reported and the objective evidence; one discrepancy is never recurrence or a trait.",
+      "authority_kind": "document",
+      "authority_ref": "docs/decisions/0005-reasoning-discrepancy-contract.md",
+      "evidence_refs": ["file:docs/decisions/0005-reasoning-discrepancy-contract.md"],
+      "epistemic_status": "declared",
+      "attributes": {"review_status": "reviewed"}
+    },
+    {
+      "id": "concept:learner-hypothesis",
+      "kind": "domain_concept",
+      "statement": "M7/M7C participant-specific append-only hypothesis with revision lineage and recurrence/support/challenge/contradiction assessment over exact M6 evidence units.",
+      "authority_kind": "document",
+      "authority_ref": "docs/decisions/0006-learner-hypothesis-ledger-contract.md",
+      "evidence_refs": ["file:docs/decisions/0006-learner-hypothesis-ledger-contract.md", "file:docs/architecture/learner-hypothesis-recurrence-assessment.md"],
+      "epistemic_status": "declared",
+      "attributes": {"review_status": "reviewed"}
+    },
+    {
+      "id": "concept:intervention-selection",
+      "kind": "domain_concept",
+      "statement": "M9 explicit applicability and selection of a registered exercise/intervention for a hypothesis; selected != effective.",
+      "authority_kind": "document",
+      "authority_ref": "docs/decisions/0008-training-intervention-registry-contract.md",
+      "evidence_refs": ["file:docs/decisions/0008-training-intervention-registry-contract.md"],
+      "epistemic_status": "declared",
+      "attributes": {"review_status": "reviewed"}
+    },
+    {
+      "id": "concept:outcome-transfer-evidence",
+      "kind": "domain_concept",
+      "statement": "M10 bounded practice / near / far / real-game outcome evidence for a selected intervention; practice completion != transfer != mastery.",
+      "authority_kind": "document",
+      "authority_ref": "docs/decisions/0009-outcome-transfer-evidence-contract.md",
+      "evidence_refs": ["file:docs/decisions/0009-outcome-transfer-evidence-contract.md"],
+      "epistemic_status": "declared",
+      "attributes": {"review_status": "reviewed"}
+    },
+    {
+      "id": "concept:longitudinal-learner-state",
+      "kind": "domain_concept",
+      "statement": "M11 append-only participant ledger of hypothesis state events and a deterministic snapshot projection.",
+      "authority_kind": "document",
+      "authority_ref": "docs/decisions/0010-longitudinal-learner-state-contract.md",
+      "evidence_refs": ["file:docs/decisions/0010-longitudinal-learner-state-contract.md", "file:docs/runbooks/m11-longitudinal-learner-state.md"],
+      "epistemic_status": "declared",
+      "attributes": {"review_status": "reviewed"}
+    },
+    {
+      "id": "concept:chess-knowledge-concept",
+      "kind": "domain_concept",
+      "statement": "K0-K7 versioned chess ontology concept (41 concepts in ontology.v1.json) with provenance-bound assertions and conservative detectors; concept occurrence != participant perception or weakness.",
+      "authority_kind": "document",
+      "authority_ref": "docs/decisions/0012-chess-knowledge-ontology-contract.md",
+      "evidence_refs": ["file:docs/decisions/0012-chess-knowledge-ontology-contract.md", "file:src/chess_mentor_engine/chess_knowledge/data/ontology.v1.json"],
+      "epistemic_status": "observed",
+      "attributes": {"review_status": "reviewed"}
+    },
+    {
+      "id": "concept:exposure-lifecycle",
+      "kind": "domain_concept",
+      "statement": "M8 session ordering that protects measurement: present position, capture baseline, freeze before any reveal; assisted responses and post-reveal reflection are separate evidence classes.",
+      "authority_kind": "document",
+      "authority_ref": "docs/decisions/0007-evidence-aware-tutor-session-contract.md",
+      "evidence_refs": ["file:docs/decisions/0007-evidence-aware-tutor-session-contract.md", "file:src/chess_mentor_engine/tutoring/session.py"],
+      "epistemic_status": "declared",
+      "attributes": {"review_status": "reviewed"}
+    },
+    {
+      "id": "concept:proposal-layers",
+      "kind": "domain_concept",
+      "statement": "M36 read model, M39 synthesis, M40 next-session proposal, M43 evidence candidates, M41 intervention candidates, M42 transfer plans, M44 progress view, M45 mentor queue, M46 tutor action proposal: all read/propose only, none inherits upstream mutation, selection, outcome or execution authority.",
+      "authority_kind": "document",
+      "authority_ref": "docs/architecture/architecture.md",
+      "evidence_refs": ["file:docs/architecture/architecture.md", "file:CONTEXT.md"],
+      "epistemic_status": "declared",
+      "attributes": {"review_status": "reviewed"}
+    },
+    {
+      "id": "concept:product-use-observation",
+      "kind": "domain_concept",
+      "statement": "Post-V1 descriptive record of local use of an M8 session plus bounded 1-5 self-report; never learner inference, efficacy or mastery evidence.",
+      "authority_kind": "document",
+      "authority_ref": "docs/product/post-v1-local-product-use-observation.md",
+      "evidence_refs": ["file:docs/product/post-v1-local-product-use-observation.md", "file:src/chess_mentor_engine/observation/model.py"],
+      "epistemic_status": "declared",
+      "attributes": {"review_status": "reviewed"}
+    },
+    {
+      "id": "inv:authority-separation",
+      "kind": "invariant",
+      "statement": "objective chess truth != participant evidence != learner inference; each downstream proposal/presentation/composition layer must not acquire the authority of the layer it reads.",
+      "authority_kind": "document",
+      "authority_ref": "CONTEXT.md",
+      "evidence_refs": ["file:CONTEXT.md", "file:docs/architecture/architecture.md"],
+      "epistemic_status": "declared",
+      "attributes": {"review_status": "reviewed", "full_list": "CONTEXT.md 'Contracts to preserve'"}
+    },
+    {
+      "id": "inv:claim-ceiling",
+      "kind": "invariant",
+      "statement": "Repository qualification does not establish learning effect, tutor efficacy, mastery or real-user usefulness; these remain not_established.",
+      "authority_kind": "document",
+      "authority_ref": "STATUS.md",
+      "evidence_refs": ["file:STATUS.md", "file:README.md"],
+      "epistemic_status": "declared",
+      "attributes": {"review_status": "reviewed"}
+    },
+    {
+      "id": "constraint:documentation-governance",
+      "kind": "constraint",
+      "statement": "Repository docs record only accepted decisions, qualified state, repeatable runbooks or decision-changing evidence; brainstorming and ungrounded recommendations must not become roadmap or product commitments.",
+      "authority_kind": "document",
+      "authority_ref": "CONTEXT.md",
+      "evidence_refs": ["file:CONTEXT.md"],
+      "epistemic_status": "declared",
+      "attributes": {"review_status": "reviewed", "consequence_for_sensemaking": "Sensemaking analyses live under .sensemaking/, not docs/, and are labelled exploratory."}
+    },
+    {
+      "id": "constraint:qualification-discipline",
+      "kind": "constraint",
+      "statement": "Every package: reconcile main, name the problem and authority owner, classify REPOSITORY_ONLY/HERMETIC_VALIDATION/EXTERNAL_AUTHORITY, define claim ceiling, include rejection/tamper cases, and merge only an exact head passing pytest, Ruff, compileall, release-distribution and Stockfish jobs.",
+      "authority_kind": "document",
+      "authority_ref": "CONTEXT.md",
+      "evidence_refs": ["file:CONTEXT.md", "file:.github/workflows/ci.yml"],
+      "epistemic_status": "declared",
+      "attributes": {"review_status": "reviewed"}
+    }
+  ],
+  "relations": [
+    {"id": "rel:distinct-objective-participant", "subject": "concept:objective-chess-evidence", "predicate": "distinct_from", "object": "concept:participant-evidence", "evidence_refs": ["file:CONTEXT.md"]},
+    {"id": "rel:distinct-discrepancy-hypothesis", "subject": "concept:reasoning-discrepancy", "predicate": "distinct_from", "object": "concept:learner-hypothesis", "evidence_refs": ["file:docs/decisions/0005-reasoning-discrepancy-contract.md"]},
+    {"id": "rel:distinct-concept-hypothesis", "subject": "concept:chess-knowledge-concept", "predicate": "distinct_from", "object": "concept:learner-hypothesis", "evidence_refs": ["file:docs/decisions/0012-chess-knowledge-ontology-contract.md"]},
+    {"id": "rel:distinct-observation-outcome", "subject": "concept:product-use-observation", "predicate": "distinct_from", "object": "concept:outcome-transfer-evidence", "evidence_refs": ["file:docs/product/post-v1-local-product-use-observation.md"]},
+    {"id": "rel:discrepancy-flows-to-hypothesis", "subject": "concept:reasoning-discrepancy", "predicate": "references", "object": "concept:learner-hypothesis", "attributes": {"conceptual_relation": "flows_to"}, "evidence_refs": ["file:docs/decisions/0006-learner-hypothesis-ledger-contract.md"]},
+    {"id": "rel:hypothesis-flows-to-state", "subject": "concept:learner-hypothesis", "predicate": "references", "object": "concept:longitudinal-learner-state", "attributes": {"conceptual_relation": "flows_to"}, "evidence_refs": ["file:docs/decisions/0010-longitudinal-learner-state-contract.md"]},
+    {"id": "rel:first-value-serves-diagnosis", "subject": "goal:first-value-ten-games", "predicate": "serves_goal", "object": "goal:recurring-decision-diagnosis", "evidence_refs": ["file:docs/product/product-discovery.md"]},
+    {"id": "rel:exposure-constrained-by-separation", "subject": "concept:exposure-lifecycle", "predicate": "constrained_by", "object": "inv:authority-separation", "evidence_refs": ["file:docs/architecture/architecture.md"]}
+  ]
+}
