@@ -1,0 +1,37 @@
+# Legacy Using-Sensemaking Template
+
+**Status:** retained compatibility placeholder; not an agent instruction surface  
+**Canonical Skill:** [`SKILL.md`](SKILL.md)
+
+This file is retained only because earlier Phase-1 repository material referred to `SKILL.md.template`. It is **not** the current Sensemaking bootstrap and must not be used as routing or orchestration authority.
+
+The canonical, shipped agent instructions are in `SKILL.md`, with progressively loaded supporting guidance under `references/`.
+
+In particular, do not recover the former template's obsolete assumptions that:
+
+```text
+primary fog type -> automatic workflow choice
+recommended workflow -> execute next
+validation PASS -> semantic routing authority
+```
+
+Current doctrine instead requires the active coding agent to:
+
+```text
+goal / authority
+-> nearest decision-changing uncertainty
+-> evidence
+-> warranted responsibility
+-> appropriate capability when useful
+-> bounded work
+-> validation / reconciliation when warranted
+-> continue / stop / escalate
+```
+
+The Persona & Adaptive Guidance Model v0 further keeps scaffolding, process rigor, and Campaign durability proportional to user supervision capability, desired delegation, decision complexity, consequentiality, and continuation complexity. Those factors are qualitative judgment concepts, not scores or routing rules.
+
+For current guidance, read:
+
+- `SKILL.md` — canonical agent-facing control loop;
+- `references/adaptive-guidance-v0.md` — proportional scaffolding/rigor/durability guidance;
+- `references/golden-paths-v1.md` — Campaign composition examples when durable Campaign state is useful.

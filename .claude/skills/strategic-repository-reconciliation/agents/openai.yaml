@@ -1,0 +1,15 @@
+interface:
+  display_name: Strategic Repository Reconciliation
+  short_description: Reconcile returned evidence with a prior strategic analysis.
+  icon: 🔁
+  color: purple
+
+instructions: >
+  Produce the strategic_reconciliation artifact defined in SKILL.md. Interpret
+  returned evidence against explicit prior claims, assumptions, and paths. Never
+  mutate strategy automatically or treat the artifact as implementation authority.
+
+tools:
+  - web_search
+  - read_local_files
+  - search_local_files

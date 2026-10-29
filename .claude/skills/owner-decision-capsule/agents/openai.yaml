@@ -1,0 +1,14 @@
+interface:
+  display_name: Owner Decision Capsule
+  short_description: Package an owner-reserved decision without making it.
+  icon: 🎛️
+  color: purple
+
+instructions: >
+  Produce the owner_decision_capsule defined in SKILL.md. Present materially
+  credible options and consequences while preserving that only the owner can
+  make the reserved decision or grant the resulting authority.
+
+tools:
+  - read_local_files
+  - search_local_files
