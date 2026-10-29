@@ -1,0 +1,34 @@
+# Workflow liveness is separate from registry identity.
+#
+# Registry membership preserves stable IDs and historical/compatibility provenance.
+# Liveness controls whether a workflow is eligible for CURRENT recommendation,
+# selection, planning, or execution. See ADR 0027 and the disposition audit.
+schema_version: 1
+default_liveness: active
+allowed_liveness: [active, compatibility_only]
+
+overrides:
+  # Original ADR-0027 compatibility set.
+  product-to-issues: compatibility_only
+  product-autonomous-sprint: compatibility_only
+  experimental-autonomous-sprint: compatibility_only
+  implementation-workflow: compatibility_only
+  product-implementation-workflow: compatibility_only
+  ui-diagnostic-workflow: compatibility_only
+  ui-implementation-workflow: compatibility_only
+  architecture-implementation-workflow: compatibility_only
+
+  # RC4 simplification: historical auto-chaining claims do not match the
+  # current runtime, which deliberately requires a separate authority event.
+  fast-path-workflow: compatibility_only
+
+  # RC4 selective contraction: preserve catalog identity, remove unsupported
+  # workflows from the current selectable surface.
+  artifact-reconciliation: compatibility_only
+  autonomous-sprint-preflight: compatibility_only
+  product-strategy-sprint: compatibility_only
+
+  # Post-RC4 direct-responsibility migration: the active agent now owns
+  # product/architecture responsibility selection without a routing wrapper.
+  product-discovery-sprint: compatibility_only
+  architectural-review-planning-workflow: compatibility_only

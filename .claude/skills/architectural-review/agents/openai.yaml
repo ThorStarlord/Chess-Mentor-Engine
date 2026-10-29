@@ -1,0 +1,7 @@
+# Claude Code Agent Configuration — Architectural Review
+
+# This file configures how the architectural-review skill is invoked when using Claude Code.
+# Format matches other skills in the sensemaking ecosystem (repo-sensemaker, problem-framer, etc.).
+
+version: "1.0"
+skill_id: architectural-review
