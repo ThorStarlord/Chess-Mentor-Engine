@@ -1,0 +1,84 @@
+artifact_id: sensemaking_session_receipt
+schema_version: 1
+session_ref: 2026-10-29-coach-multi-student-question
+state: final
+created_at: "2026-10-29T09:00:00Z"
+updated_at: "2026-10-29T09:30:00Z"
+target_repository: thorstarlord/chess-mentor-engine
+source_identity:
+  start_ref: 055f96f
+  end_ref: 055f96f
+  worktree_clean_at_end: false
+skill_identity:
+  load_mode: harness_discovered
+  sensemaking_source_ref: null
+goal:
+  statement: "Focused question: should CME support a chess coach who reviews several students' learner hypotheses and progress and assigns targeted practice; what would it require of the architecture and authority model; which decisions and prior possibilities bear on it; what is the warranted next step. Do not change product implementation."
+  source: assigned_task
+  source_ref: null
+delegation:
+  granted: [read, local_write_receipt_only, commit, push, open_pr]
+  withheld: [product_change, knowledge_edit, merge, release, tracker_write]
+continuity:
+  resumes: 2026-10-28-repository-bootstrap
+  campaign_ref: null
+  resolves_questions: []
+responsibilities:
+  - id: R-1
+    responsibility: focused_reasoning_on_counterfactual_possibility
+    capability: using-sensemaking controller (recall of reviewed knowledge + targeted source inspection)
+    status: completed
+    reason: "Reused reviewed knowledge (poss:coach-mediated-product, PATH-3, Q-2, FRONTIER-1/2/3) and checked the decisive code and ADRs at the current head; no new specialist warranted because the remaining uncertainty is owner intent, not repository evidence."
+    artifact_refs: [.sensemaking/knowledge/observations-and-possibilities.json, .sensemaking/analyses/strategic_repository_analysis.md]
+    validation:
+      - command: source inspection of storage/store.py, learning/hypothesis_model.py, training/model.py, ADR 0006/0008/0011, product-discovery.md, CONTEXT.md
+        result: PASS
+findings:
+  - id: F-1
+    statement: "The store and every learner artifact are participant-scoped, and cross-participant dependencies are rejected (IntegrityError). Several students are already representable as several participant_ids in one local store; there is no cross-participant read surface and no coach/actor identity in the store."
+    epistemic_status: OBSERVED
+    evidence_refs: [src/chess_mentor_engine/storage/store.py:118-125, src/chess_mentor_engine/storage/store.py:163-164]
+    disposition: open
+  - id: F-2
+    statement: "Human authorship is already a first-class provenance kind: M7 hypotheses carry HypothesisActorProvenance (human|model|system) and M9 mappings carry human|model actors. A coach-authored or coach-confirmed hypothesis fits existing contracts; the coach role is close to the 'operator-confirmed' option of open question Q-2."
+    epistemic_status: OBSERVED
+    evidence_refs: [src/chess_mentor_engine/learning/hypothesis_model.py:11-96, src/chess_mentor_engine/training/model.py:10-106, docs/decisions/0008-training-intervention-registry-contract.md]
+    disposition: open
+  - id: F-3
+    statement: "'Assign targeted practice' collides with M9 authority: M9 v1 selects deterministically only when the hypothesis is supported_recurrence and exactly one registered mapping is applicable. A coach assignment that overrides or bypasses that is a new authority, not a UI over the existing one; ADR 0011 also excludes select/assign M9 training from the CLI."
+    epistemic_status: OBSERVED
+    evidence_refs: [docs/decisions/0008-training-intervention-registry-contract.md:91-125, docs/decisions/0011-local-evidence-cli-contract.md:51]
+    disposition: open
+  - id: F-4
+    statement: "The coach request inherits the cold-start wall and library-only learner loop: no command creates M7 hypotheses from sessions and M6-M44 have no store writer, so there is nothing per-student for a coach to review until PATH-1/T1-T2 exist."
+    epistemic_status: OBSERVED
+    evidence_refs: [src/chess_mentor_engine/learner_intelligence/next_session.py:543, src/chess_mentor_engine/storage/store.py]
+    disposition: open
+  - id: F-5
+    statement: "Product discovery names a 1400-1800 self-directed online player as design customer and lists the human coach as an alternative, not a user; the research protocol already casts 'a researcher or coach' as the manual analyst. Making the coach the user is a design-customer change (owner decision), and multi-user/hosted access stays outside repository authority per STATUS.md."
+    epistemic_status: OBSERVED
+    evidence_refs: [docs/product/product-discovery.md:20-40, docs/product/product-discovery.md:126, docs/product/product-discovery.md:264, STATUS.md]
+    disposition: open
+open_questions:
+  - id: Q-3
+    question: "Is a human coach (a) the product's design customer, (b) a supported secondary operator over the self-directed learner product, or (c) out of scope for now? And if (a)/(b): may the coach author/confirm M7 hypotheses, and may a coach assignment stand in for M9 selection or only annotate it?"
+    source: owner_intent
+    blocking: true
+    options:
+      - option: "(c) out of scope / defer"
+        consequence: "No change; poss:coach-mediated-product stays a retained counterfactual. PATH-1 proceeds as before."
+      - option: "(b) secondary local operator"
+        consequence: "Answers Q-2 as operator-confirmed with coach as operator; PATH-1/T2 designed so hypothesis confirmation is a human (coach) act; coach assignment recorded as human-provenance M9 mapping, M9 selection unchanged. Local single-machine, one store, many participant_ids."
+      - option: "(a) coach as design customer"
+        consequence: "Product-discovery revision and new validation (coach interviews/pilot) before architecture; likely ADRs for a coach actor, cross-participant read-only roster, and coach assignment authority distinct from M9."
+    durable_ref: null
+stop:
+  disposition: OWNER_DECISION
+  reason: "Repository evidence answers what it would take; whether CME should pursue it is a design-customer and authority choice reserved to the owner. No implementation authority."
+next:
+  warranted_responsibility: "Owner answers Q-3 (which also resolves Q-2). Meanwhile the coach's own students are a cheap source of the governed evidence: run the manual/semi-manual packet protocol for 2-3 of them with the coach as analyst (PATH-2 with a coach), no code. Only after a (b) answer and PATH-1/T1, design T2 with coach confirmation."
+  blocked_on: [Q-3, Q-2]
+persistence: committed
+claim_ceiling: "Repository inspection only; no coach interview, no run of any coach workflow, no assessment of coach willingness to pay or of M7C/M9 policy quality for coach use."
+action_authorized_by_receipt: false
+immutable: true
